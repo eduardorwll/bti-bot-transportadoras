@@ -93,19 +93,25 @@ function buildGMapsButton(lat, long) {
     to: wa_id,
     type: "interactive",
     interactive: {
-      type: "cta_url",
-      body: {
-        text: "Clique abaixo para abrir a localização no Google Maps:"
+        type: "cta_url",
+        header: {
+            type: "image",
+            image: {
+                link: "https://imgs.search.brave.com/1fpCuNTA-nXXZ4pN036omMc5vZ6jAehjLTlnkIIMr1I/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjE5/MDkzNjY0Mi9waG90/by90aGUtZ29vZ2xl/LW1hcHMtbG9nby1h/cHBlYXJzLW9uLWEt/c21hcnRwaG9uZS1z/Y3JlZW4taW4tdGhp/cy1pbGx1c3RyYXRp/b24tcGhvdG8taW4t/cmVuby11bml0ZWQu/anBnP3M9NjEyeDYx/MiZ3PTAmaz0yMCZj/PUNnNzg2U1l2TkJv/YzU4WUNpWUdhaVZS/ZG9MX2ZDNHdtQ2ZB/bVl4ek80akU9"
+            }
+        },
+        body: {
+            text: `Status da tarefa ${currentTaskId} alterado para: "Em andamento"`
+        },
+        action: {
+            name: "cta_url",
+            parameters: {
+                display_text: "Abrir no Google Maps",
+                url: `https://www.google.com/maps/search/?api=1&query=${lat},${long}`
+            }
       },
       footer: {
-        text: "Status da tarefa {{currentTaskId}} alterado para: \"Em andamento\""
-      },
-      action: {
-        name: "cta_url",
-        parameters: {
-          display_text: "📍 Abrir no Google Maps",
-          url: `https://www.google.com/maps/search/?api=1&query=${lat},${long}`
-        }
+        text: "Clique abaixo para abrir a localização no Google Maps."
       }
     }
   };
@@ -397,10 +403,7 @@ function processConfirmacao(ctx) {
     if (ctx.interactive_id === '0') {
       return {
         next: 'FINISHED',
-        reply: [
-          buildText(`Status da tarefa ${ctx.currentTaskId} alterado para: "Em andamento"`),
-          buildGMapsButton(ctx.currentTask.latitude, ctx.currentTask.longitude)
-        ],
+        reply: buildGMapsButton(ctx.currentTask.latitude, ctx.currentTask.longitude),
         status: 1,
         window_start: nowISO()
       };
