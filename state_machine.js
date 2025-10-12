@@ -331,7 +331,7 @@ function processStatusEntrega(ctx) {
   if (ctx.inputType === 'interactive') {
     switch (ctx.interactive_id) {
       case '0':
-        return { next: 'ENTREGA_SUCESSO', reply: processSucessoInicial(ctx) };
+        return { next: 'ENTREGA_SUCESSO', reply: buildText("Por favor, informe o número da NF para continuar.") };
       case '1':
         return { next: 'ENTREGA_PENDENCIA_TIPO', reply: showMenu('pendencia_tipo', ctx) };
       case '2':
@@ -352,41 +352,10 @@ function processStatusEntrega(ctx) {
   };
 }
 
-function processSucessoInicial(ctx) {
-  if (ctx.currentTask?.nfe) {
-    if
-    return [buildList(
-      "Confirma os dados da NF?",
-      `NF: ${ctx.currentTask.nfe}\nRemetente: (consultado no ERP)\nDestinatário: (consultado no ERP)`,
-      [
-        { id: "0", title: "Sim", description: null },
-        { id: "1", title: "Não", description: null }
-      ]
-    ), 
-
-    ]
-  } else {
-    return buildText("Por favor, informe o número da NF para continuar.");
-  }
-}
-
 function processEntregaSucesso(ctx) {
-  if (ctx.currentTask?.nfe) {
-    return {
-      next: 'ENTREGA_SUCESSO_CONFIRMA',
-      reply: buildList(
-        "Confirma os dados da NF?",
-        `NF: ${ctx.currentTask.nfe}\nRemetente: (consultado no ERP)\nDestinatário: (consultado no ERP)`,
-        [
-          { id: "0", title: "Sim", description: null },
-          { id: "1", title: "Não", description: null }
-        ]
-      ),
-      context_patch: { nf: ctx.currentTask.nfe }
-    };
-  } else if (ctx.inputType === 'text') {
+  if (ctx.inputType === 'text') {
     const nfDigitada = ctx.text.replace(/\D/g, "");
-    if (nfDigitada) {
+    if (nfDigitada === ctx.currentTask?.nfe) {
       return {
         next: 'ENTREGA_SUCESSO_CONFIRMA',
         reply: buildList(
@@ -402,7 +371,7 @@ function processEntregaSucesso(ctx) {
     } else {
       return {
         next: 'ENTREGA_SUCESSO',
-        reply: buildText("Informe o número da NF (apenas números)."),
+        reply: buildText("Não entendi, informe o número da NF (apenas números) novamente."),
         incRetry: true
       };
     }
