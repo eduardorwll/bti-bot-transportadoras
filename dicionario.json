@@ -107,10 +107,6 @@
       ]
     }
   },
-  "templates": {
-    "confirma_tarefa_address": "Tarefa selecionada:\n{{address}}\nID: {{taskId}}",
-    "sucesso_confirma_body": "NF: {{nf}}\nRemetente: (consultado no ERP)\nDestinatário: (consultado no ERP)"
-  },
   
   "stateMap": {
     "MENU_MAIN": {

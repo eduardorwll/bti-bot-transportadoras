@@ -311,10 +311,8 @@ function processMainMenu(ctx) {
         } else {
           return {
             next: 'MENU_ENTREGAS',
-            reply: [
-              buildText("Nenhuma tarefa em andamento. Escolha uma nova:"),
+            reply: 
               resolveMenu('entregas', ctx)
-            ]
           };
         }
       case '2':
@@ -369,7 +367,6 @@ function processEntregasMenu(ctx) {
       const selectedTask = ctx.tasks[interactiveId]; // Buscar pelo ID único
       
       if (selectedTask) {
-        console.log(`DEBUG: Tarefa selecionada: ${selectedTask.id} - ${selectedTask.address}`);
         
         return {
           next: 'CONFIRMACAO',
@@ -382,9 +379,6 @@ function processEntregasMenu(ctx) {
         };
       }
     }
-    
-    // Se chegou aqui, não encontrou a tarefa
-    console.log(`DEBUG: Tarefa não encontrada para interactive_id: ${interactiveId}`);
   }
   
   // CORREÇÃO: Se não for interactive ou não encontrou, reenviar menu
@@ -538,7 +532,7 @@ if (result.context_patch) {
 }
 
 // Verificar limite de retries
-if (retries > 3) {
+if (retries >= 3) {
   result.reply = buildText("Muitas tentativas inválidas. Encerrando atendimento.");
   result.next = 'FINISHED';
   result.active = false;
