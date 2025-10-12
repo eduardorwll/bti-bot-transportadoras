@@ -22,13 +22,9 @@
     },
     "confirma_tarefa": [
       {
-        "type": "text",
-        "content": "Tarefa selecionada:\n{{address}}\nID: {{taskId}}"
-      },
-      {
         "type": "list",
         "header": "Confirma que essa é a tarefa escolhida?",
-        "body": "Selecione abaixo",
+        "body": "Tarefa selecionada:\n{{address}}\nID: {{taskId}}",
         "options": [
           { "id": "0", "title": "Sim", "description": null },
           { "id": "1", "title": "Não", "description": null }
