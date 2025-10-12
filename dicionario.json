@@ -20,8 +20,7 @@
       "type": "text",
       "content": "Atendimento cancelado. Obrigado!"
     },
-    "confirma_tarefa": [
-      {
+    "confirma_tarefa":{
         "type": "list",
         "header": "Confirma a escolha da seguinte tarefa?",
         "body": "Endereço: {{address}}\nID: {{taskId}}",
@@ -29,8 +28,7 @@
           { "id": "0", "title": "Sim", "description": null },
           { "id": "1", "title": "Não", "description": null }
         ]
-      }
-    ],
+      },
     "status_entrega": {
       "type": "list",
       "header": "Escolha o Tipo de Entrega",
