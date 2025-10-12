@@ -185,7 +185,6 @@ let result;
 try {
   result = processStateDirectly(currentState, context);
 } catch (e) {
-  console.error('Erro na execução do estado:', e);
   result = { 
     next: 'MENU_MAIN', 
     reply: buildText("Erro interno. Retornando ao menu principal."), 
@@ -265,8 +264,6 @@ function processMainMenu(ctx) {
 function processEntregasMenu(ctx) {
   if (ctx.inputType === 'interactive') {
     const interactiveId = ctx.interactive_id;
-    
-    console.log(`DEBUG: interactive_id recebido: ${interactiveId}`);
     
     if (interactiveId === "voltar_menu") {
       return {
@@ -474,6 +471,7 @@ const taskStatus = 'status' in result ? result.status : currentTask.task_status;
 const windowStart = 'window_start' in result ? result.window_start : currentTask.window_start;
 const windowEnd = 'window_end' in result ? result.window_end : currentTask.window_end;
 
+
 if (result.context_patch) {
   Object.assign(context, result.context_patch);
 }
@@ -484,10 +482,14 @@ if (retries >= 3) {
   result.active = false;
 }
 
+// VERIFICA SE HÁ MAIS DE UM REPLY
+const replyIsArray = Array.isArray(result.reply);
+
 // SAÍDA FINAL
 return [{
   json: {
     reply: result.reply,
+    replyIsArray: replyIsArray,
     session_update: {
       employee_id: rawSession.employee_id,
       state: nextState,
