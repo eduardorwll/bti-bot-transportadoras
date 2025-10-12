@@ -2,6 +2,7 @@
 const parser = $('Parser numero/mensagem').first().json;
 const rawSession = $('Get last session').first().json || {};
 const rawTasks = $('Get active tasks').all();
+const dadosComprovante = $('COMPROVANTE').first().json || {};
 
 // Currents
 const currentState = rawSession?.state || 'MENU_MAIN';
@@ -356,7 +357,7 @@ function processSucessoConfirma(ctx) {
 
 function processFotoComprovante(ctx){
     if (ctx.inputType === 'image'){
-
+        
     }
     return {
         next: 'ENVIAR_FOTO',
