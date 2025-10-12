@@ -1,5 +1,5 @@
 {
-  "name": "Bot-contato",
+  "name": "Farrapos - bot-contato",
   "nodes": [
     {
       "parameters": {
@@ -26,7 +26,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const msg = $json.messages?.[0] || {};\nconst type = msg.type;\nconst text = (msg.text?.body || \"\").trim();\nconst interactiveId = msg.interactive?.list_reply?.id ?? null;\nconst raw = $json.messages?.[0]?.from || \"\";\nlet parsedPhoneNumber = raw.replace(/[^\\d]/g, \"\");\n\nif (parsedPhoneNumber.length === 12) {\n  parsedPhoneNumber = parsedPhoneNumber.slice(0,4) + \"9\" + parsedPhoneNumber.slice(4);\n}\nreturn [{ json: { \n  parsedPhoneNumber: `${parsedPhoneNumber}`,\n  message_id: msg.id,\n  type: interactiveId ? \"interactive\" : \"text\",\n  text: text.toUpperCase(),\n  interactive_id: interactiveId\n  } \n}];\n"
+        "jsCode": "const msg = $json.messages?.[0] || {};\nconst text = (msg.text?.body || \"\").trim();\nconst interactiveId = msg.interactive?.list_reply?.id ?? null;\nconst raw = $json.messages?.[0]?.from || \"\";\nlet parsedPhoneNumber = raw.replace(/[^\\d]/g, \"\");\n\nif (parsedPhoneNumber.length === 12) {\n  parsedPhoneNumber = parsedPhoneNumber.slice(0,4) + \"9\" + parsedPhoneNumber.slice(4);\n}\nreturn [{ json: { \n  parsedPhoneNumber: `${parsedPhoneNumber}`,\n  message_id: msg.id,\n  type: interactiveId ? \"interactive\" : \"text\",\n  text: text.toUpperCase(),\n  interactive_id: interactiveId\n  } \n}];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -92,7 +92,7 @@
       "typeVersion": 4.2,
       "position": [
         1344,
-        592
+        448
       ],
       "id": "d9374fbd-ab35-40fd-95da-d061737fbaab",
       "name": "Número não está registrado",
@@ -148,7 +148,7 @@
       "typeVersion": 1,
       "position": [
         1280,
-        480
+        352
       ],
       "id": "bfc3fc6c-84cc-4bf8-b2f5-7e3f626a25bf",
       "name": "Sticky Note5"
@@ -195,7 +195,7 @@
           "conditions": [
             {
               "id": "c5db1e13-4141-4556-a02e-b549b9180b77",
-              "leftValue": "={{ $json }}",
+              "leftValue": "={{ $('Get last session').first().json }}",
               "rightValue": "",
               "operator": {
                 "type": "object",
@@ -249,32 +249,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://graph.facebook.com/v22.0/764981153363033/messages",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "whatsAppApi",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ $json.reply }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2032,
-        -256
-      ],
-      "id": "ee4d2343-adcc-4186-93ae-7f8568ea76e7",
-      "name": "POST Whatsapp",
-      "credentials": {
-        "whatsAppApi": {
-          "id": "6DyQbUy3Ty2nyzEV",
-          "name": "Token Rewell"
-        }
-      }
-    },
-    {
-      "parameters": {
         "conditions": {
           "options": {
             "caseSensitive": true,
@@ -310,7 +284,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1472,
+        1376,
         -64
       ],
       "id": "016ee7ab-70f8-40d1-b176-57877cef671a",
@@ -319,15 +293,15 @@
     {
       "parameters": {
         "content": "## Inicia o menu inicial\n",
-        "height": 192,
+        "height": 224,
         "width": 480,
         "color": 7
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1968,
-        80
+        2000,
+        48
       ],
       "id": "896fb4ac-87bb-4656-bc02-6657945893cd",
       "name": "Sticky Note"
@@ -340,14 +314,14 @@
         "nodeCredentialType": "whatsAppApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('Parser numero/mensagem').item.json.parsedPhoneNumber }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"list\",\n    \"header\": {\n      \"type\": \"text\",\n      \"text\": \"Escolha o Tipo de Atendimento\"\n    },\n    \"body\": {\n      \"text\": \"Selecione uma das opções abaixo para continuar:\"\n    },\n    \"footer\": {\n      \"text\": \"Sistema de Atendimento\"\n    },\n    \"action\": {\n      \"button\": \"Selecionar\",\n      \"sections\": [\n        {\n          \"title\": \"Opções de Atendimento\",\n          \"rows\": [\n            {\n              \"id\": \"0\",\n              \"title\": \"Entrega Rota Normal\",\n              \"description\": \"Seguir com entrega padrão\"\n            },\n            {\n              \"id\": \"1\",\n              \"title\": \"Agendamento\",\n              \"description\": \"Agendar horário para entrega\"\n            },\n            {\n              \"id\": \"2\",\n              \"title\": \"Cancelar\",\n              \"description\": \"Cancelar atendimento.\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n}",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('Parser numero/mensagem').item.json.parsedPhoneNumber }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"list\",\n    \"header\": {\n      \"type\": \"text\",\n      \"text\": \"Escolha o Tipo de Atendimento\"\n    },\n    \"body\": {\n      \"text\": \"Selecione uma das opções abaixo para continuar:\"\n    },\n    \"footer\": {\n      \"text\": \"Sistema de Atendimento\"\n    },\n    \"action\": {\n      \"button\": \"Selecionar\",\n      \"sections\": [\n        {\n          \"title\": \"Opções de Atendimento\",\n          \"rows\": [\n            { \"id\": \"0\", \"title\": \"Entregas\", \"description\": \"Ver e escolher entrega.\" },\n            { \"id\": \"1\", \"title\": \"Status\", \"description\": \"Atualizar status\" },\n            { \"id\": \"2\", \"title\": \"Cancelar\", \"description\": \"Cancelar atendimento\" }\n          ]\n        }\n      ]\n    }\n  }\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2048,
-        144
+        2080,
+        112
       ],
       "id": "cd2a3884-7926-49b6-b2e5-3e5f857788a2",
       "name": "Start menu",
@@ -357,21 +331,6 @@
           "name": "Token Rewell"
         }
       }
-    },
-    {
-      "parameters": {
-        "content": "# Sessions\n## Tabela \"wa_session\"\n### state: \n- START : Menu inicial\n- \n",
-        "width": 400,
-        "color": 6
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        1280,
-        -400
-      ],
-      "id": "4de98e61-ccfd-4092-a01c-0b8203dd5c6a",
-      "name": "Sticky Note1"
     },
     {
       "parameters": {
@@ -472,7 +431,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const parser = $('Parser numero/mensagem').item.json;\nconst rawSession = $('Get last session').first().json || {};\n\nconst wa_id = parser?.parsedPhoneNumber;\nconst message_id = parser?.message_id || null;\nconst inputType = parser?.type || 'text';\nconst rawText = (parser?.text || '').toString();\nconst text = rawText.trim();\nconst interactive_id = parser?.interactive_id ?? null;\n\n// Sessão atual\nlet session = {\n  wa_id: rawSession?.wa_id ?? wa_id,\n  state: rawSession?.state ?? 'START',\n  context: rawSession?.context ?? {},\n  retries: Number.isFinite(Number(rawSession?.retries)) ? Number(rawSession.retries) : 0,\n  last_message_id: rawSession?.last_message_id ?? null,\n  employee_id: rawSession?.employee_id ?? null,\n  active: rawSession?.active ?? true\n};\n\n// Helper para timestamps\nfunction nowISO() {\n  return new Date().toISOString();\n}\n\n// Cria textos\nfunction buildText(body) {\n  return {\n    messaging_product: \"whatsapp\",\n    to: wa_id,\n    type: \"text\",\n    text: { body }\n  };\n}\n\n// Cria menus\nfunction buildList(header, body, rows) {\n  return {\n    messaging_product: \"whatsapp\",\n    recipient_type: \"individual\",\n    to: wa_id,\n    type: \"interactive\",\n    interactive: {\n      type: \"list\",\n      header: { type: \"text\", text: header },\n      body: { text: body },\n      footer: { text: \"Sistema de Atendimento\" },\n      action: { button: \"Selecionar\", sections: [{ title: \"Opções\", rows }] }\n    }\n  };\n}\n\n// State Mapping\nconst stateMap = {\n  MENU_MAIN: {\n    action: () => {\n      if (inputType === 'interactive') {\n        switch (String(interactive_id)) {\n          case '0':\n            return {\n              next: 'MENU_ENTREGA',\n              reply: buildList(\n                \"Escolha o Tipo de Entrega\",\n                \"Selecione uma das opções abaixo:\",\n                [\n                  { id: \"0\", title: \"Sucesso\", description: \"Entrega realizada\" },\n                  { id: \"1\", title: \"Pendência\", description: \"Entrega com pendência\" },\n                  { id: \"2\", title: \"Insucesso\", description: \"Entrega não realizada\" },\n                  { id: \"4\", title: \"Voltar\", description: \"Retornar ao menu principal\" }\n                ]\n              )\n            };\n          case '1':\n            return {\n              next: 'AGENDAMENTO',\n              reply: buildText(\"Por favor, envie a data desejada para o agendamento (DD/MM/AAAA).\")\n            };\n          case '2':\n            return {\n              next: 'FINISHED',\n              reply: buildText(\"Atendimento cancelado. Obrigado!\"),\n              active: false\n            };\n          default:\n            return { next: 'MENU_MAIN', reply: buildText(\"Opção inválida. Por favor, selecione do menu.\"), incRetry: true };\n        }\n      }\n      return { next: 'MENU_MAIN', reply: buildText(\"Por favor, selecione uma opção do menu.\"), incRetry: true };\n    }\n  },\n\n  MENU_ENTREGA: {\n    action: () => {\n      if (inputType === 'interactive') {\n        switch (String(interactive_id)) {\n          case '0':\n  return { next: 'FINISHED', reply: buildText(\"Entrega registrada com SUCESSO.\") };\n          case '1':\n            return { next: 'FINISHED', reply: buildText(\"Entrega registrada com PENDÊNCIA.\"), active: false };\n          case '2':\n            return { next: 'FINISHED', reply: buildText(\"Entrega registrada como INSUCESSO.\"), active: false };\n          case '4':\n            return {\n              next: 'MENU_MAIN',\n              reply: buildList(\n                \"Escolha o Tipo de Atendimento\",\n                \"Selecione uma das opções abaixo:\",\n                [\n                  { id: \"0\", title: \"Entrega Rota Normal\", description: \"Seguir com entrega padrão\" },\n                  { id: \"1\", title: \"Agendamento\", description: \"Agendar horário para entrega\" },\n                  { id: \"2\", title: \"Cancelar\", description: \"Cancelar atendimento\" }\n                ]\n              )\n            };\n          default:\n            return { next: 'MENU_ENTREGA', reply: buildText(\"Opção inválida. Selecione uma das opções.\"), incRetry: true };\n        }\n      }\n      return { next: 'MENU_ENTREGA', reply: buildText(\"Por favor, selecione uma opção da lista.\"), incRetry: true };\n    }\n  },\n  \n  FINISHED: {\n    action: () => ({\n      next: 'FINISHED',\n      reply: buildText(\"Atendimento finalizado.\"),\n      active: false\n    })\n  }\n};\n\n// Verifica se o estado existe\nconst currentState = stateMap[session.state];\nif (!currentState) {\n  return [{\n    json: {\n      reply: buildText(\"Erro interno: estado inválido.\"),\n      session_update: { ...session, updated_at: nowISO() },\n      idempotent: false\n    }\n  }];\n}\n\n// Execução\nlet result;\ntry {\n  result = currentState.action();\n} catch (e) {\n  result = { next: 'FINISHED', reply: buildText(\"Erro interno. Encerrando atendimento.\"), active: false };\n}\n\n// Atualiza sessão\nconst nextState = result.next || session.state;\nconst ctxPatch = result.ctxPatch || {};\nconst newContext = { ...session.context, ...ctxPatch };\nconst retries = result.incRetry ? session.retries + 1 : 0;\nconst active = 'active' in result ? result.active : session.active;\n\n// Saída\nreturn [{\n  json: {\n    reply: result.reply,\n    session_update: {\n      employee_id: session.employee_id,\n      state: nextState,\n      context: newContext,\n      retries,\n      active,\n      last_message_id: message_id,\n      updated_at: nowISO()\n    }\n  }\n}];\n"
+        "jsCode": "// Variaveis JSON\nconst parser = $('Parser numero/mensagem').first().json;\nconst rawSession = $('Get last session').first().json || {};\nconst rawTasks = $('Get active tasks').all();\n\n// Currents\nconst currentState = rawSession?.state || 'MENU_MAIN';\nconst currentTaskId = rawSession?.task_id || null;\nconst currentTask = rawTasks?.find(task => task.json.id === currentTaskId)?.json || {};\n\n// Referência apenas aos menus do dicionario\nconst dicionario = $('Dicionario').first().json;\nconst menus = dicionario.menus;\n\n// Array simples com itens das tarefas\nconst tasks = rawTasks.map(task => {\n  if (!task || !task.json) return null;\n  \n  return {\n    id: task.json.id,\n    address: task.json.address,\n    task_type: (task.json.task_type === 0) ? \"Entrega\" : task.json.task_type,\n    notes: task.json.notes,\n    nfe: task.json.nfe,\n    latitude: task.json.latitude,\n    longitude: task.json.longitude\n  };\n}).filter(task => task !== null);\n\n// Variaveis sessão whatsapp\nconst wa_id = parser?.parsedPhoneNumber;\nconst inputType = parser?.type || 'text';\nconst rawText = (parser?.text || '').toString();\nconst text = rawText.trim();\nconst interactive_id = parser?.interactive_id ?? null;\nconst message_id = parser?.message_id;\n\n// Helper para timestamps\nfunction nowISO() {\n  return new Date().toISOString();\n}\n\n// 🎯 FUNÇÕES PARA API DO WHATSAPP - MANTIDAS GLOBAIS\n\nfunction buildText(body) {\n  return {\n    messaging_product: \"whatsapp\",\n    recipient_type: \"individual\",\n    to: wa_id,\n    type: \"text\",\n    text: { body }\n  };\n}\n\nfunction buildList(header, body, rows) {\n  return {\n    messaging_product: \"whatsapp\",\n    recipient_type: \"individual\",\n    to: wa_id,\n    type: \"interactive\",\n    interactive: {\n      type: \"list\",\n      header: { \n        type: \"text\", \n        text: header.substring(0, 60)\n      },\n      body: { \n        text: (body || \" \").substring(0, 1024)\n      },\n      action: {\n        button: \"Opções\",\n        sections: [{\n          title: \"Menu\",\n          rows: rows.map(row => ({\n            id: String(row.id),\n            title: row.title.substring(0, 24),\n            description: row.description ? row.description.substring(0, 72) : \"\"\n          }))\n        }]\n      }\n    }\n  };\n}\n\nfunction buildGMapsButton(lat, long) {\n  return {\n    messaging_product: \"whatsapp\",\n    recipient_type: \"individual\",\n    to: wa_id,\n    type: \"interactive\",\n    interactive: {\n        type: \"cta_url\",\n        header: {\n            type: \"image\",\n            image: {\n                link: \"https://imgs.search.brave.com/1fpCuNTA-nXXZ4pN036omMc5vZ6jAehjLTlnkIIMr1I/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjE5/MDkzNjY0Mi9waG90/by90aGUtZ29vZ2xl/LW1hcHMtbG9nby1h/cHBlYXJzLW9uLWEt/c21hcnRwaG9uZS1z/Y3JlZW4taW4tdGhp/cy1pbGx1c3RyYXRp/b24tcGhvdG8taW4t/cmVuby11bml0ZWQu/anBnP3M9NjEyeDYx/MiZ3PTAmaz0yMCZj/PUNnNzg2U1l2TkJv/YzU4WUNpWUdhaVZS/ZG9MX2ZDNHdtQ2ZB/bVl4ek80akU9\"\n            }\n        },\n        body: {\n            text: `Status da tarefa ${currentTaskId} alterado para: \"Em andamento\"`\n        },\n        action: {\n            name: \"cta_url\",\n            parameters: {\n                display_text: \"Abrir no Google Maps\",\n                url: `https://www.google.com/maps/search/?api=1&query=${lat},${long}`\n            }\n      },\n      footer: {\n        text: \"Clique abaixo para abrir a localização no Google Maps.\"\n      }\n    }\n  };\n}\n\n// 🎯 FUNÇÕES SIMPLIFICADAS PARA MOSTRAR MENUS\n\nfunction showMenu(menuName, context = {}) {\n  const menu = menus[menuName];\n  if (!menu) return buildText(\"Menu não encontrado\");\n  \n  switch(menu.type) {\n    case 'text':\n      return buildText(menu.content);\n    case 'list':\n      let options = menu.options;\n      // Se options for string (referência), buscar do contexto\n      if (typeof options === 'string' && context[options]) {\n        options = context[options];\n      }\n      return buildList(menu.header, menu.body, options);\n    default:\n      return buildText(\"Tipo de menu não suportado\");\n  }\n}\n\n// 🎯 VARIÁVEL HELPER PRO MENU ENTREGAS - SIMPLIFICADA\n\nlet taskList = tasks.map((task, index) => ({\n  id: `task_${task.id}`,\n  title: (task.address || \"Endereço não informado\").substring(0, 24),\n  description: `ID: ${task.id}`.substring(0, 72)\n}));\n\ntaskList.push(\n  {\n    id: \"voltar_menu\",\n    title: \"↩️ Voltar\",\n    description: \"Retornar ao menu principal\"\n  },\n  {\n    id: \"cancelar_atendimento\",\n    title: \"❌ Cancelar\", \n    description: \"Cancelar atendimento\"\n  }\n);\n\n// 🎯 CONTEXTO SIMPLIFICADO\n\nconst context = {\n  // Dados de entrada\n  inputType,\n  interactive_id,\n  text,\n  \n  // Estado atual\n  currentState,\n  currentTaskId,\n  currentTask,\n  \n  // Listas\n  taskList,\n  tasks, // ← Array simples em vez de objeto complexo\n  \n  // Dados interpoláveis\n  address: currentTask?.address || \"Endereço não informado\",\n  taskId: currentTaskId || \"—\",\n  nfe: currentTask?.nfe,\n  nf: currentTask?.nfe\n};\n\n// 🎯 EXECUÇÃO PRINCIPAL DO ESTADO\n\nlet result;\ntry {\n  result = processStateDirectly(currentState, context);\n} catch (e) {\n  console.error('Erro na execução do estado:', e);\n  result = { \n    next: 'MENU_MAIN', \n    reply: buildText(\"Erro interno. Retornando ao menu principal.\"), \n    active: true \n  };\n}\n\n// 🎯 PROCESSAMENTO DIRETO DOS ESTADOS - MANTIDO SIMPLIFICADO\n\nfunction processStateDirectly(state, ctx) {\n  switch (state) {\n    case 'MENU_MAIN':\n      return processMainMenu(ctx);\n    case 'MENU_ENTREGAS':\n      return processEntregasMenu(ctx);\n    case 'CONFIRMACAO':\n      return processConfirmacao(ctx);\n    case 'STATUS_ENTREGA':\n      return processStatusEntrega(ctx);\n    case 'ENTREGA_SUCESSO':\n      return processEntregaSucesso(ctx);\n    case 'ENTREGA_PENDENCIA_TIPO':\n      return processPendenciaTipo(ctx);\n    case 'ENTREGA_INSUCESSO_TIPO':\n      return processInsucessoTipo(ctx);\n    default:\n      return {\n        next: 'MENU_MAIN',\n        reply: buildText(\"Estado não reconhecido. Retornando ao menu principal.\"),\n        active: true\n      };\n  }\n}\n\nfunction processMainMenu(ctx) {\n  if (ctx.inputType === 'interactive') {\n    switch (ctx.interactive_id) {\n      case '0':\n        return {\n          next: 'MENU_ENTREGAS',\n          reply: showMenu('entregas', ctx)\n        };\n      case '1':\n        if (ctx.currentTaskId) {\n          return {\n            next: 'STATUS_ENTREGA',\n            reply: showMenu('status_entrega', ctx)\n          };\n        } else {\n          return {\n            next: 'MENU_ENTREGAS',\n            reply: showMenu('entregas', ctx)\n          };\n        }\n      case '2':\n        return {\n          next: 'FINISHED',\n          reply: showMenu('cancel', ctx),\n          active: false\n        };\n      default:\n        return {\n          next: 'MENU_MAIN',\n          reply: buildText(\"Opção inválida. Por favor, selecione uma opção do menu.\"),\n          incRetry: true\n        };\n    }\n  } else {\n    return {\n      next: 'MENU_MAIN',\n      reply: showMenu('main', ctx),\n      incRetry: ctx.inputType !== 'interactive'\n    };\n  }\n}\n\nfunction processEntregasMenu(ctx) {\n  if (ctx.inputType === 'interactive') {\n    const interactiveId = ctx.interactive_id;\n    \n    console.log(`DEBUG: interactive_id recebido: ${interactiveId}`);\n    \n    if (interactiveId === \"voltar_menu\") {\n      return {\n        next: 'MENU_MAIN',\n        reply: showMenu('main', ctx)\n      };\n    }\n    \n    if (interactiveId === \"cancelar_atendimento\") {\n      return {\n        next: 'FINISHED',\n        reply: showMenu('cancel', ctx),\n        active: false\n      };\n    }\n    \n    // Busca linear simples em vez de mapeamento complexo\n    if (interactiveId && interactiveId.startsWith('task_')) {\n      const taskId = interactiveId.replace('task_', '');\n      const selectedTask = ctx.tasks.find(task => `task_${task.id}` === interactiveId);\n      \n      if (selectedTask) {\n        return {\n          next: 'CONFIRMACAO',\n          reply: buildList(\n            \"Confirma a escolha da seguinte tarefa?\",\n            `Endereço: ${selectedTask.address}\\nID: ${selectedTask.id}`,\n            [\n              { id: \"0\", title: \"Sim\", description: null },\n              { id: \"1\", title: \"Não\", description: null }\n            ]\n          ),\n          task_id: selectedTask.id\n        };\n      }\n    }\n  }\n  \n  return {\n    next: 'MENU_ENTREGAS',\n    reply: showMenu('entregas', ctx),\n    incRetry: true\n  };\n}\n\nfunction processConfirmacao(ctx) {\n  if (ctx.inputType === 'interactive') {\n    if (ctx.interactive_id === '0') {\n      return {\n        next: 'FINISHED',\n        reply: buildGMapsButton(ctx.currentTask.latitude, ctx.currentTask.longitude),\n        status: 1,\n        window_start: nowISO()\n      };\n    } else if (ctx.interactive_id === '1') {\n      return {\n        next: 'MENU_ENTREGAS',\n        reply: showMenu('entregas', ctx),\n        task_id: null\n      };\n    }\n  }\n  \n  return {\n    next: 'CONFIRMACAO',\n    reply: buildText(\"Por favor, selecione Sim ou Não para confirmar a tarefa.\"),\n    incRetry: true\n  };\n}\n\nfunction processStatusEntrega(ctx) {\n  if (ctx.inputType === 'interactive') {\n    switch (ctx.interactive_id) {\n      case '0':\n        return { next: 'ENTREGA_SUCESSO', reply: processSucessoInicial(ctx) };\n      case '1':\n        return { next: 'ENTREGA_PENDENCIA_TIPO', reply: showMenu('pendencia_tipo', ctx) };\n      case '2':\n        return { next: 'ENTREGA_INSUCESSO_TIPO', reply: showMenu('insucesso_tipo', ctx) };\n      case '3':\n        return { next: 'MENU_ENTREGAS', reply: showMenu('entregas', ctx) };\n      case '4':\n        return { next: 'FINISHED', reply: showMenu('cancel', ctx), task_id: null };\n      default:\n        return { next: 'STATUS_ENTREGA', reply: buildText(\"Selecione uma opção válida.\") };\n    }\n  }\n  \n  return {\n    next: 'STATUS_ENTREGA',\n    reply: showMenu('status_entrega', ctx),\n    incRetry: true\n  };\n}\n\n// 🎯 FUNÇÕES AUXILIARES SIMPLIFICADAS\n\nfunction processSucessoInicial(ctx) {\n  if (ctx.currentTask?.nfe) {\n    return buildList(\n      \"Confirma os dados da NF?\",\n      `NF: ${ctx.currentTask.nfe}\\nRemetente: (consultado no ERP)\\nDestinatário: (consultado no ERP)`,\n      [\n        { id: \"0\", title: \"Sim\", description: null },\n        { id: \"1\", title: \"Não\", description: null }\n      ]\n    );\n  } else {\n    return buildText(\"Por favor, informe o número da NF para continuar.\");\n  }\n}\n\nfunction processEntregaSucesso(ctx) {\n  if (ctx.currentTask?.nfe) {\n    return {\n      next: 'ENTREGA_SUCESSO_CONFIRMA',\n      reply: buildList(\n        \"Confirma os dados da NF?\",\n        `NF: ${ctx.currentTask.nfe}\\nRemetente: (consultado no ERP)\\nDestinatário: (consultado no ERP)`,\n        [\n          { id: \"0\", title: \"Sim\", description: null },\n          { id: \"1\", title: \"Não\", description: null }\n        ]\n      ),\n      context_patch: { nf: ctx.currentTask.nfe }\n    };\n  } else if (ctx.inputType === 'text') {\n    const nfDigitada = ctx.text.replace(/\\D/g, \"\");\n    if (nfDigitada) {\n      return {\n        next: 'ENTREGA_SUCESSO_CONFIRMA',\n        reply: buildList(\n          \"Confirma os dados da NF?\",\n          `NF: ${nfDigitada}\\nRemetente: (consultado no ERP)\\nDestinatário: (consultado no ERP)`,\n          [\n            { id: \"0\", title: \"Sim\", description: null },\n            { id: \"1\", title: \"Não\", description: null }\n          ]\n        ),\n        context_patch: { nf: nfDigitada }\n      };\n    } else {\n      return {\n        next: 'ENTREGA_SUCESSO',\n        reply: buildText(\"Informe o número da NF (apenas números).\"),\n        incRetry: true\n      };\n    }\n  }\n  \n  return {\n    next: 'ENTREGA_SUCESSO',\n    reply: buildText(\"Por favor, informe o número da NF.\"),\n    incRetry: true\n  };\n}\n\nfunction processPendenciaTipo(ctx) {\n  if (ctx.inputType === 'interactive') {\n    return {\n      next: 'ENTREGA_PENDENCIA_TOTALIDADE',\n      reply: showMenu('pendencia_total', ctx),\n      context_patch: { tipo_pendencia: ctx.interactive_id }\n    };\n  }\n  \n  return {\n    next: 'ENTREGA_PENDENCIA_TIPO',\n    reply: showMenu('pendencia_tipo', ctx)\n  };\n}\n\nfunction processInsucessoTipo(ctx) {\n  if (ctx.inputType === 'interactive') {\n    const motivos = [\n      \"Comprovante Retido\",\n      \"Divergência Comercial\", \n      \"Endereço não localizado\",\n      \"Destinatário ausente\",\n      \"Recusa/Impossibilidade\"\n    ];\n    const motivoIndex = parseInt(ctx.interactive_id);\n    \n    return {\n      next: 'ENTREGA_INSUCESSO_INTERACAO',\n      reply: buildText(`Motivo selecionado: ${motivos[motivoIndex]}\\nA torre será notificada.`),\n      context_patch: { motivo_insucesso: motivos[motivoIndex] }\n    };\n  }\n  \n  return {\n    next: 'ENTREGA_INSUCESSO_TIPO',\n    reply: showMenu('insucesso_tipo', ctx)\n  };\n}\n\n// 🎯 ATUALIZAÇÃO DE SESSÃO E TAREFA (MANTIDO)\n\nconst nextState = result.next || 'MENU_MAIN';\nconst retries = result.incRetry ? (rawSession.retries || 0) + 1 : 0;\nconst active = 'active' in result ? result.active : (rawSession.active !== false);\nconst nextTaskId = 'task_id' in result ? result.task_id : currentTaskId;\n\nconst taskStatus = 'status' in result ? result.status : currentTask.task_status;\nconst windowStart = 'window_start' in result ? result.window_start : currentTask.window_start;\nconst windowEnd = 'window_end' in result ? result.window_end : currentTask.window_end;\n\nif (result.context_patch) {\n  Object.assign(context, result.context_patch);\n}\n\nif (retries >= 3) {\n  result.reply = buildText(\"Muitas tentativas inválidas. Encerrando atendimento.\");\n  result.next = 'FINISHED';\n  result.active = false;\n}\n\n// 🎯 SAÍDA FINAL\nreturn [{\n  json: {\n    reply: result.reply,\n    session_update: {\n      employee_id: rawSession.employee_id,\n      state: nextState,\n      context: context,\n      retries: retries,\n      active: active,\n      last_message_id: message_id,\n      task_id: nextTaskId,\n      updated_at: nowISO()\n    },\n    task_update: nextTaskId ? {\n      id: nextTaskId,\n      task_status: taskStatus,\n      window_start: windowStart,\n      window_end: windowEnd\n    } : null\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -482,41 +441,6 @@
       ],
       "id": "9905a16d-c90e-4593-a794-31541e2b08fa",
       "name": "State Engine"
-    },
-    {
-      "parameters": {
-        "method": "PATCH",
-        "url": "=https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/wa_session?wa_id=eq.{{ $('Parser numero/mensagem').item.json.parsedPhoneNumber }}&active=eq.true",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "supabaseApi",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Prefer",
-              "value": "return=representation"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ $('State Engine').item.json.session_update }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2240,
-        -256
-      ],
-      "id": "9ebd19ec-ec64-486a-b6ca-6fb43a2a55a2",
-      "name": "UPDATE State",
-      "credentials": {
-        "supabaseApi": {
-          "id": "1f2MLqKps462P7gw",
-          "name": "Supabase Farrapos"
-        }
-      }
     },
     {
       "parameters": {
@@ -532,7 +456,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        688,
+        752,
         0
       ],
       "id": "bdba8e87-97ec-4fc8-9d37-85d78b071d0f",
@@ -558,8 +482,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2448,
-        -256
+        2832,
+        -272
       ],
       "id": "ab2c01b1-db08-4510-876b-ba0e014cf0e7",
       "name": "Log SENT",
@@ -584,11 +508,184 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2256,
-        144
+        2288,
+        112
       ],
       "id": "007c972d-9a8a-4291-8386-94be53a5f09d",
       "name": "Log SENT1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/task",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "employee_id",
+              "value": "=eq.{{ $json.employee_id }}"
+            },
+            {
+              "name": "order",
+              "value": "created_at.asc"
+            },
+            {
+              "name": "task_status",
+              "value": "neq.2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        608,
+        0
+      ],
+      "id": "6fbe239f-e5bf-4a24-8d95-897afb0e2135",
+      "name": "Get active tasks",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"menus\": {\n    \"main\": {\n      \"type\": \"list\",\n      \"header\": \"Escolha uma das opções abaixo:\",\n      \"body\": null,\n      \"options\": [\n        { \"id\": \"0\", \"title\": \"Entregas\", \"description\": \"Ver e escolher entrega.\" },\n        { \"id\": \"1\", \"title\": \"Status\", \"description\": \"Atualizar status\" },\n        { \"id\": \"2\", \"title\": \"Cancelar\", \"description\": \"Cancelar atendimento\" }\n      ]\n    },\n    \"entregas\": {\n      \"type\": \"list\",\n      \"header\": \"Entregas pendentes\",\n      \"body\": \"Selecione uma das opções abaixo\",\n      \"options\": \"taskList\"\n    },\n    \"cancel\": {\n      \"type\": \"text\",\n      \"content\": \"Atendimento cancelado. Obrigado!\"\n    },\n    \"status_entrega\": {\n      \"type\": \"list\",\n      \"header\": \"Escolha o status da entrega\",\n      \"body\": \"Selecione uma das opções abaixo:\",\n      \"options\": [\n        { \"id\": \"0\", \"title\": \"Sucesso\", \"description\": \"Entrega realizada\" },\n        { \"id\": \"1\", \"title\": \"Pendência\", \"description\": \"Entrega com pendência\" },\n        { \"id\": \"2\", \"title\": \"Insucesso\", \"description\": \"Entrega não realizada\" },\n        { \"id\": \"3\", \"title\": \"Voltar\", \"description\": \"Retornar ao menu principal\" },\n        { \"id\": \"4\", \"title\": \"Cancelar\", \"description\": \"Cancelar atendimento\" }\n      ]\n    },\n    \"pendencia_tipo\": {\n      \"type\": \"list\",\n      \"header\": \"Informe o tipo de pendência:\",\n      \"body\": \"Selecione uma das opções abaixo:\",\n      \"options\": [\n        { \"id\": \"0\", \"title\": \"Avaria\" },\n        { \"id\": \"1\", \"title\": \"Falta\" },\n        { \"id\": \"2\", \"title\": \"Inversão/Troca de volumes\" }\n      ]\n    },\n    \"pendencia_total\": {\n      \"type\": \"list\",\n      \"header\": \"A pendência é total ou parcial?\",\n      \"body\": \"Selecione uma das opções abaixo:\",\n      \"options\": [\n        { \"id\": \"0\", \"title\": \"Total\" },\n        { \"id\": \"1\", \"title\": \"Parcial\" }\n      ]\n    },\n    \"insucesso_tipo\": {\n      \"type\": \"list\",\n      \"header\": \"Informe o motivo do insucesso:\",\n      \"body\": \"Selecione uma das opções abaixo:\",\n      \"options\": [\n        { \"id\": \"0\", \"title\": \"Comprovante Retido\" },\n        { \"id\": \"1\", \"title\": \"Divergência Comercial\" },\n        { \"id\": \"2\", \"title\": \"Endereço não localizado\" },\n        { \"id\": \"3\", \"title\": \"Destinatário ausente\" },\n        { \"id\": \"4\", \"title\": \"Recusa/Impossibilidade\" }\n      ]\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1584,
+        -256
+      ],
+      "id": "37dea3e9-12ce-4d4f-b664-a30355cca0af",
+      "name": "Dicionario"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/task",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=id",
+              "value": "=eq.{{ $('State Engine').item.json.task_update.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('State Engine').item.json.task_update }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2608,
+        -272
+      ],
+      "id": "1f96694e-9872-4e3d-8bda-41c534d92e61",
+      "name": "UPDATE Task",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/764981153363033/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.reply }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2128,
+        -256
+      ],
+      "id": "104c7462-c95d-45b5-adbc-30f7397c8be2",
+      "name": "POST Whatsapp",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "6DyQbUy3Ty2nyzEV",
+          "name": "Token Rewell"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/wa_session",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=wa_id",
+              "value": "=eq.{{ $('Parser numero/mensagem').item.json.parsedPhoneNumber }}"
+            },
+            {
+              "name": "active",
+              "value": "eq.true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('State Engine').item.json.session_update }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2384,
+        -272
+      ],
+      "id": "ce33153a-eae6-400e-9c0d-43ec9e9ce699",
+      "name": "UPDATE State",
       "credentials": {
         "supabaseApi": {
           "id": "1f2MLqKps462P7gw",
@@ -625,7 +722,7 @@
       "main": [
         [
           {
-            "node": "Log RECEIVED",
+            "node": "Get active tasks",
             "type": "main",
             "index": 0
           }
@@ -694,7 +791,7 @@
       "main": [
         [
           {
-            "node": "State Engine",
+            "node": "Dicionario",
             "type": "main",
             "index": 0
           }
@@ -752,17 +849,6 @@
         ]
       ]
     },
-    "POST Whatsapp": {
-      "main": [
-        [
-          {
-            "node": "UPDATE State",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Log RECEIVED": {
       "main": [
         [
@@ -774,7 +860,29 @@
         ]
       ]
     },
-    "UPDATE State": {
+    "Get active tasks": {
+      "main": [
+        [
+          {
+            "node": "Log RECEIVED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dicionario": {
+      "main": [
+        [
+          {
+            "node": "State Engine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UPDATE Task": {
       "main": [
         [
           {
@@ -784,13 +892,35 @@
           }
         ]
       ]
+    },
+    "POST Whatsapp": {
+      "main": [
+        [
+          {
+            "node": "UPDATE State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UPDATE State": {
+      "main": [
+        [
+          {
+            "node": "UPDATE Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "18fe75dc-9860-4ba3-a931-8486fff41634",
+  "versionId": "78d56b2b-1fcb-43e1-849b-c9e027e94566",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "aa6df07db1b386814570ffd65bf5a1bc78881504b712a406d3a96a243fdeef75"
