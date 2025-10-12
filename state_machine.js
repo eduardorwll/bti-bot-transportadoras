@@ -8,12 +8,11 @@ const currentState = rawSession?.state || 'MENU_MAIN';
 const currentTaskId = rawSession?.task_id || null;
 const currentTask = rawTasks?.find(task => task.json.id === currentTaskId)?.json || {};
 
-// Referência ao dicionario de stateMap e menus
+// Referência apenas aos menus do dicionario
 const dicionario = $('Dicionario').first().json;
-const stateMap = dicionario.stateMap;
 const menus = dicionario.menus;
 
-// Array com itens das tarefas para a listagem no whats
+// Array simples com itens das tarefas
 const tasks = rawTasks.map(task => {
   if (!task || !task.json) return null;
   
@@ -41,9 +40,8 @@ function nowISO() {
   return new Date().toISOString();
 }
 
-// 🎯 FUNÇÕES PARA API DO WHATSAPP - RETORNAM JSON EXATO
+// 🎯 FUNÇÕES PARA API DO WHATSAPP - MANTIDAS GLOBAIS
 
-// Cria mensagem de texto
 function buildText(body) {
   return {
     messaging_product: "whatsapp",
@@ -54,7 +52,6 @@ function buildText(body) {
   };
 }
 
-// Cria lista interativa
 function buildList(header, body, rows) {
   return {
     messaging_product: "whatsapp",
@@ -85,7 +82,6 @@ function buildList(header, body, rows) {
   };
 }
 
-// Cria botão com link do Google Maps
 function buildGMapsButton(lat, long) {
   return {
     messaging_product: "whatsapp",
@@ -117,113 +113,50 @@ function buildGMapsButton(lat, long) {
   };
 }
 
-// 🎯 VARIÁVEL HELPER PRO MENU ENTREGAS - CORRIGIDA
+// 🎯 FUNÇÕES SIMPLIFICADAS PARA MOSTRAR MENUS
 
-// CORREÇÃO: Criar taskList com IDs únicos e não numéricos
+function showMenu(menuName, context = {}) {
+  const menu = menus[menuName];
+  if (!menu) return buildText("Menu não encontrado");
+  
+  switch(menu.type) {
+    case 'text':
+      return buildText(menu.content);
+    case 'list':
+      let options = menu.options;
+      // Se options for string (referência), buscar do contexto
+      if (typeof options === 'string' && context[options]) {
+        options = context[options];
+      }
+      return buildList(menu.header, menu.body, options);
+    default:
+      return buildText("Tipo de menu não suportado");
+  }
+}
+
+// 🎯 VARIÁVEL HELPER PRO MENU ENTREGAS - SIMPLIFICADA
+
 let taskList = tasks.map((task, index) => ({
-  id: `task_${task.id}`, // ← ID único baseado no ID real da task
+  id: `task_${task.id}`,
   title: (task.address || "Endereço não informado").substring(0, 24),
   description: `ID: ${task.id}`.substring(0, 72)
 }));
 
-// CORREÇÃO: Adicionar opções com IDs específicos e únicos
 taskList.push(
   {
-    id: "voltar_menu", // ← ID fixo e único
+    id: "voltar_menu",
     title: "↩️ Voltar",
     description: "Retornar ao menu principal"
   },
   {
-    id: "cancelar_atendimento", // ← ID fixo e único
+    id: "cancelar_atendimento",
     title: "❌ Cancelar", 
     description: "Cancelar atendimento"
   }
 );
 
-// 🎯 SISTEMA DE INTERPRETAÇÃO DO DICIONÁRIO
+// 🎯 CONTEXTO SIMPLIFICADO
 
-// Função para substituir placeholders
-function interpolate(template, data) {
-  if (typeof template !== 'string') return template;
-  
-  return template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
-    const keys = key.trim().split('.');
-    let value = data;
-    
-    for (const k of keys) {
-      value = value?.[k];
-      if (value === undefined) break;
-    }
-    
-    return value !== undefined ? String(value) : match;
-  });
-}
-
-// Resolve um menu baseado na referência
-function resolveMenu(menuRef, context) {
-  if (!menuRef) return null;
-  
-  if (typeof menuRef === 'string') {
-    return resolveMenu(menus[menuRef], context);
-  }
-  
-  if (Array.isArray(menuRef)) {
-    return menuRef.map(item => resolveMenu(item, context));
-  }
-  
-  if (menuRef.type) {
-    switch (menuRef.type) {
-      case 'text':
-        const content = interpolate(menuRef.content, context);
-        return buildText(content);
-        
-      case 'list':
-        const header = interpolate(menuRef.header, context);
-        const body = interpolate(menuRef.body, context);
-        let options = menuRef.options;
-        
-        if (typeof options === 'string' && context[options]) {
-          options = context[options];
-        }
-        
-        return buildList(header, body, options);
-        
-      case 'gmaps_button':
-        const lat = context.currentTask?.latitude || context.latitude;
-        const long = context.currentTask?.longitude || context.longitude;
-        if (lat && long) {
-          return buildGMapsButton(lat, long);
-        }
-        return buildText("Localização não disponível para esta tarefa.");
-        
-      case 'conditional':
-        // CORREÇÃO: Implementação básica de conditional
-        const condition = menuRef.condition;
-        if (condition === 'hasNfe' && context.currentTask?.nfe) {
-          return resolveMenu(menuRef.true, context);
-        } else {
-          return resolveMenu(menuRef.false, context);
-        }
-        
-      case 'reference':
-        const referencedMenu = menus[menuRef.menu];
-        return resolveMenu(referencedMenu, context);
-        
-      default:
-        return buildText("Tipo de menu não suportado");
-    }
-  }
-  
-  if (menuRef.menu) {
-    return resolveMenu(menus[menuRef.menu], context);
-  }
-  
-  return buildText("Formato de menu inválido");
-}
-
-// 🎯 EXECUÇÃO PRINCIPAL DO ESTADO
-
-// Contexto para execução
 const context = {
   // Dados de entrada
   inputType,
@@ -237,36 +170,20 @@ const context = {
   
   // Listas
   taskList,
-  // CORREÇÃO: Mapeamento correto das tasks
-  tasks: tasks.reduce((acc, task, index) => {
-    acc[`task_${task.id}`] = task; // ← Mapear por ID único
-    return acc;
-  }, {}),
+  tasks, // ← Array simples em vez de objeto complexo
   
   // Dados interpoláveis
   address: currentTask?.address || "Endereço não informado",
   taskId: currentTaskId || "—",
   nfe: currentTask?.nfe,
-  nf: currentTask?.nfe,
-  
-  // Funções auxiliares
-  buildText,
-  buildList,
-  buildGMapsButton,
-  nowISO
+  nf: currentTask?.nfe
 };
 
-// Execução do estado atual
+// 🎯 EXECUÇÃO PRINCIPAL DO ESTADO
+
 let result;
 try {
-  const stateConfig = stateMap[currentState];
-  
-  if (!stateConfig) {
-    throw new Error(`Estado não encontrado: ${currentState}`);
-  }
-  
   result = processStateDirectly(currentState, context);
-  
 } catch (e) {
   console.error('Erro na execução do estado:', e);
   result = { 
@@ -276,7 +193,7 @@ try {
   };
 }
 
-// 🎯 PROCESSAMENTO DIRETO DOS ESTADOS - CORRIGIDO
+// 🎯 PROCESSAMENTO DIRETO DOS ESTADOS - MANTIDO SIMPLIFICADO
 
 function processStateDirectly(state, ctx) {
   switch (state) {
@@ -309,25 +226,24 @@ function processMainMenu(ctx) {
       case '0':
         return {
           next: 'MENU_ENTREGAS',
-          reply: resolveMenu('entregas', ctx)
+          reply: showMenu('entregas', ctx)
         };
       case '1':
         if (ctx.currentTaskId) {
           return {
             next: 'STATUS_ENTREGA',
-            reply: resolveMenu('status_entrega', ctx)
+            reply: showMenu('status_entrega', ctx)
           };
         } else {
           return {
             next: 'MENU_ENTREGAS',
-            reply: 
-              resolveMenu('entregas', ctx)
+            reply: showMenu('entregas', ctx)
           };
         }
       case '2':
         return {
           next: 'FINISHED',
-          reply: resolveMenu('cancel', ctx),
+          reply: showMenu('cancel', ctx),
           active: false
         };
       default:
@@ -340,60 +256,58 @@ function processMainMenu(ctx) {
   } else {
     return {
       next: 'MENU_MAIN',
-      reply: resolveMenu('main', ctx),
+      reply: showMenu('main', ctx),
       incRetry: ctx.inputType !== 'interactive'
     };
   }
 }
 
-// CORREÇÃO CRÍTICA: Função processEntregasMenu completamente revisada
 function processEntregasMenu(ctx) {
   if (ctx.inputType === 'interactive') {
     const interactiveId = ctx.interactive_id;
     
     console.log(`DEBUG: interactive_id recebido: ${interactiveId}`);
-    console.log(`DEBUG: taskList IDs: ${ctx.taskList.map(t => t.id).join(', ')}`);
     
-    // CORREÇÃO: Verificar por IDs específicos em vez de índices numéricos
     if (interactiveId === "voltar_menu") {
       return {
         next: 'MENU_MAIN',
-        reply: resolveMenu('main', ctx)
+        reply: showMenu('main', ctx)
       };
     }
     
     if (interactiveId === "cancelar_atendimento") {
       return {
         next: 'FINISHED',
-        reply: resolveMenu('cancel', ctx),
+        reply: showMenu('cancel', ctx),
         active: false
       };
     }
     
-    // CORREÇÃO: Buscar a tarefa pelo ID único
+    // Busca linear simples em vez de mapeamento complexo
     if (interactiveId && interactiveId.startsWith('task_')) {
       const taskId = interactiveId.replace('task_', '');
-      const selectedTask = ctx.tasks[interactiveId]; // Buscar pelo ID único
+      const selectedTask = ctx.tasks.find(task => `task_${task.id}` === interactiveId);
       
       if (selectedTask) {
-        
         return {
           next: 'CONFIRMACAO',
-          reply: resolveMenu('confirma_tarefa', {
-            ...ctx,
-            address: selectedTask.address,
-            taskId: selectedTask.id
-          }),
+          reply: buildList(
+            "Confirma a escolha da seguinte tarefa?",
+            `Endereço: ${selectedTask.address}\nID: ${selectedTask.id}`,
+            [
+              { id: "0", title: "Sim", description: null },
+              { id: "1", title: "Não", description: null }
+            ]
+          ),
           task_id: selectedTask.id
         };
       }
     }
   }
   
-  // CORREÇÃO: Se não for interactive ou não encontrou, reenviar menu
   return {
     next: 'MENU_ENTREGAS',
-    reply: resolveMenu('entregas', ctx),
+    reply: showMenu('entregas', ctx),
     incRetry: true
   };
 }
@@ -410,7 +324,7 @@ function processConfirmacao(ctx) {
     } else if (ctx.interactive_id === '1') {
       return {
         next: 'MENU_ENTREGAS',
-        reply: resolveMenu('entregas', ctx),
+        reply: showMenu('entregas', ctx),
         task_id: null
       };
     }
@@ -427,15 +341,15 @@ function processStatusEntrega(ctx) {
   if (ctx.inputType === 'interactive') {
     switch (ctx.interactive_id) {
       case '0':
-        return { next: 'ENTREGA_SUCESSO', reply: resolveMenu('sucesso_inicial', ctx) };
+        return { next: 'ENTREGA_SUCESSO', reply: processSucessoInicial(ctx) };
       case '1':
-        return { next: 'ENTREGA_PENDENCIA_TIPO', reply: resolveMenu('pendencia_tipo', ctx) };
+        return { next: 'ENTREGA_PENDENCIA_TIPO', reply: showMenu('pendencia_tipo', ctx) };
       case '2':
-        return { next: 'ENTREGA_INSUCESSO_TIPO', reply: resolveMenu('insucesso_tipo', ctx) };
+        return { next: 'ENTREGA_INSUCESSO_TIPO', reply: showMenu('insucesso_tipo', ctx) };
       case '3':
-        return { next: 'MENU_ENTREGAS', reply: resolveMenu('entregas', ctx) };
+        return { next: 'MENU_ENTREGAS', reply: showMenu('entregas', ctx) };
       case '4':
-        return { next: 'FINISHED', reply: resolveMenu('cancel', ctx), task_id: null };
+        return { next: 'FINISHED', reply: showMenu('cancel', ctx), task_id: null };
       default:
         return { next: 'STATUS_ENTREGA', reply: buildText("Selecione uma opção válida.") };
     }
@@ -443,18 +357,40 @@ function processStatusEntrega(ctx) {
   
   return {
     next: 'STATUS_ENTREGA',
-    reply: resolveMenu('status_entrega', ctx),
+    reply: showMenu('status_entrega', ctx),
     incRetry: true
   };
 }
 
-// Funções adicionais para outros estados
+// 🎯 FUNÇÕES AUXILIARES SIMPLIFICADAS
+
+function processSucessoInicial(ctx) {
+  if (ctx.currentTask?.nfe) {
+    return buildList(
+      "Confirma os dados da NF?",
+      `NF: ${ctx.currentTask.nfe}\nRemetente: (consultado no ERP)\nDestinatário: (consultado no ERP)`,
+      [
+        { id: "0", title: "Sim", description: null },
+        { id: "1", title: "Não", description: null }
+      ]
+    );
+  } else {
+    return buildText("Por favor, informe o número da NF para continuar.");
+  }
+}
+
 function processEntregaSucesso(ctx) {
-  // Lógica simplificada para ENTREGA_SUCESSO
   if (ctx.currentTask?.nfe) {
     return {
       next: 'ENTREGA_SUCESSO_CONFIRMA',
-      reply: resolveMenu('sucesso_confirma', { ...ctx, nf: ctx.currentTask.nfe }),
+      reply: buildList(
+        "Confirma os dados da NF?",
+        `NF: ${ctx.currentTask.nfe}\nRemetente: (consultado no ERP)\nDestinatário: (consultado no ERP)`,
+        [
+          { id: "0", title: "Sim", description: null },
+          { id: "1", title: "Não", description: null }
+        ]
+      ),
       context_patch: { nf: ctx.currentTask.nfe }
     };
   } else if (ctx.inputType === 'text') {
@@ -462,7 +398,14 @@ function processEntregaSucesso(ctx) {
     if (nfDigitada) {
       return {
         next: 'ENTREGA_SUCESSO_CONFIRMA',
-        reply: resolveMenu('sucesso_confirma', { ...ctx, nf: nfDigitada }),
+        reply: buildList(
+          "Confirma os dados da NF?",
+          `NF: ${nfDigitada}\nRemetente: (consultado no ERP)\nDestinatário: (consultado no ERP)`,
+          [
+            { id: "0", title: "Sim", description: null },
+            { id: "1", title: "Não", description: null }
+          ]
+        ),
         context_patch: { nf: nfDigitada }
       };
     } else {
@@ -485,14 +428,14 @@ function processPendenciaTipo(ctx) {
   if (ctx.inputType === 'interactive') {
     return {
       next: 'ENTREGA_PENDENCIA_TOTALIDADE',
-      reply: resolveMenu('pendencia_total', ctx),
+      reply: showMenu('pendencia_total', ctx),
       context_patch: { tipo_pendencia: ctx.interactive_id }
     };
   }
   
   return {
     next: 'ENTREGA_PENDENCIA_TIPO',
-    reply: resolveMenu('pendencia_tipo', ctx)
+    reply: showMenu('pendencia_tipo', ctx)
   };
 }
 
@@ -516,28 +459,25 @@ function processInsucessoTipo(ctx) {
   
   return {
     next: 'ENTREGA_INSUCESSO_TIPO',
-    reply: resolveMenu('insucesso_tipo', ctx)
+    reply: showMenu('insucesso_tipo', ctx)
   };
 }
 
-// 🎯 ATUALIZAÇÃO DE SESSÃO E TAREFA
+// 🎯 ATUALIZAÇÃO DE SESSÃO E TAREFA (MANTIDO)
 
 const nextState = result.next || 'MENU_MAIN';
 const retries = result.incRetry ? (rawSession.retries || 0) + 1 : 0;
 const active = 'active' in result ? result.active : (rawSession.active !== false);
 const nextTaskId = 'task_id' in result ? result.task_id : currentTaskId;
 
-// Campos de tarefa
 const taskStatus = 'status' in result ? result.status : currentTask.task_status;
 const windowStart = 'window_start' in result ? result.window_start : currentTask.window_start;
 const windowEnd = 'window_end' in result ? result.window_end : currentTask.window_end;
 
-// Aplicar context_patch se existir
 if (result.context_patch) {
   Object.assign(context, result.context_patch);
 }
 
-// Verificar limite de retries
 if (retries >= 3) {
   result.reply = buildText("Muitas tentativas inválidas. Encerrando atendimento.");
   result.next = 'FINISHED';
