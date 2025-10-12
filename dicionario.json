@@ -206,10 +206,8 @@
             "cases": {
               "0": {
                 "next": "FINISHED",
-                "reply": [
-                  {"type": "text", "content": "Status da tarefa {{currentTaskId}} alterado para: \"Em andamento\""},
-                  {"type": "gmaps_button", "latitude": "currentTask.latitude", "longitude": "currentTask.longitude"}
-                ],
+                "reply": 
+                  {"type": "gmaps_button", "latitude": "currentTask.latitude", "longitude": "currentTask.longitude"},
                 "status": 1,
                 "window_start": "nowISO()"
               },

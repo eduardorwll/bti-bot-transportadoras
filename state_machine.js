@@ -97,6 +97,9 @@ function buildGMapsButton(lat, long) {
       body: {
         text: "Clique abaixo para abrir a localização no Google Maps:"
       },
+      footer: {
+        text: "Status da tarefa {{currentTaskId}} alterado para: \"Em andamento\""
+      },
       action: {
         name: "cta_url",
         parameters: {
