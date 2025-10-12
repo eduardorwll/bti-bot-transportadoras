@@ -12,7 +12,15 @@ const currentTask = rawTasks?.find(task => task.json.id === currentTaskId)?.json
 const dicionario = $('Dicionario').first().json;
 const menus = dicionario.menus;
 
-// Array simples com itens das tarefas
+// Variaveis sessão whatsapp
+const wa_id = parser?.parsedPhoneNumber;
+const inputType = parser?.type || 'text';
+const rawText = (parser?.text || '').toString();
+const text = rawText.trim();
+const interactive_id = parser?.interactive_id ?? null;
+const message_id = parser?.message_id;
+
+// Array com itens das tarefas
 const tasks = rawTasks.map(task => {
   if (!task || !task.json) return null;
   
@@ -27,13 +35,27 @@ const tasks = rawTasks.map(task => {
   };
 }).filter(task => task !== null);
 
-// Variaveis sessão whatsapp
-const wa_id = parser?.parsedPhoneNumber;
-const inputType = parser?.type || 'text';
-const rawText = (parser?.text || '').toString();
-const text = rawText.trim();
-const interactive_id = parser?.interactive_id ?? null;
-const message_id = parser?.message_id;
+// VARIÁVEL HELPER PARA ADICIONAR BOTAO DE RETORNO E CANCELAMENTO NO MENU ENTREGAS
+
+let taskMenuOptions = tasks.map((task, index) => ({
+  id: index,
+  title: (task.address || "Endereço não informado").substring(0, 24),
+  description: `ID: ${task.id}`.substring(0, 72)
+}));
+
+const baseId = taskMenuOptions.length;
+taskMenuOptions.push(
+  {
+    id: baseId,
+    title: "↩️ Voltar",
+    description: "Retornar ao menu principal"
+  },
+  {
+    id: baseId + 1,
+    title: "❌ Cancelar", 
+    description: "Cancelar atendimento"
+  }
+);
 
 // Helper para timestamps
 function nowISO() {
@@ -134,68 +156,10 @@ function showMenu(menuName, context = {}) {
   }
 }
 
-// VARIÁVEL HELPER PRO MENU ENTREGAS
-
-let taskList = tasks.map((task, index) => ({
-  id: `task_${task.id}`,
-  title: (task.address || "Endereço não informado").substring(0, 24),
-  description: `ID: ${task.id}`.substring(0, 72)
-}));
-
-taskList.push(
-  {
-    id: "voltar_menu",
-    title: "↩️ Voltar",
-    description: "Retornar ao menu principal"
-  },
-  {
-    id: "cancelar_atendimento",
-    title: "❌ Cancelar", 
-    description: "Cancelar atendimento"
-  }
-);
-
-// CONTEXTO
-
-const context = {
-  // Dados de entrada
-  inputType,
-  interactive_id,
-  text,
-  
-  // Estado atual
-  currentState,
-  currentTaskId,
-  currentTask,
-  
-  // Listas
-  taskList,
-  tasks,
-  
-  // Dados interpoláveis
-  address: currentTask?.address || "Endereço não informado",
-  taskId: currentTaskId || "—",
-  nfe: currentTask?.nfe,
-  nf: currentTask?.nfe
-};
-
-// EXECUÇÃO PRINCIPAL DO ESTADO
-
-let result;
-try {
-  result = processStateDirectly(currentState, context);
-} catch (e) {
-  result = { 
-    next: 'MENU_MAIN', 
-    reply: buildText("Erro interno. Retornando ao menu principal."), 
-    active: true 
-  };
-}
-
 // PROCESSAMENTO DIRETO DOS ESTADOS
 
-function processStateDirectly(state, ctx) {
-  switch (state) {
+function processStateDirectly(ctx) {
+  switch (ctx.currentState) {
     case 'MENU_MAIN':
       return processMainMenu(ctx);
     case 'MENU_ENTREGAS':
@@ -210,6 +174,28 @@ function processStateDirectly(state, ctx) {
       return processPendenciaTipo(ctx);
     case 'ENTREGA_INSUCESSO_TIPO':
       return processInsucessoTipo(ctx);
+  }
+}
+
+function opcaoInvalida (ctx){
+    return {
+        next: ctx.currentState,
+        reply: [
+            buildText('Opção inválida, escolha do menu.'),
+            processStateDirectly(ctx)
+        ],
+        incRetry: true
+  }
+}
+
+function naoEntendi (ctx){
+    return {
+        next: ctx.currentState,
+        reply: [
+            buildText('Não entendi, responda novamente.'),
+            processStateDirectly(ctx)
+        ],
+        incRetry: true
   }
 }
 
@@ -230,7 +216,10 @@ function processMainMenu(ctx) {
         } else {
           return {
             next: 'MENU_ENTREGAS',
-            reply: showMenu('entregas', ctx)
+            reply: [
+                buildText('Nenhuma tarefa em andamento, selecione do menu a seguir:'),
+                showMenu('entregas', ctx)
+            ]
           };
         }
       case '2':
@@ -240,91 +229,64 @@ function processMainMenu(ctx) {
           active: false
         };
       default:
-        return {
-          next: 'MENU_MAIN',
-          reply: buildText("Opção inválida. Por favor, selecione uma opção do menu."),
-          incRetry: true
-        };
+        return opcaoInvalida (ctx);
     }
-  } else {
-    return {
-      next: 'MENU_MAIN',
-      reply: showMenu('main', ctx),
-      incRetry: ctx.inputType !== 'interactive'
-    };
   }
+    return naoEntendi(ctx)
 }
 
 function processEntregasMenu(ctx) {
   if (ctx.inputType === 'interactive') {
-    const interactiveId = ctx.interactive_id;
-    
-    if (interactiveId === "voltar_menu") {
-      return {
-        next: 'MENU_MAIN',
-        reply: showMenu('main', ctx)
-      };
-    }
-    
-    if (interactiveId === "cancelar_atendimento") {
-      return {
-        next: 'FINISHED',
-        reply: showMenu('cancel', ctx),
-        active: false
-      };
-    }
-    
-    if (interactiveId && interactiveId.startsWith('task_')) {
-      const taskId = interactiveId.replace('task_', '');
-      const selectedTask = ctx.tasks.find(task => `task_${task.id}` === interactiveId);
-      
-      if (selectedTask) {
-        return {
+    switch (ctx.interactiveId) {
+        case baseId:
+            return {
+                next: 'MENU_MAIN',
+                reply: showMenu('main', ctx)
+            };
+        case (baseId+1):
+            return {
+                next: 'FINISHED',
+                reply: showMenu('cancel', ctx),
+                active: false
+            };
+        case (ctx.interactiveId<baseId && ctx.interactiveId>=0):
+            return {
           next: 'CONFIRMACAO',
-          reply: buildList(
-            "Confirma a escolha da seguinte tarefa?",
-            `Endereço: ${selectedTask.address}\nID: ${selectedTask.id}`,
-            [
-              { id: "0", title: "Sim", description: null },
-              { id: "1", title: "Não", description: null }
-            ]
-          ),
-          task_id: selectedTask.id
-        };
-      }
+          reply: [
+            buildText(`Endereço: ${selectedTask.address}\nID: ${selectedTask.id}`), 
+            showMenu('confirma_tarefa', ctx)
+            ],
+          task_id: ctx.task.id
+        }
+        default:
+            return opcaoInvalida(ctx);
     }
   }
   
-  return {
-    next: 'MENU_ENTREGAS',
-    reply: showMenu('entregas', ctx),
-    incRetry: true
-  };
+  return naoEntendi(ctx)
 }
 
 function processConfirmacao(ctx) {
   if (ctx.inputType === 'interactive') {
-    if (ctx.interactive_id === '0') {
-      return {
-        next: 'FINISHED',
-        reply: buildGMapsButton(ctx.currentTask.latitude, ctx.currentTask.longitude),
-        status: 1,
-        window_start: nowISO()
-      };
-    } else if (ctx.interactive_id === '1') {
-      return {
-        next: 'MENU_ENTREGAS',
-        reply: showMenu('entregas', ctx),
-        task_id: null
-      };
+    switch (String(ctx.interactive_id)){
+        case '0':
+            return {
+                next: 'FINISHED',
+                reply: buildGMapsButton(ctx.currentTask.latitude, ctx.currentTask.longitude),
+                status: 1,
+                window_start: nowISO()
+            };
+        case '1':
+            return {
+                next: 'MENU_ENTREGAS',
+                reply: showMenu('entregas', ctx),
+                task_id: null
+            };
+        default:
+            return opcaoInvalida(ctx);
     }
-}
-  
-  return {
-    next: 'CONFIRMACAO',
-    reply: buildText("Por favor, selecione Sim ou Não para confirmar a tarefa."),
-    incRetry: true
-  };
+    }
+  return naoEntendi(ctx)
 }
 
 function processStatusEntrega(ctx) {
@@ -341,15 +303,11 @@ function processStatusEntrega(ctx) {
       case '4':
         return { next: 'FINISHED', reply: showMenu('cancel', ctx), task_id: null };
       default:
-        return { next: 'STATUS_ENTREGA', reply: buildText("Selecione uma opção válida.") };
+        return opcaoInvalida (ctx);
     }
   }
   
-  return {
-    next: 'STATUS_ENTREGA',
-    reply: showMenu('status_entrega', ctx),
-    incRetry: true
-  };
+  return naoEntendi(ctx)
 }
 
 function processEntregaSucesso(ctx) {
@@ -358,30 +316,36 @@ function processEntregaSucesso(ctx) {
     if (nfDigitada === ctx.currentTask?.nfe) {
       return {
         next: 'ENTREGA_SUCESSO_CONFIRMA',
-        reply: buildList(
-          "Confirma os dados da NF?",
-          `NF: ${nfDigitada}\nRemetente: (consultado no ERP)\nDestinatário: (consultado no ERP)`,
-          [
-            { id: "0", title: "Sim", description: null },
-            { id: "1", title: "Não", description: null }
-          ]
-        ),
+        reply: showMenu('sucesso_confirma', ctx),
         context_patch: { nf: nfDigitada }
       };
     } else {
-      return {
-        next: 'ENTREGA_SUCESSO',
-        reply: buildText("Não entendi, informe o número da NF (apenas números) novamente."),
-        incRetry: true
-      };
+      return naoEntendi(ctx)
     }
   }
   
-  return {
-    next: 'ENTREGA_SUCESSO',
-    reply: buildText("Por favor, informe o número da NF."),
-    incRetry: true
-  };
+  return naoEntendi(ctx)
+}
+
+function processSucessoConfirma(ctx) {
+  if (ctx.inputType === 'interactive') {
+    switch (String(ctx.interactiveId)){
+        case '0':
+            return {
+                next: 'ENVIAR_FOTO',
+                reply: showMenu('pendencia_total', ctx)
+            };
+        case '1':
+            return {
+                next: 'REPORTAR_INCONGRUENCIA',
+                reply: showMenu('pendencia_total', ctx)
+            };
+        default:
+            return opcaoInvalida (ctx);
+    }
+  }
+  
+  return naoEntendi(ctx)
 }
 
 function processPendenciaTipo(ctx) {
@@ -393,10 +357,7 @@ function processPendenciaTipo(ctx) {
     };
   }
   
-  return {
-    next: 'ENTREGA_PENDENCIA_TIPO',
-    reply: showMenu('pendencia_tipo', ctx)
-  };
+  return naoEntendi(ctx)
 }
 
 function processInsucessoTipo(ctx) {
@@ -417,9 +378,43 @@ function processInsucessoTipo(ctx) {
     };
   }
   
-  return {
-    next: 'ENTREGA_INSUCESSO_TIPO',
-    reply: showMenu('insucesso_tipo', ctx)
+  return naoEntendi(ctx);
+}
+
+// CONTEXTO
+
+const context = {
+  // Dados de entrada
+  inputType,
+  interactive_id,
+  text,
+  
+  // Estado atual
+  currentState,
+  currentTaskId,
+  currentTask,
+  
+  // Listas
+  taskMenuOptions,
+  tasks,
+  
+  // Dados interpoláveis
+  address: currentTask?.address || "Endereço não informado",
+  taskId: currentTaskId || "—",
+  nfe: currentTask?.nfe,
+  nf: currentTask?.nfe
+};
+
+// EXECUÇÃO PRINCIPAL DO ESTADO
+
+let result;
+try {
+  result = processStateDirectly(context);
+} catch (e) {
+  result = { 
+    next: 'MENU_MAIN', 
+    reply: buildText("Erro interno. Retornando ao menu principal."), 
+    active: true 
   };
 }
 

@@ -62,6 +62,15 @@
         { "id": "3", "title": "Destinatário ausente" },
         { "id": "4", "title": "Recusa/Impossibilidade" }
       ]
+    },
+    "sucesso_confirma": {
+      "type": "list",
+      "header": "Confirma os dados da NF?",
+      "body": "Selecione uma das opções abaixo:",
+      "options": [
+        { "id": "0", "title": "Sim" },
+        { "id": "1", "title": "Não" }
+      ]
     }
   }
 }
