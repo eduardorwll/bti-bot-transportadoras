@@ -170,6 +170,12 @@ function processStateDirectly(ctx) {
       return processStatusEntrega(ctx);
     case 'ENTREGA_SUCESSO':
       return processEntregaSucesso(ctx);
+    case 'ENVIAR_FOTO':
+        return processFotoComprovante(ctx);
+    case 'VERIFICACAO_FOTO':
+        return ;
+    case 'INFORMAR_INCONGRUENCIA':
+        return ;
     case 'ENTREGA_PENDENCIA_TIPO':
       return processPendenciaTipo(ctx);
     case 'ENTREGA_INSUCESSO_TIPO':
@@ -202,12 +208,12 @@ function naoEntendi (ctx){
 function processMainMenu(ctx) {
   if (ctx.inputType === 'interactive') {
     switch (ctx.interactive_id) {
-      case '0':
+      case 0:
         return {
           next: 'MENU_ENTREGAS',
           reply: showMenu('entregas', ctx)
         };
-      case '1':
+      case 1:
         if (ctx.currentTaskId) {
           return {
             next: 'STATUS_ENTREGA',
@@ -222,7 +228,7 @@ function processMainMenu(ctx) {
             ]
           };
         }
-      case '2':
+      case 2:
         return {
           next: 'FINISHED',
           reply: showMenu('cancel', ctx),
@@ -268,15 +274,15 @@ function processEntregasMenu(ctx) {
 
 function processConfirmacao(ctx) {
   if (ctx.inputType === 'interactive') {
-    switch (String(ctx.interactive_id)){
-        case '0':
+    switch (ctx.interactive_id){
+        case 0:
             return {
                 next: 'FINISHED',
                 reply: buildGMapsButton(ctx.currentTask.latitude, ctx.currentTask.longitude),
                 status: 1,
                 window_start: nowISO()
             };
-        case '1':
+        case 1:
             return {
                 next: 'MENU_ENTREGAS',
                 reply: showMenu('entregas', ctx),
@@ -292,15 +298,15 @@ function processConfirmacao(ctx) {
 function processStatusEntrega(ctx) {
   if (ctx.inputType === 'interactive') {
     switch (ctx.interactive_id) {
-      case '0':
+      case 0:
         return { next: 'ENTREGA_SUCESSO', reply: buildText("Por favor, informe o número da NF para continuar.") };
-      case '1':
+      case 1:
         return { next: 'ENTREGA_PENDENCIA_TIPO', reply: showMenu('pendencia_tipo', ctx) };
-      case '2':
+      case 2:
         return { next: 'ENTREGA_INSUCESSO_TIPO', reply: showMenu('insucesso_tipo', ctx) };
-      case '3':
+      case 3:
         return { next: 'MENU_ENTREGAS', reply: showMenu('entregas', ctx) };
-      case '4':
+      case 4:
         return { next: 'FINISHED', reply: showMenu('cancel', ctx), task_id: null };
       default:
         return opcaoInvalida (ctx);
@@ -329,16 +335,16 @@ function processEntregaSucesso(ctx) {
 
 function processSucessoConfirma(ctx) {
   if (ctx.inputType === 'interactive') {
-    switch (String(ctx.interactiveId)){
-        case '0':
+    switch (ctx.interactiveId){
+        case 0:
             return {
                 next: 'ENVIAR_FOTO',
-                reply: showMenu('pendencia_total', ctx)
+                reply: buildText('Por favor, envie a foto do comprovante:')
             };
-        case '1':
+        case 1:
             return {
                 next: 'REPORTAR_INCONGRUENCIA',
-                reply: showMenu('pendencia_total', ctx)
+                reply: buildText('Por favor, envie o relato da incongruência:')
             };
         default:
             return opcaoInvalida (ctx);
@@ -346,6 +352,17 @@ function processSucessoConfirma(ctx) {
   }
   
   return naoEntendi(ctx)
+}
+
+function processFotoComprovante(ctx){
+    if (ctx.inputType === 'image'){
+
+    }
+    return {
+        next: 'ENVIAR_FOTO',
+        reply: buildText('Favor enviar a foto do comprovante'),
+        incRetry: true
+    }
 }
 
 function processPendenciaTipo(ctx) {

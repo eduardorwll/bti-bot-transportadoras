@@ -32,6 +32,15 @@
         { "id": "4", "title": "Cancelar", "description": "Cancelar atendimento" }
       ]
     },
+    "confirma_tarefa": {
+      "type": "list",
+      "header": "Confirma a escolha da seguinte tarefa?",
+      "body": "Selecione uma das opções abaixo:",
+      "options": [
+        { "id": "0", "title": "Sim" },
+        { "id": "1", "title": "Não" }
+      ]
+    },
     "pendencia_tipo": {
       "type": "list",
       "header": "Informe o tipo de pendência:",
