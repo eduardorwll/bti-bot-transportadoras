@@ -210,12 +210,6 @@ function processStateDirectly(state, ctx) {
       return processPendenciaTipo(ctx);
     case 'ENTREGA_INSUCESSO_TIPO':
       return processInsucessoTipo(ctx);
-    default:
-      return {
-        next: 'MENU_MAIN',
-        reply: buildText("Estado não reconhecido. Retornando ao menu principal."),
-        active: true
-      };
   }
 }
 
@@ -280,7 +274,6 @@ function processEntregasMenu(ctx) {
       };
     }
     
-    // Busca linear simples em vez de mapeamento complexo
     if (interactiveId && interactiveId.startsWith('task_')) {
       const taskId = interactiveId.replace('task_', '');
       const selectedTask = ctx.tasks.find(task => `task_${task.id}` === interactiveId);
@@ -325,7 +318,7 @@ function processConfirmacao(ctx) {
         task_id: null
       };
     }
-  }
+}
   
   return {
     next: 'CONFIRMACAO',
@@ -359,18 +352,19 @@ function processStatusEntrega(ctx) {
   };
 }
 
-// 🎯 FUNÇÕES AUXILIARES SIMPLIFICADAS
-
 function processSucessoInicial(ctx) {
   if (ctx.currentTask?.nfe) {
-    return buildList(
+    if
+    return [buildList(
       "Confirma os dados da NF?",
       `NF: ${ctx.currentTask.nfe}\nRemetente: (consultado no ERP)\nDestinatário: (consultado no ERP)`,
       [
         { id: "0", title: "Sim", description: null },
         { id: "1", title: "Não", description: null }
       ]
-    );
+    ), 
+
+    ]
   } else {
     return buildText("Por favor, informe o número da NF para continuar.");
   }
