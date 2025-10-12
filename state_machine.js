@@ -40,7 +40,7 @@ function nowISO() {
   return new Date().toISOString();
 }
 
-// 🎯 FUNÇÕES PARA API DO WHATSAPP - MANTIDAS GLOBAIS
+// FUNÇÕES PARA API DO WHATSAPP
 
 function buildText(body) {
   return {
@@ -113,7 +113,7 @@ function buildGMapsButton(lat, long) {
   };
 }
 
-// 🎯 FUNÇÕES SIMPLIFICADAS PARA MOSTRAR MENUS
+// FUNÇÕES SIMPLIFICADAS PARA MOSTRAR MENUS
 
 function showMenu(menuName, context = {}) {
   const menu = menus[menuName];
@@ -134,7 +134,7 @@ function showMenu(menuName, context = {}) {
   }
 }
 
-// 🎯 VARIÁVEL HELPER PRO MENU ENTREGAS - SIMPLIFICADA
+// VARIÁVEL HELPER PRO MENU ENTREGAS
 
 let taskList = tasks.map((task, index) => ({
   id: `task_${task.id}`,
@@ -155,7 +155,7 @@ taskList.push(
   }
 );
 
-// 🎯 CONTEXTO SIMPLIFICADO
+// CONTEXTO
 
 const context = {
   // Dados de entrada
@@ -170,7 +170,7 @@ const context = {
   
   // Listas
   taskList,
-  tasks, // ← Array simples em vez de objeto complexo
+  tasks,
   
   // Dados interpoláveis
   address: currentTask?.address || "Endereço não informado",
@@ -179,7 +179,7 @@ const context = {
   nf: currentTask?.nfe
 };
 
-// 🎯 EXECUÇÃO PRINCIPAL DO ESTADO
+// EXECUÇÃO PRINCIPAL DO ESTADO
 
 let result;
 try {
@@ -193,7 +193,7 @@ try {
   };
 }
 
-// 🎯 PROCESSAMENTO DIRETO DOS ESTADOS - MANTIDO SIMPLIFICADO
+// PROCESSAMENTO DIRETO DOS ESTADOS
 
 function processStateDirectly(state, ctx) {
   switch (state) {
@@ -463,7 +463,7 @@ function processInsucessoTipo(ctx) {
   };
 }
 
-// 🎯 ATUALIZAÇÃO DE SESSÃO E TAREFA (MANTIDO)
+// ATUALIZAÇÃO DE SESSÃO E TAREFA
 
 const nextState = result.next || 'MENU_MAIN';
 const retries = result.incRetry ? (rawSession.retries || 0) + 1 : 0;
@@ -484,7 +484,7 @@ if (retries >= 3) {
   result.active = false;
 }
 
-// 🎯 SAÍDA FINAL
+// SAÍDA FINAL
 return [{
   json: {
     reply: result.reply,
