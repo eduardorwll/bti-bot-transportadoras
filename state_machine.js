@@ -183,10 +183,14 @@ function processStateDirectly(ctx) {
             return processarConfirmacaoEntrega(ctx);
         case 'RELATORIO_ENTREGA':
             return processarRelatorioEntrega(ctx);
-        case 'INFORMAR_NF':
+        case 'INFORMAR_NF_SUCESSO':
+        case 'INFORMAR_NF_PENDENCIA':
+        case 'INFORMAR_NF_INSUCESSO':
             return processarInformarNF(ctx);
-        case 'CONFIRMAR_SUCESSO':
-            return processarConfirmarSucesso(ctx);
+        case 'CONFIRMAR_NF_SUCESSO':
+        case 'CONFIRMAR_NF_PENDENCIA':
+        case 'CONFIRMAR_NF_INSUCESSO':
+            return processarConfirmarNF(ctx);
         case 'ENVIAR_COMPROVANTE':
             return processarEnviarComprovante(ctx);
         case 'INFORMAR_RECEBEDOR':
@@ -330,18 +334,18 @@ function processarRelatorioEntrega(ctx) {
         switch (parseInt(ctx.interactive_id)) {
             case 0:
                 return { 
-                    next: 'INFORMAR_NF', 
+                    next: 'INFORMAR_NF_SUCESSO', 
                     reply: buildText("Por favor, informe o número da NF para continuar.") 
                 };
             case 1:
                 return { 
-                    next: 'SELECIONAR_TIPO_PENDENCIA', 
-                    reply: showMenu('selecao_pendencia', ctx) 
+                    next: 'INFORMAR_NF_PENDENCIA', 
+                    reply: buildText("Por favor, informe o número da NF para continuar.") 
                 };
             case 2:
                 return { 
-                    next: 'SELECIONAR_MOTIVO_INSUCESSO', 
-                    reply: showMenu('selecao_motivo_insucesso', ctx) 
+                    next: 'INFORMAR_NF_INSUCESSO', 
+                    reply: buildText("Por favor, informe o número da NF para continuar.") 
                 };
             case 3:
                 return { 
@@ -366,11 +370,27 @@ function processarInformarNF(ctx) {
     if (ctx.inputType === 'text') {
         const nfDigitada = ctx.text.replace(/\D/g, "");
         if (nfDigitada === ctx.currentTask?.nfe) {
-            return {
-                next: 'CONFIRMAR_SUCESSO',
-                reply: showMenu('confirmacao_sucesso', ctx),
-                context_patch: { nf: nfDigitada }
-            };
+            switch (ctx.currentState){
+                case 'IFORMAR_NF_SUCESSO':
+                    return {
+                        next: 'CONFIRMAR_NF_SUCESSO',
+                        reply: showMenu('confirmacao_sucesso', ctx),
+                        nfe: nfDigitada
+                    };
+                case 'IFORMAR_NF_PENDENCIA':
+                    return {
+                        next: 'CONFIRMAR_NF_PENDENCIA',
+                        reply: showMenu('confirmacao_sucesso', ctx),
+                        nfe: nfDigitada
+                    };
+                case 'IFORMAR_NF_INSUCESSO':
+                    return {
+                        next: 'CONFIRMAR_NF_INSUCESSO',
+                        reply: showMenu('confirmacao_sucesso', ctx),
+                        nfe: nfDigitada
+                    }
+            }
+            
         } else {
             return naoEntendi(ctx);
         }
@@ -379,14 +399,27 @@ function processarInformarNF(ctx) {
     return naoEntendi(ctx);
 }
 
-function processarConfirmarSucesso(ctx) {
+function processarConfirmarNF(ctx) {
     if (ctx.inputType === 'interactive') {
         switch (parseInt(ctx.interactive_id)) {
             case 0:
-                return {
-                    next: 'ENVIAR_COMPROVANTE',
-                    reply: buildText('Por favor, envie a foto do comprovante:')
-                };
+                switch (ctx.currentState){
+                    case 'CONFIRMAR_NF_SUCESSO':
+                        return {
+                            next: 'ENVIAR_COMPROVANTE',
+                            reply: buildText('Por favor, envie a foto do comprovante:')
+                        };
+                    case 'CONFIRMAR_NF_SUCESSO':
+                        return { 
+                            next: 'SELECIONAR_TIPO_PENDENCIA', 
+                            reply: showMenu('selecao_pendencia', ctx) 
+                        };
+                    case 'CONFIRMAR_NF_SUCESSO':
+                        return { 
+                            next: 'SELECIONAR_MOTIVO_INSUCESSO', 
+                            reply: showMenu('selecao_motivo_insucesso', ctx) 
+                        };
+                }
             case 1:
                 return {
                     next: 'RELATAR_PROBLEMA',
@@ -473,7 +506,7 @@ function processarSelecionarCaracteristicaPendencia (ctx) {
         };
     }
 
-    return opcaoInvalida();
+    return opcaoInvalida(ctx);
 }
 
 function processarSelecionarMotivoInsucesso(ctx) {
@@ -489,9 +522,10 @@ function processarSelecionarMotivoInsucesso(ctx) {
         
         if (motivoIndex >= 0 && motivoIndex < motivos.length) {
             return {
-                next: 'CONFIRMAR_INSUCESSO',
-                reply: buildText(`Motivo selecionado: ${motivos[motivoIndex]}\nA torre será notificada.`),
-                context_patch: { motivo_insucesso: motivos[motivoIndex] }
+                next: 'FINISHED',
+                reply: buildText(`O status da tarefa ${ctx.currentTaskId} foi atualizado para: "Insucesso por ${motivos[motivoIndex]}"`),
+                motivo_insucesso: motivos[motivoIndex],
+                task_status: 4
             };
         }
     }
@@ -516,7 +550,8 @@ const context = {
     taskId: currentTaskId || null,
     nfe: currentTask?.nfe,
     tipoPendencia: currentTask?.tipo_pendencia || null,
-    caracteristicaPendencia: currentTask?.caracteristica_pendencia || null
+    caracteristicaPendencia: currentTask?.caracteristica_pendencia || null,
+    motivoInsucesso: currentTask?.motivo_insucesso || null
 };
 
 let result;
@@ -545,6 +580,8 @@ const windowEnd = 'window_end' in result ? result.window_end : currentTask.windo
 const recebedor = 'recebedor' in result ? result.recebedor : currentTask.recebedor;
 const tipoPendencia = 'tipo_pendencia' in result ? result.tipo_pendencia : currentTask.tipo_pendencia;
 const caracteristicaPendencia = 'caracteristica_pendencia' in result ? result.caracteristica_pendencia : currentTask.caracteristica_pendencia;
+const nfe = 'nfe' in result ? result.nfe : currentTask.nfe;
+const motivoInsucesso = 'motivo_insucesso' in result ? result.motivo_insucesso : currentTask.motivo_insucesso;
 
 if (result.context_patch) {
     Object.assign(context, result.context_patch);
@@ -583,7 +620,9 @@ return [{
             window_end: windowEnd,
             recebedor: recebedor,
             tipo_pendencia: tipoPendencia,
-            caracteristica_pendencia: caracteristicaPendencia
+            caracteristica_pendencia: caracteristicaPendencia,
+            nfe: nfe,
+            moivo_insucesso: motivoInsucesso
         } : null
     }
 }];
