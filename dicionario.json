@@ -2,8 +2,8 @@
   "menus": {
     "menu_principal": {
       "type": "list",
-      "header": "Escolha uma das opções abaixo:",
-      "body": null,
+      "header": "Menu principal: ",
+      "body": "Escolha uma das opções abaixo: ",
       "options": [
         { "id": "0", "title": "Entregas", "description": "Ver e escolher entrega." },
         { "id": "1", "title": "Status", "description": "Atualizar status" },
