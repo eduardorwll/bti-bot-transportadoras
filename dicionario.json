@@ -1,6 +1,6 @@
 {
   "menus": {
-    "main": {
+    "menu_principal": {
       "type": "list",
       "header": "Escolha uma das opções abaixo:",
       "body": null,
@@ -10,17 +10,17 @@
         { "id": "2", "title": "Cancelar", "description": "Cancelar atendimento" }
       ]
     },
-    "entregas": {
+    "selecao_entregas": {
       "type": "list",
       "header": "Entregas pendentes",
       "body": "Selecione uma das opções abaixo",
       "options": "taskList"
     },
-    "cancel": {
+    "cancelamento": {
       "type": "text",
       "content": "Atendimento cancelado. Obrigado!"
     },
-    "status_entrega": {
+    "relatorio_entrega": {
       "type": "list",
       "header": "Escolha o Tipo de Entrega",
       "body": "Selecione uma das opções abaixo:",
@@ -32,7 +32,7 @@
         { "id": "4", "title": "Cancelar", "description": "Cancelar atendimento" }
       ]
     },
-    "confirma_tarefa": {
+    "confirmacao_entrega": {
       "type": "list",
       "header": "Confirma a escolha da seguinte tarefa?",
       "body": "Selecione uma das opções abaixo:",
@@ -41,7 +41,7 @@
         { "id": "1", "title": "Não" }
       ]
     },
-    "pendencia_tipo": {
+    "selecao_pendencia": {
       "type": "list",
       "header": "Informe o tipo de pendência:",
       "body": "Selecione uma das opções abaixo:",
@@ -51,7 +51,7 @@
         { "id": "2", "title": "Inversão/Troca de volumes" }
       ]
     },
-    "pendencia_total": {
+    "detalhes_pendencia": {
       "type": "list",
       "header": "A pendência é total ou parcial?",
       "body": "Selecione uma das opções abaixo:",
@@ -60,7 +60,7 @@
         { "id": "1", "title": "Parcial" }
       ]
     },
-    "insucesso_tipo": {
+    "selecao_motivo_insucesso": {
       "type": "list",
       "header": "Informe o motivo do insucesso:",
       "body": "Selecione uma das opções abaixo:",
@@ -72,7 +72,7 @@
         { "id": "4", "title": "Recusa/Impossibilidade" }
       ]
     },
-    "sucesso_confirma": {
+    "confirmacao_sucesso": {
       "type": "list",
       "header": "Confirma os dados da NF?",
       "body": "Selecione uma das opções abaixo:",
