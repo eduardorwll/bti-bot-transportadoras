@@ -205,3 +205,59 @@ CREATE TABLE public.log_json (
   created_at timestamp with time zone DEFAULT now(),
   CONSTRAINT log_json_pkey PRIMARY KEY (id)
 );
+
+-- Habilitar RLS em todas as tabelas
+ALTER TABLE public.company ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.unit ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.employee ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.vehicle ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.manifest ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.task ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.image ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wa_session ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.log_json ENABLE ROW LEVEL SECURITY;
+
+-- Políticas para COMPANY
+CREATE POLICY "allow_all_company_select" ON public.company FOR SELECT USING (true);
+CREATE POLICY "allow_all_company_insert" ON public.company FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_all_company_update" ON public.company FOR UPDATE USING (true);
+
+-- Políticas para UNIT
+CREATE POLICY "allow_all_unit_select" ON public.unit FOR SELECT USING (true);
+CREATE POLICY "allow_all_unit_insert" ON public.unit FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_all_unit_update" ON public.unit FOR UPDATE USING (true);
+
+-- Políticas para EMPLOYEE
+CREATE POLICY "allow_all_employee_select" ON public.employee FOR SELECT USING (true);
+CREATE POLICY "allow_all_employee_insert" ON public.employee FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_all_employee_update" ON public.employee FOR UPDATE USING (true);
+
+-- Políticas para VEHICLE
+CREATE POLICY "allow_all_vehicle_select" ON public.vehicle FOR SELECT USING (true);
+CREATE POLICY "allow_all_vehicle_insert" ON public.vehicle FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_all_vehicle_update" ON public.vehicle FOR UPDATE USING (true);
+
+-- Políticas para MANIFEST
+CREATE POLICY "allow_all_manifest_select" ON public.manifest FOR SELECT USING (true);
+CREATE POLICY "allow_all_manifest_insert" ON public.manifest FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_all_manifest_update" ON public.manifest FOR UPDATE USING (true);
+
+-- Políticas para TASK
+CREATE POLICY "allow_all_task_select" ON public.task FOR SELECT USING (true);
+CREATE POLICY "allow_all_task_insert" ON public.task FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_all_task_update" ON public.task FOR UPDATE USING (true);
+
+-- Políticas para IMAGE
+CREATE POLICY "allow_all_image_select" ON public.image FOR SELECT USING (true);
+CREATE POLICY "allow_all_image_insert" ON public.image FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_all_image_update" ON public.image FOR UPDATE USING (true);
+
+-- Políticas para WA_SESSION
+CREATE POLICY "allow_all_wa_session_select" ON public.wa_session FOR SELECT USING (true);
+CREATE POLICY "allow_all_wa_session_insert" ON public.wa_session FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_all_wa_session_update" ON public.wa_session FOR UPDATE USING (true);
+
+-- Políticas para LOG_JSON
+CREATE POLICY "allow_all_log_json_select" ON public.log_json FOR SELECT USING (true);
+CREATE POLICY "allow_all_log_json_insert" ON public.log_json FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_all_log_json_update" ON public.log_json FOR UPDATE USING (true);
