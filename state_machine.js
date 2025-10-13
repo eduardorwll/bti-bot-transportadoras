@@ -147,7 +147,7 @@ function buildGMapsButton(lat, long) {
 }
 
 // ==========================================
-// GERENCIADOR DE MENUS
+// MENUS
 // ==========================================
 
 function showMenu(menuName, context = {}) {
