@@ -193,8 +193,10 @@ function processStateDirectly(ctx) {
             return processarInformarRecebedor(ctx);
         case 'RELATAR_PROBLEMA':
             return processarRelatarProblema(ctx);
-        case 'SELECIONAR_PENDENCIA':
-            return processarSelecionarPendencia(ctx);
+        case 'SELECIONAR__TIPO_PENDENCIA':
+            return processarSelecionarTipoPendencia(ctx);
+        case 'INFORMAR_CARACTERISTICA_PENDENCIA':
+            return processarSelecionarCaracteristicaPendencia (ctx);
         case 'SELECIONAR_MOTIVO_INSUCESSO':
             return processarSelecionarMotivoInsucesso(ctx);
         default:
@@ -269,9 +271,7 @@ function processarMenuPrincipal(ctx) {
 
 function processarSelecaoEntregas(ctx) {
     if (ctx.inputType === 'interactive') {
-        const interactiveId = parseInt(ctx.interactive_id);
-        
-        switch (interactiveId) {
+        switch (ctx.interactive_id) {
             case baseId:
                 return {
                     next: 'MENU_PRINCIPAL',
@@ -284,8 +284,8 @@ function processarSelecaoEntregas(ctx) {
                     active: false
                 };
             default:
-                if (interactiveId >= 0 && interactiveId < baseId) {
-                    const selectedTask = ctx.tasks[interactiveId];
+                if (ctx.interactive_id >= 0 && ctx.interactive_id < baseId) {
+                    const selectedTask = ctx.tasks[ctx.interactive_id];
                     return {
                         next: 'CONFIRMAR_ENTREGA',
                         reply: [
@@ -335,7 +335,7 @@ function processarRelatorioEntrega(ctx) {
                 };
             case 1:
                 return { 
-                    next: 'SELECIONAR_PENDENCIA', 
+                    next: 'SELECIONAR_TIPO_PENDENCIA', 
                     reply: showMenu('selecao_pendencia', ctx) 
                 };
             case 2:
@@ -449,16 +449,31 @@ function processarRelatarProblema(ctx) {
     };
 }
 
-function processarSelecionarPendencia(ctx) {
-    if (ctx.inputType === 'interactive') {
+function processarSelecionarTipoPendencia(ctx) {
+    if (ctx.inputType === 'interactive' && ctx.interactive_id < 3) {
+        const tiposPendencia = ["avaria", "falta", "inversão"]
         return {
-            next: 'INFORMAR_DETALHES_PENDENCIA',
+            next: 'INFORMAR_CARACTERISTICA_PENDENCIA',
             reply: showMenu('detalhes_pendencia', ctx),
-            context_patch: { tipo_pendencia: ctx.interactive_id }
+            tipo_pendencia: tiposPendencia[ctx.interactive_id]
         };
     }
 
-    return naoEntendi(ctx);
+    return opcaoInvalida(ctx);
+}
+
+function processarSelecionarCaracteristicaPendencia (ctx) {
+    if (ctx.inputType === 'interactive' && ctx.interactive_id < 2) {
+        const caracteristicasPendencia = ["total", "parcial"]
+        return {
+            next: 'FINISHED',
+            reply: buildText(`Obrigado. o status da tarefa ${ctx.currentTaskId} foi atualizado para "Pendência ${caracteristicasPendencia[ctx.interactive_id]} do tipo: ${ctx.tipoPendencia}`),
+            tipo_pendencia: caracteristicasPendencia[ctx.interactive_id],
+            task_status: 3
+        };
+    }
+
+    return opcaoInvalida();
 }
 
 function processarSelecionarMotivoInsucesso(ctx) {
@@ -499,7 +514,9 @@ const context = {
     tasks,
     address: currentTask?.address || "Endereço não informado",
     taskId: currentTaskId || null,
-    nfe: currentTask?.nfe
+    nfe: currentTask?.nfe,
+    tipoPendencia: currentTask?.tipo_pendencia || null,
+    caracteristicaPendencia: currentTask?.caracteristica_pendencia || null
 };
 
 let result;
@@ -526,6 +543,8 @@ const taskStatus = 'task_status' in result ? result.task_status : currentTask.ta
 const windowStart = 'window_start' in result ? result.window_start : currentTask.window_start;
 const windowEnd = 'window_end' in result ? result.window_end : currentTask.window_end;
 const recebedor = 'recebedor' in result ? result.recebedor : currentTask.recebedor;
+const tipoPendencia = 'tipo_pendencia' in result ? result.tipo_pendencia : currentTask.tipo_pendencia;
+const caracteristicaPendencia = 'caracteristica_pendencia' in result ? result.caracteristica_pendencia : currentTask.caracteristica_pendencia;
 
 if (result.context_patch) {
     Object.assign(context, result.context_patch);
@@ -562,7 +581,9 @@ return [{
             task_status: taskStatus,
             window_start: windowStart,
             window_end: windowEnd,
-            recebedor: recebedor
+            recebedor: recebedor,
+            tipo_pendencia: tipoPendencia,
+            caracteristica_pendencia: caracteristicaPendencia
         } : null
     }
 }];
