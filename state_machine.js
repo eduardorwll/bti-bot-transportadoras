@@ -9,7 +9,7 @@ const currentState = rawSession?.state || 'MENU_MAIN';
 const currentTaskId = rawSession?.task_id || null;
 const currentTask = rawTasks?.find(task => task.json.id === currentTaskId)?.json || {};
 
-// Referência apenas aos menus do dicionario
+// Referência aos menus
 const dicionario = $('Dicionario').first().json;
 const menus = dicionario.menus;
 
@@ -161,7 +161,7 @@ function showMenu(menuName, context = {}) {
 
 function processStateDirectly(ctx) {
   switch (ctx.currentState) {
-    case 'MENU_MAIN':
+    case 'MENU_MAIN' || 'FINISHED':
       return processMainMenu(ctx);
     case 'MENU_ENTREGAS':
       return processEntregasMenu(ctx);
@@ -173,8 +173,8 @@ function processStateDirectly(ctx) {
       return processEntregaSucesso(ctx);
     case 'ENVIAR_FOTO':
         return processFotoComprovante(ctx);
-    case 'VERIFICACAO_FOTO':
-        return ;
+    case 'RECEBEDOR':
+        return 
     case 'INFORMAR_INCONGRUENCIA':
         return ;
     case 'ENTREGA_PENDENCIA_TIPO':
@@ -263,7 +263,7 @@ function processEntregasMenu(ctx) {
             buildText(`Endereço: ${selectedTask.address}\nID: ${selectedTask.id}`), 
             showMenu('confirma_tarefa', ctx)
             ],
-          task_id: ctx.task.id
+          task_id: ctx.tasks[ctx.interactiveId].id
         }
         default:
             return opcaoInvalida(ctx);
@@ -280,7 +280,7 @@ function processConfirmacao(ctx) {
             return {
                 next: 'FINISHED',
                 reply: buildGMapsButton(ctx.currentTask.latitude, ctx.currentTask.longitude),
-                status: 1,
+                task_status: 1,
                 window_start: nowISO()
             };
         case 1:
@@ -357,11 +357,41 @@ function processSucessoConfirma(ctx) {
 
 function processFotoComprovante(ctx){
     if (ctx.inputType === 'image'){
-        
+        if (dadosComprovante.destinatario === ctx.currentTask.destinatario 
+        && dadosComprovante.date === ctx.currentTask.date 
+        && dadosComprovante.documento === ctx.currentTask.documento 
+        && dadosComprovante.carimbo){
+            return {
+                next: 'RECEBEDOR',
+                reply: buildText('✅ Imagem recebida e verificada. Qual o nome do recebedor do pacote?')
+            }
+        }
+        return {
+            next: 'ENVIAR_FOTO',
+            reply: buildText('Não foi possível verificar as informações na foto. Por favor, envie uma nova.'),
+            incRetry: true
+        }
     }
+
     return {
         next: 'ENVIAR_FOTO',
         reply: buildText('Favor enviar a foto do comprovante'),
+        incRetry: true
+    }
+}
+
+function processRecebedor(ctx){
+    if (ctx.inputType ===  text){
+        return{
+            next: 'FINISHED',
+            reply: buildText(`Obrigado, status da tarefa: ${ctx.currentTaskId} atualizado para "Sucesso"!`),
+            task_status: 2,
+            recebedor: ctx.text
+        }
+    }
+    return {
+        next: 'RECEBEDOR',
+        reply: buildText('Favor responder em texto. Qual o nome do recebedor?'),
         incRetry: true
     }
 }
@@ -399,6 +429,8 @@ function processInsucessoTipo(ctx) {
   return naoEntendi(ctx);
 }
 
+
+
 // CONTEXTO
 
 const context = {
@@ -418,9 +450,8 @@ const context = {
   
   // Dados interpoláveis
   address: currentTask?.address || "Endereço não informado",
-  taskId: currentTaskId || "—",
-  nfe: currentTask?.nfe,
-  nf: currentTask?.nfe
+  taskId: currentTaskId || null,
+  nfe: currentTask?.nfe
 };
 
 // EXECUÇÃO PRINCIPAL DO ESTADO
@@ -443,7 +474,7 @@ const retries = result.incRetry ? (rawSession.retries || 0) + 1 : 0;
 const active = 'active' in result ? result.active : (rawSession.active !== false);
 const nextTaskId = 'task_id' in result ? result.task_id : currentTaskId;
 
-const taskStatus = 'status' in result ? result.status : currentTask.task_status;
+const taskStatus = 'task_status' in result ? result.task_status : currentTask.task_status;
 const windowStart = 'window_start' in result ? result.window_start : currentTask.window_start;
 const windowEnd = 'window_end' in result ? result.window_end : currentTask.window_end;
 
@@ -480,7 +511,8 @@ return [{
       id: nextTaskId,
       task_status: taskStatus,
       window_start: windowStart,
-      window_end: windowEnd
+      window_end: windowEnd,
+      recebedor: recebedor
     } : null
   }
 }];
