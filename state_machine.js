@@ -441,7 +441,8 @@ function processarEnviarComprovante(ctx) {
             && dadosComprovante.carimbo) {
             return {
                 next: 'INFORMAR_RECEBEDOR',
-                reply: buildText('✅ Imagem recebida e verificada. Qual o nome do recebedor do pacote?')
+                reply: buildText('✅ Imagem recebida e verificada. Qual o nome do recebedor do pacote?'),
+                download_media: true
             };
         }
         return {
@@ -464,7 +465,9 @@ function processarInformarRecebedor(ctx) {
             next: 'FINISHED',
             reply: buildText(`Obrigado, status da tarefa: ${ctx.currentTaskId} atualizado para "Sucesso"!`),
             task_status: 2,
-            recebedor: ctx.text
+            recebedor: ctx.text,
+            task_id: null,
+            window_end: nowISO()
         };
     }
     return {
@@ -502,7 +505,9 @@ function processarSelecionarCaracteristicaPendencia (ctx) {
             next: 'FINISHED',
             reply: buildText(`Obrigado. o status da tarefa ${ctx.currentTaskId} foi atualizado para "Pendência ${caracteristicasPendencia[ctx.interactive_id]} do tipo: ${ctx.tipoPendencia}`),
             tipo_pendencia: caracteristicasPendencia[ctx.interactive_id],
-            task_status: 3
+            task_status: 3,
+            task_id: null,
+            window_end: nowISO()
         };
     }
 
@@ -525,7 +530,9 @@ function processarSelecionarMotivoInsucesso(ctx) {
                 next: 'FINISHED',
                 reply: buildText(`O status da tarefa ${ctx.currentTaskId} foi atualizado para: "Insucesso por ${motivos[motivoIndex]}"`),
                 motivo_insucesso: motivos[motivoIndex],
-                task_status: 4
+                task_status: 4,
+                task_id: null,
+                window_end: nowISO()
             };
         }
     }
@@ -560,7 +567,7 @@ try {
 } catch (e) {
     result = {
         next: 'MENU_PRINCIPAL',
-        reply: buildText("Erro interno. Retornando ao menu principal."),
+        reply: [buildText("Erro interno. Retornando ao menu principal."), showMenu('menu_principal', context)],
         active: true
     };
 }
@@ -583,6 +590,7 @@ const caracteristicaPendencia = 'caracteristica_pendencia' in result ? result.ca
 const nfe = 'nfe' in result ? result.nfe : currentTask.nfe;
 const motivoInsucesso = 'motivo_insucesso' in result ? result.motivo_insucesso : currentTask.motivo_insucesso;
 
+
 if (result.context_patch) {
     Object.assign(context, result.context_patch);
 }
@@ -593,6 +601,7 @@ if (retries >= 3) {
     result.active = false;
 }
 
+const downloadMedia = 'download_media' in result ? true : false;
 const replyIsArray = Array.isArray(result.reply);
 
 // ==========================================
@@ -602,7 +611,7 @@ const replyIsArray = Array.isArray(result.reply);
 return [{
     json: {
         reply: result.reply,
-        replyIsArray: replyIsArray,
+        reply_is_array: replyIsArray,
         session_update: {
             employee_id: rawSession.employee_id,
             state: nextState,
@@ -623,6 +632,7 @@ return [{
             caracteristica_pendencia: caracteristicaPendencia,
             nfe: nfe,
             moivo_insucesso: motivoInsucesso
-        } : null
+        } : null,
+        download_media: downloadMedia
     }
 }];

@@ -1,7 +1,3 @@
--- WARNING: This schema is for context only and is not meant to be run.
--- Table order and constraints may not be valid for execution.
-
--- Create company first since it's independent
 CREATE TABLE public.company (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   name text NOT NULL,
@@ -16,7 +12,6 @@ CREATE TABLE public.company (
   CONSTRAINT company_pkey PRIMARY KEY (id)
 );
 
--- unit depends on company
 CREATE TABLE public.unit (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   company_id uuid,
@@ -28,10 +23,12 @@ CREATE TABLE public.unit (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT unit_pkey PRIMARY KEY (id),
-  CONSTRAINT unit_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.company(id)
+  CONSTRAINT unit_company_id_fkey 
+    FOREIGN KEY (company_id) 
+    REFERENCES public.company(id) 
+    ON UPDATE CASCADE
 );
 
--- employee depends on company and unit
 CREATE TABLE public.employee (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   company_id uuid,
@@ -43,11 +40,16 @@ CREATE TABLE public.employee (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT employee_pkey PRIMARY KEY (id),
-  CONSTRAINT employee_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.company(id),
-  CONSTRAINT employee_unit_id_fkey FOREIGN KEY (unit_id) REFERENCES public.unit(id)
+  CONSTRAINT employee_company_id_fkey 
+    FOREIGN KEY (company_id) 
+    REFERENCES public.company(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT employee_unit_id_fkey 
+    FOREIGN KEY (unit_id) 
+    REFERENCES public.unit(id) 
+    ON UPDATE CASCADE
 );
 
--- vehicle depends on company, unit and employee
 CREATE TABLE public.vehicle (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   company_id uuid,
@@ -60,21 +62,20 @@ CREATE TABLE public.vehicle (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT vehicle_pkey PRIMARY KEY (id),
-  CONSTRAINT vehicle_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.company(id),
-  CONSTRAINT vehicle_unit_id_fkey FOREIGN KEY (unit_id) REFERENCES public.unit(id),
-  CONSTRAINT vehicle_employee_id_fkey FOREIGN KEY (employee_id) REFERENCES public.employee(id)
+  CONSTRAINT vehicle_company_id_fkey 
+    FOREIGN KEY (company_id) 
+    REFERENCES public.company(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT vehicle_unit_id_fkey 
+    FOREIGN KEY (unit_id) 
+    REFERENCES public.unit(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT vehicle_employee_id_fkey 
+    FOREIGN KEY (employee_id) 
+    REFERENCES public.employee(id) 
+    ON UPDATE CASCADE
 );
 
--- incident is independent
-CREATE TABLE public.incident (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  erp_code text,
-  description text NOT NULL,
-  created_at timestamp with time zone DEFAULT now(),
-  CONSTRAINT incident_pkey PRIMARY KEY (id)
-);
-
--- manifest depends on company, unit, vehicle and employee
 CREATE TABLE public.manifest (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   company_id uuid,
@@ -92,13 +93,24 @@ CREATE TABLE public.manifest (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT manifest_pkey PRIMARY KEY (id),
-  CONSTRAINT manifest_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.company(id),
-  CONSTRAINT manifest_unit_id_fkey FOREIGN KEY (unit_id) REFERENCES public.unit(id),
-  CONSTRAINT manifest_vehicle_id_fkey FOREIGN KEY (vehicle_id) REFERENCES public.vehicle(id),
-  CONSTRAINT manifest_employee_id_fkey FOREIGN KEY (employee_id) REFERENCES public.employee(id)
+  CONSTRAINT manifest_company_id_fkey 
+    FOREIGN KEY (company_id) 
+    REFERENCES public.company(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT manifest_unit_id_fkey 
+    FOREIGN KEY (unit_id) 
+    REFERENCES public.unit(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT manifest_vehicle_id_fkey 
+    FOREIGN KEY (vehicle_id) 
+    REFERENCES public.vehicle(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT manifest_employee_id_fkey 
+    FOREIGN KEY (employee_id) 
+    REFERENCES public.employee(id) 
+    ON UPDATE CASCADE
 );
 
--- task depends on company, unit, manifest and employee
 CREATE TABLE public.task (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   company_id uuid,
@@ -121,44 +133,27 @@ CREATE TABLE public.task (
   destinatario text,
   date date,
   recebedor text,
+  tipo_pendencia text,
+  caracteristica_pendencia text,
   CONSTRAINT task_pkey PRIMARY KEY (id),
-  CONSTRAINT task_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.company(id),
-  CONSTRAINT task_unit_id_fkey FOREIGN KEY (unit_id) REFERENCES public.unit(id),
-  CONSTRAINT task_manifest_id_fkey FOREIGN KEY (manifest_id) REFERENCES public.manifest(id),
-  CONSTRAINT task_employee_id_fkey FOREIGN KEY (employee_id) REFERENCES public.employee(id)
+  CONSTRAINT task_company_id_fkey 
+    FOREIGN KEY (company_id) 
+    REFERENCES public.company(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT task_unit_id_fkey 
+    FOREIGN KEY (unit_id) 
+    REFERENCES public.unit(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT task_manifest_id_fkey 
+    FOREIGN KEY (manifest_id) 
+    REFERENCES public.manifest(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT task_employee_id_fkey 
+    FOREIGN KEY (employee_id) 
+    REFERENCES public.employee(id) 
+    ON UPDATE CASCADE
 );
 
--- invoice depends on company, manifest and task
-CREATE TABLE public.invoice (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  company_id uuid,
-  manifest_id uuid,
-  task_id uuid,
-  number text,
-  sender_id uuid,
-  recipient_name text,
-  recipient_document text,
-  recipient_address text,
-  recipient_phone text,
-  value numeric,
-  volumes integer,
-  weight numeric,
-  cubic_meters numeric,
-  invoice_type smallint,
-  expected_date date,
-  window_start timestamp with time zone,
-  window_end timestamp with time zone,
-  erp_note text,
-  erp_incident smallint,
-  created_at timestamp with time zone DEFAULT now(),
-  updated_at timestamp with time zone DEFAULT now(),
-  CONSTRAINT invoice_pkey PRIMARY KEY (id),
-  CONSTRAINT invoice_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.company(id),
-  CONSTRAINT invoice_manifest_id_fkey FOREIGN KEY (manifest_id) REFERENCES public.manifest(id),
-  CONSTRAINT invoice_task_id_fkey FOREIGN KEY (task_id) REFERENCES public.task(id)
-);
-
--- image depends on task, manifest, invoice and incident
 CREATE TABLE public.image (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   task_id uuid,
@@ -166,26 +161,19 @@ CREATE TABLE public.image (
   invoice_id uuid,
   incident_id uuid,
   url text NOT NULL,
-  description text,
   created_at timestamp with time zone DEFAULT now(),
+  expire_in bigint DEFAULT '60'::bigint,
   CONSTRAINT image_pkey PRIMARY KEY (id),
-  CONSTRAINT image_task_id_fkey FOREIGN KEY (task_id) REFERENCES public.task(id),
-  CONSTRAINT image_manifest_id_fkey FOREIGN KEY (manifest_id) REFERENCES public.manifest(id),
-  CONSTRAINT image_invoice_id_fkey FOREIGN KEY (invoice_id) REFERENCES public.invoice(id),
-  CONSTRAINT image_incident_id_fkey FOREIGN KEY (incident_id) REFERENCES public.incident(id)
+  CONSTRAINT image_task_id_fkey 
+    FOREIGN KEY (task_id) 
+    REFERENCES public.task(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT image_manifest_id_fkey 
+    FOREIGN KEY (manifest_id) 
+    REFERENCES public.manifest(id) 
+    ON UPDATE CASCADE
 );
 
--- log_json is independent
-CREATE TABLE public.log_json (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  wa_id text,
-  content jsonb,
-  log_type text,
-  created_at timestamp with time zone DEFAULT now(),
-  CONSTRAINT log_json_pkey PRIMARY KEY (id)
-);
-
--- wa_session depends on employee and task
 CREATE TABLE public.wa_session (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   wa_id text NOT NULL UNIQUE,
@@ -198,6 +186,22 @@ CREATE TABLE public.wa_session (
   updated_at timestamp with time zone DEFAULT now(),
   task_id uuid,
   CONSTRAINT wa_session_pkey PRIMARY KEY (id),
-  CONSTRAINT wa_session_task_id_fkey FOREIGN KEY (task_id) REFERENCES public.task(id),
-  CONSTRAINT wa_session_employee_id_fkey FOREIGN KEY (employee_id) REFERENCES public.employee(id)
+  CONSTRAINT wa_session_task_id_fkey 
+    FOREIGN KEY (task_id) 
+    REFERENCES public.task(id) 
+    ON UPDATE CASCADE,
+  CONSTRAINT wa_session_employee_id_fkey 
+    FOREIGN KEY (employee_id) 
+    REFERENCES public.employee(id) 
+    ON UPDATE CASCADE
+);
+
+-- Tabelas restantes mantêm a mesma estrutura
+CREATE TABLE public.log_json (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  wa_id text,
+  content jsonb,
+  log_type text,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT log_json_pkey PRIMARY KEY (id)
 );
