@@ -294,7 +294,7 @@ function processarMenuPrincipal(ctx) {
 
 function processarSelecaoEntregas(ctx) {
     if (ctx.inputType === 'interactive') {
-        switch (ctx.interactive_id) {
+        switch (parseInt(ctx.interactive_id)) {
             case baseId:
                 return {
                     next: 'MENU_PRINCIPAL',
