@@ -181,7 +181,6 @@ CREATE TABLE public.wa_session (
   state text NOT NULL DEFAULT 'start'::text,
   context jsonb NOT NULL DEFAULT '{}'::jsonb,
   retries smallint DEFAULT 0,
-  last_message_id text,
   active boolean DEFAULT true,
   updated_at timestamp with time zone DEFAULT now(),
   task_id uuid,

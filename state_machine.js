@@ -618,7 +618,6 @@ return [{
             context: context,
             retries: retries,
             active: active,
-            last_message_id: message_id,
             task_id: nextTaskId,
             updated_at: nowISO()
         },
