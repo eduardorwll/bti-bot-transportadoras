@@ -150,23 +150,38 @@ function buildGMapsButton(lat, long) {
 // MENUS
 // ==========================================
 
-function showMenu(menuName, context = {}) {
+function showMenu(menuName) {
     const menu = menus[menuName];
-    if (!menu) return buildText("Menu não encontrado");
+
+    if (!menu) {
+        return buildText(`❌ Menu "${menuName}" não encontrado.`);
+    }
 
     switch (menu.type) {
         case 'text':
             return buildText(menu.content);
-        case 'list':
+
+        case 'list': {
             let options = menu.options;
-            if (typeof options === 'string' && context[options]) {
-                options = context[options];
+
+            // ✅ substitui a referência "taskList" pelo array dinâmico taskMenuOptions
+            if (options === 'taskList') {
+                options = taskMenuOptions;
             }
+
+            // ✅ validação extra — evita cair no catch se algo vier indefinido
+            if (!Array.isArray(options)) {
+                return buildText(`⚠️ Erro: opções inválidas no menu "${menuName}".`);
+            }
+
             return buildList(menu.header, menu.body, options);
+        }
+
         default:
-            return buildText("Tipo de menu não suportado");
+            return buildText("⚠️ Tipo de menu não suportado");
     }
 }
+
 
 // ==========================================
 // MÁQUINA DE ESTADOS - PROCESSAMENTO
@@ -174,8 +189,8 @@ function showMenu(menuName, context = {}) {
 
 function processStateDirectly(ctx) {
     switch (ctx.currentState) {
-        case 'MENU_PRINCIPAL':
         case 'FINISHED':
+        case 'MENU_PRINCIPAL':
             return processarMenuPrincipal(ctx);
         case 'SELECAO_ENTREGAS':
             return processarSelecaoEntregas(ctx);
@@ -185,7 +200,7 @@ function processStateDirectly(ctx) {
             return processarRelatorioEntrega(ctx);
         case 'INFORMAR_NF_SUCESSO':
         case 'INFORMAR_NF_PENDENCIA':
-        case 'INFORMAR_NF_INSUCESSO':
+        case 'INFORMAR_NF_INSUCESSO':  
             return processarInformarNF(ctx);
         case 'CONFIRMAR_NF_SUCESSO':
         case 'CONFIRMAR_NF_PENDENCIA':
@@ -197,29 +212,21 @@ function processStateDirectly(ctx) {
             return processarInformarRecebedor(ctx);
         case 'RELATAR_PROBLEMA':
             return processarRelatarProblema(ctx);
-        case 'SELECIONAR__TIPO_PENDENCIA':
+        case 'SELECIONAR_TIPO_PENDENCIA':
             return processarSelecionarTipoPendencia(ctx);
         case 'INFORMAR_CARACTERISTICA_PENDENCIA':
-            return processarSelecionarCaracteristicaPendencia (ctx);
+            return processarSelecionarCaracteristicaPendencia(ctx);
         case 'SELECIONAR_MOTIVO_INSUCESSO':
             return processarSelecionarMotivoInsucesso(ctx);
         default:
             return {
                 next: 'MENU_PRINCIPAL',
-                reply: buildText("Estado não reconhecido. Retornando ao menu principal.")
+                reply: [
+                    buildText("Estado não reconhecido. Retornando ao menu principal."), 
+                    showMenu('menu_principal')
+                ]
             };
     }
-}
-
-function opcaoInvalida(ctx) {
-    return {
-        next: ctx.currentState,
-        reply: [
-            buildText('Opção inválida, escolha do menu.'),
-            processStateDirectly(ctx)
-        ],
-        incRetry: true
-    };
 }
 
 function naoEntendi(ctx) {
@@ -227,11 +234,23 @@ function naoEntendi(ctx) {
         next: ctx.currentState,
         reply: [
             buildText('Não entendi, responda novamente.'),
-            processStateDirectly(ctx)
+            showMenu(ctx.currentState?.toLowerCase() || 'menu_principal')
         ],
         incRetry: true
     };
 }
+
+function opcaoInvalida(ctx) {
+    return {
+        next: ctx.currentState,
+        reply: [
+            buildText('Opção inválida, escolha do menu.'),
+            showMenu(ctx.currentState?.toLowerCase() || 'menu_principal')
+        ],
+        incRetry: true
+    };
+}
+
 
 // ==========================================
 // PROCESSADORES DE ESTADO
@@ -243,27 +262,27 @@ function processarMenuPrincipal(ctx) {
             case 0:
                 return {
                     next: 'SELECAO_ENTREGAS',
-                    reply: showMenu('selecao_entregas', ctx)
+                    reply: showMenu('selecao_entregas')
                 };
             case 1:
                 if (ctx.currentTaskId) {
                     return {
                         next: 'RELATORIO_ENTREGA',
-                        reply: showMenu('relatorio_entrega', ctx)
+                        reply: showMenu('relatorio_entrega')
                     };
                 } else {
                     return {
                         next: 'SELECAO_ENTREGAS',
                         reply: [
                             buildText('Nenhuma tarefa em andamento, selecione do menu a seguir:'),
-                            showMenu('selecao_entregas', ctx)
+                            showMenu('selecao_entregas')
                         ]
                     };
                 }
             case 2:
                 return {
                     next: 'FINISHED',
-                    reply: showMenu('cancelamento', ctx),
+                    reply: showMenu('cancelamento'),
                     active: false
                 };
             default:
@@ -279,12 +298,12 @@ function processarSelecaoEntregas(ctx) {
             case baseId:
                 return {
                     next: 'MENU_PRINCIPAL',
-                    reply: showMenu('menu_principal', ctx)
+                    reply: showMenu('menu_principal')
                 };
             case baseId + 1:
                 return {
                     next: 'FINISHED',
-                    reply: showMenu('cancelamento', ctx),
+                    reply: showMenu('cancelamento'),
                     active: false
                 };
             default:
@@ -294,7 +313,7 @@ function processarSelecaoEntregas(ctx) {
                         next: 'CONFIRMAR_ENTREGA',
                         reply: [
                             buildText(`Endereço: ${selectedTask.address}\nID: ${selectedTask.id}`),
-                            showMenu('confirmacao_entrega', ctx)
+                            showMenu('confirmacao_entrega')
                         ],
                         task_id: selectedTask.id
                     };
@@ -312,14 +331,14 @@ function processarConfirmacaoEntrega(ctx) {
             case 0:
                 return {
                     next: 'RELATORIO_ENTREGA',
-                    reply: buildGMapsButton(ctx.currentTask.latitude, ctx.currentTask.longitude),
+                    reply: buildGMapsButton(ctx.currentTask.latitude,ctx.currentTask.longitude),
                     task_status: 1,
                     window_start: nowISO()
                 };
             case 1:
                 return {
                     next: 'SELECAO_ENTREGAS',
-                    reply: showMenu('selecao_entregas', ctx),
+                    reply: showMenu('selecao_entregas'),
                     task_id: null
                 };
             default:
@@ -350,12 +369,12 @@ function processarRelatorioEntrega(ctx) {
             case 3:
                 return { 
                     next: 'SELECAO_ENTREGAS', 
-                    reply: showMenu('selecao_entregas', ctx) 
+                    reply: showMenu('selecao_entregas') 
                 };
             case 4:
                 return { 
                     next: 'FINISHED', 
-                    reply: showMenu('cancelamento', ctx), 
+                    reply: showMenu('cancelamento'), 
                     task_id: null 
                 };
             default:
@@ -371,22 +390,22 @@ function processarInformarNF(ctx) {
         const nfDigitada = ctx.text.replace(/\D/g, "");
         if (nfDigitada === ctx.currentTask?.nfe) {
             switch (ctx.currentState){
-                case 'IFORMAR_NF_SUCESSO':
+                case 'INFORMAR_NF_SUCESSO':
                     return {
                         next: 'CONFIRMAR_NF_SUCESSO',
-                        reply: showMenu('confirmacao_sucesso', ctx),
+                        reply: showMenu('confirmacao_sucesso'),
                         nfe: nfDigitada
                     };
-                case 'IFORMAR_NF_PENDENCIA':
+                case 'INFORMAR_NF_PENDENCIA':
                     return {
                         next: 'CONFIRMAR_NF_PENDENCIA',
-                        reply: showMenu('confirmacao_sucesso', ctx),
+                        reply: showMenu('confirmacao_sucesso'),
                         nfe: nfDigitada
                     };
-                case 'IFORMAR_NF_INSUCESSO':
+                case 'INFORMAR_NF_INSUCESSO':
                     return {
                         next: 'CONFIRMAR_NF_INSUCESSO',
-                        reply: showMenu('confirmacao_sucesso', ctx),
+                        reply: showMenu('confirmacao_sucesso'),
                         nfe: nfDigitada
                     }
             }
@@ -409,15 +428,15 @@ function processarConfirmarNF(ctx) {
                             next: 'ENVIAR_COMPROVANTE',
                             reply: buildText('Por favor, envie a foto do comprovante:')
                         };
-                    case 'CONFIRMAR_NF_SUCESSO':
+                    case 'CONFIRMAR_NF_PENDENCIA':
                         return { 
                             next: 'SELECIONAR_TIPO_PENDENCIA', 
-                            reply: showMenu('selecao_pendencia', ctx) 
+                            reply: showMenu('selecao_pendencia') 
                         };
-                    case 'CONFIRMAR_NF_SUCESSO':
+                    case 'CONFIRMAR_NF_INSUCESSO':
                         return { 
                             next: 'SELECIONAR_MOTIVO_INSUCESSO', 
-                            reply: showMenu('selecao_motivo_insucesso', ctx) 
+                            reply: showMenu('selecao_motivo_insucesso') 
                         };
                 }
             case 1:
@@ -490,7 +509,7 @@ function processarSelecionarTipoPendencia(ctx) {
         const tiposPendencia = ["avaria", "falta", "inversão"]
         return {
             next: 'INFORMAR_CARACTERISTICA_PENDENCIA',
-            reply: showMenu('detalhes_pendencia', ctx),
+            reply: showMenu('detalhes_pendencia'),
             tipo_pendencia: tiposPendencia[ctx.interactive_id]
         };
     }
@@ -630,7 +649,7 @@ return [{
             tipo_pendencia: tipoPendencia,
             caracteristica_pendencia: caracteristicaPendencia,
             nfe: nfe,
-            moivo_insucesso: motivoInsucesso
+            motivo_insucesso: motivoInsucesso
         } : null,
         download_media: downloadMedia
     }
