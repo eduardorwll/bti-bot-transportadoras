@@ -1,0 +1,2 @@
+- Consertar funções de não entendi e opção invalida para se adequarem conforme o state, sem interpolação
+- Documentar todos possíveis caminhos e ir dando check se cada um está funcionando
