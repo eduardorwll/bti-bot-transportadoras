@@ -194,7 +194,7 @@ function processStateDirectly(ctx) {
             return processarMenuPrincipal(ctx);
         case 'SELECAO_ENTREGAS':
             return processarSelecaoEntregas(ctx);
-        case 'CONFIRMAR_ENTREGA':
+        case 'CONFIRMACAO_ENTREGA':
             return processarConfirmacaoEntrega(ctx);
         case 'RELATORIO_ENTREGA':
             return processarRelatorioEntrega(ctx);
@@ -212,11 +212,11 @@ function processStateDirectly(ctx) {
             return processarInformarRecebedor(ctx);
         case 'RELATAR_PROBLEMA':
             return processarRelatarProblema(ctx);
-        case 'SELECIONAR_TIPO_PENDENCIA':
+        case 'SELECAO_PENDENCIA':
             return processarSelecionarTipoPendencia(ctx);
-        case 'INFORMAR_CARACTERISTICA_PENDENCIA':
+        case 'DETALHES_PENDENCIA':
             return processarSelecionarCaracteristicaPendencia(ctx);
-        case 'SELECIONAR_MOTIVO_INSUCESSO':
+        case 'SELECAO_MOTIVO_INSUCESSO':
             return processarSelecionarMotivoInsucesso(ctx);
         default:
             return {
@@ -234,7 +234,7 @@ function naoEntendi(ctx) {
         next: ctx.currentState,
         reply: [
             buildText('Não entendi, responda novamente.'),
-            showMenu(ctx.currentState?.toLowerCase() || 'menu_principal')
+            showMenu(ctx.currentState?.toLowerCase())
         ],
         incRetry: true
     };
@@ -310,7 +310,7 @@ function processarSelecaoEntregas(ctx) {
                 if (ctx.interactive_id >= 0 && ctx.interactive_id < baseId) {
                     const selectedTask = ctx.tasks[ctx.interactive_id];
                     return {
-                        next: 'CONFIRMAR_ENTREGA',
+                        next: 'CONFIRMACAO_ENTREGA',
                         reply: [
                             buildText(`Endereço: ${selectedTask.address}\nID: ${selectedTask.id}`),
                             showMenu('confirmacao_entrega')
@@ -330,7 +330,7 @@ function processarConfirmacaoEntrega(ctx) {
         switch (parseInt(ctx.interactive_id)) {
             case 0:
                 return {
-                    next: 'RELATORIO_ENTREGA',
+                    next: 'FINISHED',
                     reply: buildGMapsButton(ctx.currentTask.latitude,ctx.currentTask.longitude),
                     task_status: 1,
                     window_start: nowISO()
@@ -430,12 +430,12 @@ function processarConfirmarNF(ctx) {
                         };
                     case 'CONFIRMAR_NF_PENDENCIA':
                         return { 
-                            next: 'SELECIONAR_TIPO_PENDENCIA', 
+                            next: 'SELECAO_PENDENCIA', 
                             reply: showMenu('selecao_pendencia') 
                         };
                     case 'CONFIRMAR_NF_INSUCESSO':
                         return { 
-                            next: 'SELECIONAR_MOTIVO_INSUCESSO', 
+                            next: 'SELECAO_MOTIVO_INSUCESSO', 
                             reply: showMenu('selecao_motivo_insucesso') 
                         };
                 }
@@ -508,7 +508,7 @@ function processarSelecionarTipoPendencia(ctx) {
     if (ctx.inputType === 'interactive' && ctx.interactive_id < 3) {
         const tiposPendencia = ["avaria", "falta", "inversão"]
         return {
-            next: 'INFORMAR_CARACTERISTICA_PENDENCIA',
+            next: 'DETALHES_PENDENCIA',
             reply: showMenu('detalhes_pendencia'),
             tipo_pendencia: tiposPendencia[ctx.interactive_id]
         };
