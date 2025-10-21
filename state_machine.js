@@ -154,7 +154,12 @@ function showMenu(menuName) {
     const menu = menus[menuName];
 
     if (!menu) {
-        return buildText(`❌ Menu "${menuName}" não encontrado.`);
+        switch(menuName){
+            case manuName.includes("confirma_nf"):
+                return showMenu("confirmacao_sucesso");
+            default:
+                return buildText(`Menu "${menuName}" não encontrado.`);
+        }
     }
 
     switch (menu.type) {
@@ -164,21 +169,19 @@ function showMenu(menuName) {
         case 'list': {
             let options = menu.options;
 
-            // ✅ substitui a referência "taskList" pelo array dinâmico taskMenuOptions
             if (options === 'taskList') {
                 options = taskMenuOptions;
             }
 
-            // ✅ validação extra — evita cair no catch se algo vier indefinido
             if (!Array.isArray(options)) {
-                return buildText(`⚠️ Erro: opções inválidas no menu "${menuName}".`);
+                return buildText(`Erro: opções inválidas no menu "${menuName}".`);
             }
 
             return buildList(menu.header, menu.body, options);
         }
 
         default:
-            return buildText("⚠️ Tipo de menu não suportado");
+            return buildText("Tipo de menu não suportado");
     }
 }
 
@@ -201,7 +204,7 @@ function processStateDirectly(ctx) {
         case 'INFORMAR_NF_SUCESSO':
         case 'INFORMAR_NF_PENDENCIA':
         case 'INFORMAR_NF_INSUCESSO':  
-            return processarInformarNF(ctx);
+            return processarInformarNF(ctx);dd
         case 'CONFIRMAR_NF_SUCESSO':
         case 'CONFIRMAR_NF_PENDENCIA':
         case 'CONFIRMAR_NF_INSUCESSO':
@@ -234,7 +237,7 @@ function naoEntendi(ctx) {
         next: ctx.currentState,
         reply: [
             buildText('Não entendi, responda novamente.'),
-            showMenu(ctx.currentState?.toLowerCase())
+            showMenu(ctx.currentState.toLowerCase())
         ],
         incRetry: true
     };
@@ -245,7 +248,7 @@ function opcaoInvalida(ctx) {
         next: ctx.currentState,
         reply: [
             buildText('Opção inválida, escolha do menu.'),
-            showMenu(ctx.currentState?.toLowerCase() || 'menu_principal')
+            showMenu(ctx.currentState.toLowerCase())
         ],
         incRetry: true
     };
