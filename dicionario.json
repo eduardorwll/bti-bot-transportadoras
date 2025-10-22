@@ -5,9 +5,9 @@
       "header": "Menu principal: ",
       "body": "Escolha uma das opções abaixo: ",
       "options": [
-        { "id": "0", "title": "Entregas", "description": "Ver e escolher entrega." },
-        { "id": "1", "title": "Status", "description": "Atualizar status" },
-        { "id": "2", "title": "Cancelar", "description": "Cancelar atendimento" }
+        { "id": 0, "title": "Entregas", "description": "Ver e escolher entrega." },
+        { "id": 1, "title": "Status", "description": "Atualizar status" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
       ]
     },
     "selecao_entregas": {
@@ -22,14 +22,14 @@
     },
     "relatorio_entrega": {
       "type": "list",
-      "header": "Escolha o Tipo de Entrega",
+      "header": "Escolha o Status de Entrega",
       "body": "Selecione uma das opções abaixo:",
       "options": [
-        { "id": "0", "title": "Sucesso", "description": "Entrega realizada" },
-        { "id": "1", "title": "Pendência", "description": "Entrega com pendência" },
-        { "id": "2", "title": "Insucesso", "description": "Entrega não realizada" },
-        { "id": "3", "title": "Voltar", "description": "Retornar ao menu principal" },
-        { "id": "4", "title": "Cancelar", "description": "Cancelar atendimento" }
+        { "id": 0, "title": "Sucesso", "description": "Entrega realizada" },
+        { "id": 1, "title": "Pendência", "description": "Entrega com pendência" },
+        { "id": 2, "title": "Insucesso", "description": "Entrega não realizada" },
+        { "id": 998, "title": "Voltar", "description": "Retornar ao menu anterior" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
       ]
     },
     "confirmacao_entrega": {
@@ -37,8 +37,8 @@
       "header": "Confirma a escolha da seguinte tarefa?",
       "body": "Selecione uma das opções abaixo:",
       "options": [
-        { "id": "0", "title": "Sim" },
-        { "id": "1", "title": "Não" }
+        { "id": 0, "title": "Sim" },
+        { "id": 1, "title": "Não" }
       ]
     },
     "selecao_pendencia": {
@@ -46,9 +46,11 @@
       "header": "Informe o tipo de pendência:",
       "body": "Selecione uma das opções abaixo:",
       "options": [
-        { "id": "0", "title": "Avaria" },
-        { "id": "1", "title": "Falta" },
-        { "id": "2", "title": "Inversão/Troca de volumes" }
+        { "id": 0, "title": "Avaria" },
+        { "id": 1, "title": "Falta" },
+        { "id": 2, "title": "Inversão/Troca de volumes" },
+        { "id": 998, "title": "Voltar", "description": "Retornar ao menu anterior" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
       ]
     },
     "detalhes_pendencia": {
@@ -56,8 +58,11 @@
       "header": "A pendência é total ou parcial?",
       "body": "Selecione uma das opções abaixo:",
       "options": [
-        { "id": "0", "title": "Total" },
-        { "id": "1", "title": "Parcial" }
+        { "id": 0, "title": "Total" },
+        { "id": 1, "title": "Parcial" },
+        { "id": 998, "title": "Voltar", "description": "Retornar ao menu anterior" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
+
       ]
     },
     "selecao_motivo_insucesso": {
@@ -65,11 +70,13 @@
       "header": "Informe o motivo do insucesso:",
       "body": "Selecione uma das opções abaixo:",
       "options": [
-        { "id": "0", "title": "Comprovante Retido" },
-        { "id": "1", "title": "Divergência Comercial" },
-        { "id": "2", "title": "Endereço não localizado" },
-        { "id": "3", "title": "Destinatário ausente" },
-        { "id": "4", "title": "Recusa/Impossibilidade" }
+        { "id": 0, "title": "Comprovante Retido" },
+        { "id": 1, "title": "Divergência Comercial" },
+        { "id": 2, "title": "Endereço não localizado" },
+        { "id": 3, "title": "Destinatário ausente" },
+        { "id": 4, "title": "Recusa/Impossibilidade" },
+        { "id": 998, "title": "Voltar", "description": "Retornar ao menu anterior" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
       ]
     },
     "confirmacao_sucesso": {
@@ -77,8 +84,8 @@
       "header": "Confirma os dados da NF?",
       "body": "Selecione uma das opções abaixo:",
       "options": [
-        { "id": "0", "title": "Sim" },
-        { "id": "1", "title": "Não" }
+        { "id": 0, "title": "Sim" },
+        { "id": 1, "title": "Não" }
       ]
     }
   }
