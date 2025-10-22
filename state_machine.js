@@ -617,8 +617,9 @@ try {
 } catch (e) {
     result = {
         next: 'MENU_PRINCIPAL',
-        reply: [buildText("Erro interno. Retornando ao menu principal."), showMenu('menu_principal', context)],
-        active: true
+        reply: [buildText("Erro interno. Retornando ao menu principal."), showMenu('menu_principal')],
+        active: true,
+        nextOptionTitles: formatNextOptionTitles('menu_principal')
     }
 }
 
