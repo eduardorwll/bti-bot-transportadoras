@@ -623,13 +623,13 @@ try {
     }
 }
 
-// ==========================================
+// ==========================================================
 // VARIÁVEIS PARA OS UPDATES E DEFINIÇÃO DOS DEFAULT VALUES
-// ==========================================
+// ==========================================================
 const nextState = result.next || 'MENU_PRINCIPAL';
 const retries = result.incRetry ? (rawSession.retries || 0) + 1 : 0;
 const active = 'active' in result ? result.active : true;
-const nextTaskId = 'taskId' in result ? result.taskId : null;
+const nextTaskId = 'taskId' in result ? result.taskId : currentTaskId;
 const nextOptionTitles = 'nextOptionTitles' in result ? result.nextOptionTitles : null;
 
 const taskStatus = 'taskStatus' in result ? result.taskStatus : currentRawTask.taskStatus;
@@ -670,7 +670,7 @@ return [{
             currentOptionsTitles: nextOptionTitles
         },
         task_update: nextTaskId ? {
-            id: nextTaskId !== null ? nextTaskId : currentTaskId,
+            id: nextTaskId,
             taskStatus: taskStatus,
             windowStart: windowStart,
             windowEnd: windowEnd,
