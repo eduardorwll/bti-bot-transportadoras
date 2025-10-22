@@ -3,13 +3,13 @@
 // ==========================================
 
 const parser = $('Parser numero/mensagem').first().json;
-const rawSession = $('Get last session').first().json || {};
+const rawSession = $('Get last session').first().json || {}
 const rawActiveTasks = $('Get raw activeTasks').all();
-const dadosComprovante = $('COMPROVANTE').first().json || {};
+const dadosComprovante = $('COMPROVANTE').first().json || {}
 
 const currentState = rawSession?.state || 'MENU_PRINCIPAL';
 const currentTaskId = rawSession?.taskId || null;
-const currentRawTask = rawActiveTasks?.find(task => task.json.id === currentTaskId)?.json || {};
+const currentRawTask = rawActiveTasks?.find(task => task.json.id === currentTaskId)?.json || {}
 const currentOptionsTitles = rawSession?.currentOptionTitles
 
 const dicionario = $('Dicionario').first().json;
@@ -40,31 +40,36 @@ const parsedRawTasks = rawActiveTasks.map(task => {
         nfe: task.json.nfe,
         latitude: task.json.latitude,
         longitude: task.json.longitude
-    };
+    }
 }).filter(task => task !== null);
 
 // ==========================================
 // TRANSFORMA AS TAREFAS EM UM MENU 
 // ==========================================
 
-let taskListOptions = parsedRawTasks.map((task, index) => ({
-    id: index,
-    title: (task.address || "Endereço não informado").substring(0, 24),
-    description: `ID: ${task.id}`.substring(0, 72)
-}));
+function formatTaskListOptions(){
+    let taskListOptions = parsedRawTasks.map((task, index) => ({
+        id: index,
+        title: (task.address || "Endereço não informado").substring(0, 24),
+        description: `ID: ${task.id}`.substring(0, 72)
+    }));
 
-taskListOptions.push(
-    {
-        id: 998,
-        title: "↩️ Voltar",
-        description: "Retornar ao menu principal"
-    },
-    {
-        id: 999,
-        title: "❌ Cancelar",
-        description: "Cancelar atendimento"
-    }
-);
+    taskListOptions.push(
+        {
+            id: 998,
+            title: "↩️ Voltar",
+            description: "Retornar ao menu principal"
+        },
+        {
+            id: 999,
+            title: "❌ Cancelar",
+            description: "Cancelar atendimento"
+        }
+    );
+}
+
+const taskListOptions = formatTaskListOptions()
+
 
 // ==========================================
 // FUNÇÕES UTILITÁRIAS
@@ -85,7 +90,7 @@ function buildText(body) {
         to: waId,
         type: "text",
         text: { body }
-    };
+    }
 }
 
 function buildList(header, body, rows) {
@@ -115,7 +120,7 @@ function buildList(header, body, rows) {
                 }]
             }
         }
-    };
+    }
 }
 
 function buildGMapsButton(lat, long) {
@@ -146,7 +151,7 @@ function buildGMapsButton(lat, long) {
                 text: "Clique abaixo para abrir a localização no Google Maps."
             }
         }
-    };
+    }
 }
 
 // ==========================================
@@ -219,7 +224,7 @@ function processStateDirectly(ctx) {
             next: 'FINISHED',
             reply: showMenu('cancelamento'),
             active: false
-        };
+        }
     }
 
     // Retorno para o menu anterior
@@ -278,9 +283,9 @@ function processStateDirectly(ctx) {
                             reply: [
                                 buildText("Estado não reconhecido.")
                             ]
-                        };
+                        }
                 }
-            }else{
+            } else {
                 return opcaoInvalida(ctx)
             }
 
@@ -311,7 +316,7 @@ function naoEntendi(ctx) {
         ],
         incRetry: true,
         nextOptionTitles: formatNextOptionTitles(ctx.currentState.toLowerCase())
-    };
+    }
 }
 
 // Opção não existe no menu
@@ -324,7 +329,7 @@ function opcaoInvalida(ctx) {
         ],
         incRetry: true,
         nextOptionTitles: formatNextOptionTitles(ctx.currentState.toLowerCase())
-    };
+    }
 }
 
 
@@ -340,14 +345,14 @@ function processarMenuPrincipal(ctx) {
                 next: 'SELECAO_ENTREGAS',
                 reply: showMenu('selecao_entregas'),
                 nextOptionTitles: formatNextOptionTitles('selecao_entregas')
-            };
+            }
         case 1:
             if (ctx.currentTaskId) {
                 return {
                     next: 'RELATORIO_ENTREGA',
                     reply: showMenu('relatorio_entrega'),
                     nextOptionTitles: formatNextOptionTitles('relatorio_entrega')
-                };
+                }
             } else {
                 return {
                     next: 'SELECAO_ENTREGAS',
@@ -356,7 +361,7 @@ function processarMenuPrincipal(ctx) {
                         showMenu('selecao_entregas'),
                     ],
                     nextOptionTitles: formatNextOptionTitles('selecao_entregas')
-                };
+                }
             }
     }
 }
@@ -372,7 +377,7 @@ function processarSelecaoEntregas(ctx) {
         ],
         taskId: rawSelectedTask.id,
         nextOptionTitles: formatNextOptionTitles('confirmacao_entrega')
-    };
+    }
 }
 
 
@@ -385,16 +390,14 @@ function processarConfirmacaoEntrega(ctx) {
                 reply: buildGMapsButton(ctx.currentRawTask.latitude, ctx.currentRawTask.longitude),
                 taskStatus: 1,
                 windowStart: nowISO()
-            };
+            }
         case 1:
             return {
                 next: 'SELECAO_ENTREGAS',
                 reply: showMenu('selecao_entregas'),
                 taskId: null,
                 nextOptionTitles: formatNextOptionTitles('selecao_entregas')
-            };
-        default:
-            return opcaoInvalida(ctx);
+            }
     }
 }
 
@@ -406,23 +409,23 @@ function processarRelatorioEntrega(ctx) {
             return {
                 next: 'INFORMAR_NF_SUCESSO',
                 reply: buildText("Por favor, informe o número da NF para continuar.")
-            };
+            }
         case 1:
             return {
                 next: 'INFORMAR_NF_PENDENCIA',
                 reply: buildText("Por favor, informe o número da NF para continuar.")
-            };
+            }
         case 2:
             return {
                 next: 'INFORMAR_NF_INSUCESSO',
                 reply: buildText("Por favor, informe o número da NF para continuar.")
-            };
+            }
         case 3:
             return {
                 next: 'SELECAO_ENTREGAS',
                 reply: showMenu('selecao_entregas'),
                 nextOptionTitles: formatNextOptionTitles('selecao_entregas')
-            };
+            }
     }
 }
 
@@ -438,14 +441,14 @@ function processarInformarNF(ctx) {
                     reply: showMenu('confirmacao_sucesso'),
                     nfe: nfDigitada,
                     nextOptionTitles: formatNextOptionTitles('confirmacao_sucesso')
-                };
+                }
             case 'INFORMAR_NF_PENDENCIA':
                 return {
                     next: 'CONFIRMAR_NF_PENDENCIA',
                     reply: showMenu('confirmacao_sucesso'),
                     nfe: nfDigitada,
                     nextOptionTitles: formatNextOptionTitles('confirmacao_sucesso')
-                };
+                }
             case 'INFORMAR_NF_INSUCESSO':
                 return {
                     next: 'CONFIRMAR_NF_INSUCESSO',
@@ -454,7 +457,6 @@ function processarInformarNF(ctx) {
                     nextOptionTitles: formatNextOptionTitles('confirmacao_sucesso')
                 }
         }
-
     }
 }
 
@@ -468,19 +470,19 @@ function processarConfirmarNF(ctx) {
                     return {
                         next: 'ENVIAR_COMPROVANTE',
                         reply: buildText('Por favor, envie a foto do comprovante:')
-                    };
+                    }
                 case 'CONFIRMAR_NF_PENDENCIA':
                     return {
                         next: 'SELECAO_PENDENCIA',
                         reply: showMenu('selecao_pendencia'),
                         nextOptionTitles: formatNextOptionTitles('selecao_pendencia')
-                    };
+                    }
                 case 'CONFIRMAR_NF_INSUCESSO':
                     return {
                         next: 'SELECAO_MOTIVO_INSUCESSO',
                         reply: showMenu('selecao_motivo_pendencia'),
                         nextOptionTitles: formatNextOptionTitles('selecao_motivo_pendencia')
-                    };
+                    }
             }
         case 1:
             return {
@@ -580,7 +582,7 @@ function processarSelecionarMotivoInsucesso(ctx) {
             taskStatus: 4,
             taskId: null,
             windowEnd: nowISO()
-        };
+        }
     }
 }
 
@@ -607,7 +609,7 @@ const context = {
     tipoPendencia: currentRawTask?.tipoPendencia || null,
     caracteristicaPendencia: currentRawTask?.caracteristicaPendencia || null,
     motivoInsucesso: currentRawTask?.motivoInsucesso || null
-};
+}
 
 let result;
 try {
@@ -617,7 +619,7 @@ try {
         next: 'MENU_PRINCIPAL',
         reply: [buildText("Erro interno. Retornando ao menu principal."), showMenu('menu_principal', context)],
         active: true
-    };
+    }
 }
 
 // ==========================================
