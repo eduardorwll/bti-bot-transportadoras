@@ -1,41 +1,22 @@
-const dados = require('./dicionario.json');
-
-function showMenu(menuName) {
-    const menu = dados.menus[menuName];
-
-    if (!menu) {
-        if(menuName.includes("confirma_nf")){
-            return showMenu("confirmacao_sucesso");
-        }else{
-            return 5;
-        }
+const d1 = {
+    options: [
+        { "id": 0, "title": "Sucesso", "description": "Entrega realizada" },
+        { "id": 1, "title": "Pendência", "description": "Entrega com pendência" },
+        { "id": 2, "title": "Insucesso", "description": "Entrega não realizada" },
+        { "id": 998, "title": "Voltar", "description": "Retornar ao menu anterior" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
+      ]
     }
 
-    switch (menu.type) {
-        case 'text':
-            return 1;
+const d2 = {
+    options: [
+        { "id": 0, "title": "Entregas", "description": "Ver e escolher entrega." },
+        { "id": 1, "title": "Status", "description": "Atualizar status" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
+      ]
+    };
 
-        case 'list': {
-            let options = menu.options;
+let optionTitles = [];
 
-            if (options === 'taskList') {
-                options = taskMenuOptions;
-            }
-
-            if (!Array.isArray(options)) {
-                2;
-            }
-
-            return menu;
-        }
-
-        default:
-            return 4;
-    }
-}
-
-const ctx = {
-    currentState:"confirma_nf_comprovante"
-}
-
-console.log(showMenu("confirma_nf_sucesso"));
+d2.options.forEach((option) => (option.id !== 999 && option.id !== 998) ? optionTitles.push(option.title):null);
+console.log(optionTitles);
