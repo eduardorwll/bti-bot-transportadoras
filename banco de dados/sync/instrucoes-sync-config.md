@@ -5,15 +5,9 @@ chmod +x setup.sh
 ```
 
 2. **Configure o arquivo de ambiente:**
-   - Use como base o arquivo `./.env.example`
-   - Crie seu próprio arquivo `.env` com as configurações reais
+   - Edite o arquivo .env que foi criado pelo setup.sh com as informações de exemplo escritas nele como base (baseado no .env.example)
 
-3. **Ative o ambiente virtual:**
-```sh
-source venv/bin/activate
-```
-
-4. **Execute os scripts de sincronização:**
+3. **Execute os scripts de sincronização:**
 ```sh
 # Em terminais separados
 python sync_ops.py  # Dados operacionais
