@@ -14,24 +14,6 @@ python sync_ops.py  # Dados operacionais
 python sync_org.py  # Dados organizacionais
 ```
 
-## Estrutura de Diretórios
-
-Após a instalação, a estrutura será:
-
-```
-banco de dados/
-├── venv/                    # Ambiente virtual Python
-├── logs/                    # Diretório de logs
-│   ├── sync_ops_log.log     # Logs da sincronização operacional
-│   └── sync_org_log.log     # Logs da sincronização organizacional
-├── .env                     # Configurações de ambiente (não versionado)
-├── .env.example            # Modelo de configuração
-├── .gitignore              # Configuração do Git
-├── setup.sh                # Script de instalação automatizado
-├── sync_ops.py             # Script para dados operacionais
-└── sync_org.py             # Script para dados organizacionais
-```
-
 ## Observações
 
 - Todos os arquivos estão documentados
