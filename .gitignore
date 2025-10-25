@@ -1,0 +1,28 @@
+# Ignora todos os arquivos na pasta Queries
+Queries/*
+
+# Ignora todos os arquivos SQL em qualquer diretório
+*.sql
+
+# Exceções - arquivos SQL que devem ser versionados
+!banco de dados/database.sql
+!banco de dados/estrutura_db.sql
+
+# Arquivos de configuração e logs
+banco de dados/.env
+banco de dados/logs/
+banco de dados/*.log
+banco de dados/sync_ops_log.log
+banco de dados/sync_org_log.log
+
+# Ambiente virtual Python
+banco de dados/venv/
+banco de dados/__pycache__/
+banco de dados/*.py[cod]
+banco de dados/*$py.class
+
+# Outros arquivos do sistema
+.DS_Store
+.vscode/
+*.swp
+*.swo

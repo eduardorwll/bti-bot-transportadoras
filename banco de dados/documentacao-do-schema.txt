@@ -1,0 +1,46 @@
+ =============================================================================
+ Schema completo do Banco de Dados do Bot de Transportadoras
+ =============================================================================
+ Este arquivo contém a definição completa do schema do banco de dados usado
+ pelo bot de WhatsApp para transportadoras. O schema foi projetado para:
+ 1. Armazenar dados das empresas, unidades e funcionários
+ 2. Gerenciar manifestos e tarefas de entrega
+ 3. Registrar ocorrências e comprovantes
+ 4. Manter sessões do WhatsApp e logs
+ 5. Integrar com o sistema ERP da transportadora
+
+ ESTRUTURA DO SISTEMA:
+
+ 1. HIERARQUIA ORGANIZACIONAL
+    - Company (Empresa)
+      └── Unit (Filiais)
+           ├── Employee (Funcionários)
+           └── Vehicle (Veículos)
+
+ 2. OPERAÇÃO DE ENTREGAS
+    - Manifest (Manifesto)
+      └── Task (Tarefas)
+           ├── Occurrence (Ocorrências)
+           ├── Invoice (Notas Fiscais)
+           └── Image (Comprovantes)
+
+ 3. GESTÃO DO BOT
+    - wa_session (Sessões WhatsApp)
+    - log_json (Logs do Sistema)
+
+ PRINCIPAIS FUNCIONALIDADES:
+ 1. Gestão completa de entregas via WhatsApp
+ 2. Rastreamento de ocorrências e status
+ 3. Gerenciamento de documentos (CT-e, NF-e)
+ 4. Controle de frota e motoristas
+ 5. Registro de comprovantes e assinaturas
+
+ Autor: Eduardo Rowlinson
+ Última atualização: 24/10/2025
+ =============================================================================
+
+ =============================================================================
+ TABELAS PRINCIPAIS
+ =============================================================================
+ As tabelas principais formam o core do sistema, contendo as entidades
+ fundamentais para o funcionamento do bot e do processo de entregas

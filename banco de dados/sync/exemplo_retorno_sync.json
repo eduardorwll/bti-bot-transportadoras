@@ -1,0 +1,169 @@
+{
+  "company": [
+    {
+      "erp_code": "001",
+      "name": "TRANSPORTADORA EXEMPLO LTDA",
+      "trading_name": "Trans Express",
+      "cnpj": "12.345.678/0001-90",
+      "address": "Av. Principal, 1000",
+      "city": "São Paulo",
+      "state": "SP",
+      "zip_code": "04538-132",
+      "phone": "(11) 3333-4444",
+      "email": "contato@transexpress.com.br"
+    }
+  ],
+  "unit": [
+    {
+      "erp_code": "SP01",
+      "name": "FILIAL SÃO PAULO",
+      "address": "Rua do Transporte, 123",
+      "city": "São Paulo",
+      "state": "SP",
+      "zip_code": "04538-132",
+      "phone": "(11) 3333-5555",
+      "manager": "João Silva",
+      "cnpj": "12.345.678/0002-71",
+      "is_main": true
+    },
+    {
+      "erp_code": "RJ01",
+      "name": "FILIAL RIO DE JANEIRO",
+      "address": "Av. Brasil, 5000",
+      "city": "Rio de Janeiro",
+      "state": "RJ",
+      "zip_code": "21535-900",
+      "phone": "(21) 3333-6666",
+      "manager": "Maria Santos",
+      "cnpj": "12.345.678/0003-52",
+      "is_main": false
+    }
+  ],
+  "employee": [
+    {
+      "erp_code": "M001",
+      "name": "JOSÉ ROBERTO DA SILVA",
+      "cpf": "123.456.789-00",
+      "role": "Motorista",
+      "phone": "(11) 98765-4321",
+      "license": "AB",
+      "license_expiry": "2026-05-15",
+      "active": true,
+      "unit_code": "SP01",
+      "hire_date": "2020-03-10"
+    },
+    {
+      "erp_code": "M002",
+      "name": "ANTONIO CARLOS SANTOS",
+      "cpf": "987.654.321-00",
+      "role": "Motorista",
+      "phone": "(11) 98888-7777",
+      "license": "51561351",
+      "license_expiry": "2025-11-20",
+      "active": true,
+      "unit_code": "SP01",
+      "hire_date": "2019-06-22"
+    }
+  ],
+  "vehicle": [
+    {
+      "plate": "ABC1D23",
+      "description": "Mercedes-Benz Actros 2651",
+      "vehicle_type": "Carreta",
+      "year": 2022,
+      "capacity": "40000",
+      "capacity_unit": "kg",
+      "fleet_number": "VE001",
+      "tracker_id": "TK123456",
+      "status": "active",
+      "unit_code": "SP01"
+    },
+    {
+      "plate": "XYZ9W87",
+      "description": "Volvo FH 540",
+      "vehicle_type": "Cavalo Mecânico",
+      "year": 2023,
+      "capacity": "45000",
+      "capacity_unit": "kg",
+      "fleet_number": "VE002",
+      "tracker_id": "TK789012",
+      "status": "active",
+      "unit_code": "RJ01"
+    }
+  ],
+  "manifest": [
+    {
+      "erp_code": "MNF001",
+      "cte_code": "35251234567890123456789012345678901234567890",
+      "date": "2025-10-24",
+      "expected_date": "2025-10-26",
+      "origin_unit": "SP01",
+      "destination_unit": "RJ01",
+      "vehicle_plate": "ABC1D23",
+      "driver_code": "M001",
+      "status": "em_transito",
+      "total_weight": 12500.50,
+      "total_volume": 45.75,
+      "total_items": 85
+    }
+  ],
+  "task": [
+    {
+      "erp_code": "TSK001",
+      "manifest_id": "MNF001",
+      "sequence": 1,
+      "scheduled_date": "2025-10-25",
+      "scheduled_time": "14:30:00",
+      "address": "Rua do Cliente, 500",
+      "city": "Guarulhos",
+      "state": "SP",
+      "zip_code": "07140-000",
+      "contact_name": "Pedro Souza",
+      "contact_phone": "(11) 97777-8888",
+      "status": "pendente",
+      "last_occurrence": null,
+      "latitude": -23.456789,
+      "longitude": -46.567890
+    }
+  ],
+  "occurrence": [
+    {
+      "occurrence_code": "ENT001",
+      "description": "Entrega Realizada com Sucesso",
+      "type": "conclusive",
+      "requires_photo": false,
+      "requires_signature": true,
+      "requires_observation": false,
+      "mobile_available": true,
+      "status": "active"
+    },
+    {
+      "occurrence_code": "AUS001",
+      "description": "Cliente Ausente",
+      "type": "pending",
+      "requires_photo": true,
+      "requires_signature": false,
+      "requires_observation": true,
+      "mobile_available": true,
+      "status": "active"
+    }
+  ],
+  "invoice": [
+    {
+      "id": "NFE001",
+      "series": "1",
+      "number": "123456",
+      "issue_date": "2025-10-23",
+      "total_value": 5890.50,
+      "weight": 1250.75,
+      "volume": 5.4,
+      "items": 25,
+      "sender_name": "Empresa Remetente LTDA",
+      "sender_cnpj": "98.765.432/0001-10",
+      "receiver_name": "Empresa Destinatária LTDA",
+      "receiver_cnpj": "10.987.654/0001-32",
+      "manifest_id": "MNF001",
+      "task_id": "TSK001"
+    }
+  ]
+}
