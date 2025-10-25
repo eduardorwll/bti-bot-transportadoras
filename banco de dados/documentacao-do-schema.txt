@@ -27,6 +27,7 @@
  3. GESTÃO DO BOT
     - wa_session (Sessões WhatsApp)
     - log_json (Logs do Sistema)
+    - sync_log (Log da sincronização da carga do ERP para Supabase)
 
  PRINCIPAIS FUNCIONALIDADES:
  1. Gestão completa de entregas via WhatsApp

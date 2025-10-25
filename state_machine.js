@@ -15,14 +15,14 @@ const currentOptionsTitles = rawSession?.currentOptionTitles
 const dicionario = $('Dicionario').first().json;
 const menus = dicionario.menus;
 
-const waId = parser.parsedPhoneNumber;
+const waId = parser.parsed_phone_number;
 const inputType = parser.type;
 const text = (parser.text || '');
 
 // reply_list - Do webhook do Whatsapp (Já parseado)
-const interactiveReplyId = parser.interactiveReplyId;
-const interactiveReplyTitle = parser.interactiveReplyTitle;
-const interactiveReplyDescription = parser.interactiveReplyDescription;
+const interactiveReplyId = parser.interactive_reply_id;
+const interactiveReplyTitle = parser.interactive_reply_itle;
+const interactiveReplyDescription = parser.interactive_reply_description;
 
 
 // ==========================================

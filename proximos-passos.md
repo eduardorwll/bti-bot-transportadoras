@@ -1,2 +1,2 @@
-- Consertar funções de não entendi e opção invalida para se adequarem conforme o state, sem interpolação
 - Documentar todos possíveis caminhos e ir dando check se cada um está funcionando
+- Verificar como o numero de telefone vem do erp pra fazer o parsing, buscar o id do funcionário no banco e adicionar à coluna de wa_id
