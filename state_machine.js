@@ -6,9 +6,10 @@ const parser = $('Parser numero/mensagem').first().json;
 const rawSession = $('Get last session').first().json || {}
 const rawActiveTasks = $('Get raw active tasks').all();
 const dadosComprovante = $('COMPROVANTE').first().json || {}
+const rawNf = Array.isArray($('Get NF from manifest id')) ? $('Get NF from manifest id').all() : $('Get NF from manifest id').first().json;
 
 const currentState = rawSession?.state || 'MENU_PRINCIPAL';
-const currentTaskId = rawSession?.taskId || null;
+const currentTaskId = rawSession?.task_id || null;
 const currentRawTask = rawActiveTasks?.find(task => task.json.id === currentTaskId)?.json || {}
 const currentOptionTitles = rawSession?.current_option_titles
 
@@ -30,7 +31,9 @@ const interactiveReplyDescription = parser.interactive_reply_description;
 // ==========================================
 
 const parsedRawTasks = rawActiveTasks.map(task => {
-    if (!task || !task.json) /* Line 33 omitted */
+    if (!task || !task.json){
+        return null;
+    }
 
     return {
         id: task.json.id,
@@ -66,6 +69,8 @@ function formatTaskListOptions(){
             description: "Cancelar atendimento"
         }
     );
+
+    return taskListOptions;
 }
 
 const taskListOptions = formatTaskListOptions()
@@ -77,6 +82,11 @@ const taskListOptions = formatTaskListOptions()
 
 function nowISO() {
     return new Date().toISOString();
+}
+
+function formatDate(dataTimestamp) {
+    const data = new Date(dataTimestamp);
+    return data.toLocaleDateString('pt-BR');
 }
 
 // ==========================================
@@ -223,20 +233,21 @@ function formatNextOptionTitles(menuName) {
 
 function processStateDirectly(ctx) {
     // Cancelamento da sessão
-    if (ctx.interactiveReplyId === 999) {
+    if (ctx.interactive_reply_id === 999) {
         return {
             next: 'FINISHED',
             reply: showMenu('cancelamento'),
-            active: false
+            active: false,
+            next_option_titles: null
         }
     }
 
     // Retorno para o menu anterior
-    if (ctx.interactiveReplyId === 998) {
+    if (ctx.interactive_reply_id === 998) {
         return {
-            next: ctx.current_state.toUppperCase(),
-            reply: showMenu(ctx.current_state.toLowerCase()),
-            next_option_titles: formatNextOptionTitles(ctx.current_state.toLowerCase())
+            next: 'MENU_PRINCIPAL',
+            reply: showMenu('menu_principal'),
+            next_option_titles: formatNextOptionTitles('menu_principal')
         }
     }
 
@@ -244,7 +255,9 @@ function processStateDirectly(ctx) {
         case 'text':
             if (ctx.current_state === 'CONFIRMAR_NF_SUCESSO' || ctx.current_state === 'CONFIRMAR_NF_PENDENCIA' || ctx.current_state === 'CONFIRMAR_NF_INSUCESSO') {
                 return processarConfirmarNF(ctx);
-            } else {
+            } else if(ctx.current_state === 'INFORMAR_NF_SUCESSO' || ctx.current_state === 'INFORMAR_NF_PENDENCIA' || ctx.current_state === 'INFORMAR_NF_INSUCESSO'){
+                return processarInformarNF(ctx);
+            }else {
                 return opcaoInvalida(ctx);
             }
         case 'interactive':
@@ -262,7 +275,7 @@ function processStateDirectly(ctx) {
                     case 'INFORMAR_NF_SUCESSO':
                     case 'INFORMAR_NF_PENDENCIA':
                     case 'INFORMAR_NF_INSUCESSO':
-                        return processarInformarNF(ctx);
+                        return naoEntendi(ctx); // States esperam inputType === text
                     case 'CONFIRMAR_NF_SUCESSO':
                     case 'CONFIRMAR_NF_PENDENCIA':
                     case 'CONFIRMAR_NF_INSUCESSO':
@@ -370,12 +383,12 @@ function processarMenuPrincipal(ctx) {
 
 
 function processarSelecaoEntregas(ctx) {
-    rawSelectedTask = parsed_raw_tasks[ctx.interactive_reply_id];
+    rawSelectedTask = parsedRawTasks[ctx.interactive_reply_id];
     return {
         next: 'CONFIRMACAO_ENTREGA',
         reply: [
-            buildText(`Endereço: ${rawSelectedTask.address}\nID: ${rawSelectedTask.id}`),
-            showMenu('confirmacao_entrega')
+            showMenu('confirmacao_entrega'),
+            buildText(`Endereço: ${rawSelectedTask.address}\nID: ${rawSelectedTask.id}`)
         ],
         task_id: rawSelectedTask.id,
         next_option_titles: formatNextOptionTitles('confirmacao_entrega')
@@ -391,7 +404,8 @@ function processarConfirmacaoEntrega(ctx) {
                 next: 'FINISHED',
                 reply: buildGMapsButton(ctx.current_raw_task.latitude, ctx.current_raw_task.longitude),
                 task_status: 1,
-                window_start: nowISO()
+                window_start: nowISO(),
+                active: false
             }
         case 1:
             return {
@@ -434,27 +448,49 @@ function processarRelatorioEntrega(ctx) {
 function processarInformarNF(ctx) {
 
     const nfDigitada = ctx.text.replace(/\D/g, "");
+    const nfDigitadaInfo = rawNf
 
     if (nfDigitada === ctx.current_task_nf) {
         switch (ctx.current_state) {
             case 'INFORMAR_NF_SUCESSO':
                 return {
                     next: 'CONFIRMAR_NF_SUCESSO',
-                    reply: showMenu('confirmacao_sucesso'),
+                    reply: [showMenu('confirmacao_sucesso'),
+                        buildText(`Detalhes da nota
+                            Número: ${nfDigitadaInfo.number}
+                            Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
+                            Peso: ${String(nfDigitadaInfo.weight)}kg
+                            Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}
+                            `)
+                    ],
                     nfe: nfDigitada,
                     next_option_titles: formatNextOptionTitles('confirmacao_sucesso')
                 }
             case 'INFORMAR_NF_PENDENCIA':
                 return {
                     next: 'CONFIRMAR_NF_PENDENCIA',
-                    reply: showMenu('confirmacao_sucesso'),
+                    reply: [showMenu('confirmacao_sucesso'),
+                        buildText(`Detalhes da nota
+                            Número: ${nfDigitadaInfo.number}
+                            Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
+                            Peso: ${String(nfDigitadaInfo.weight)}kg
+                            Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}
+                            `)
+                    ],
                     nfe: nfDigitada,
                     next_option_titles: formatNextOptionTitles('confirmacao_sucesso')
                 }
             case 'INFORMAR_NF_INSUCESSO':
                 return {
                     next: 'CONFIRMAR_NF_INSUCESSO',
-                    reply: showMenu('confirmacao_sucesso'),
+                    reply: [showMenu('confirmacao_sucesso'),
+                        buildText(`Detalhes da nota
+                            Número: ${nfDigitadaInfo.number}
+                            Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
+                            Peso: ${String(nfDigitadaInfo.weight)}kg
+                            Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}
+                            `)
+                    ],
                     nfe: nfDigitada,
                     next_option_titles: formatNextOptionTitles('confirmacao_sucesso')
                 }
