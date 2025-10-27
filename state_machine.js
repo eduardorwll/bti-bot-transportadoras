@@ -5,7 +5,7 @@
 const parser = $('Parser numero/mensagem').first().json;
 const rawSession = $('Get last session').first().json || {}
 const rawUnfinishedTasks = Array.isArray($('Get raw active tasks')) ? $('Get raw active tasks').all() : $('Get raw active tasks') !== null ? $('Get raw active tasks').first().json : {};
-const dadosComprovante = $('COMPROVANTE').first().json || {}
+const dadosComprovante = $('COMPROVANTE').first().json || {};
 const rawNf = Array.isArray($('Get NF from manifest id')) ? $('Get NF from manifest id').all() : $('Get NF from manifest id').first().json;
 
 const currentState = rawSession?.state || 'MENU_PRINCIPAL';
@@ -523,9 +523,9 @@ function processarConfirmarNF(ctx) {
 
 function processarEnviarComprovante(ctx) {
     if (dadosComprovante.destinatario === ctx.current_raw_task.destinatario
-        && dadosComprovante.date === formatDate(ctx.current_raw_task.date)
+        && dadosComprovante.date === ctx.current_raw_task.date
         && (dadosComprovante.nfe === ctx.current_raw_task.nfe || dadosComprovante.cte === ctx.current_raw_task.cte_code)
-        && dadosComprovante.carimbo) {
+        && dadosComprovante.carimbo === true) {
         return {
             next: 'INFORMAR_RECEBEDOR',
             reply: buildText('✅ Imagem recebida e verificada. Qual o nome do recebedor do pacote?'),
