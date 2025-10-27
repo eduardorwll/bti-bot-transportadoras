@@ -4,14 +4,15 @@
 
 const parser = $('Parser numero/mensagem').first().json;
 const rawSession = $('Get last session').first().json || {}
-const rawActiveTasks = $('Get raw active tasks').all();
+const rawUnfinishedTasks = Array.isArray($('Get raw active tasks')) ? $('Get raw active tasks').all() : $('Get raw active tasks') !== null ? $('Get raw active tasks').first().json : {};
 const dadosComprovante = $('COMPROVANTE').first().json || {}
 const rawNf = Array.isArray($('Get NF from manifest id')) ? $('Get NF from manifest id').all() : $('Get NF from manifest id').first().json;
 
 const currentState = rawSession?.state || 'MENU_PRINCIPAL';
 const currentTaskId = rawSession?.task_id || null;
-const currentRawTask = rawActiveTasks?.find(task => task.json.id === currentTaskId)?.json || {}
-const currentOptionTitles = rawSession?.current_option_titles
+const currentRawTask = Array.isArray(rawUnfinishedTasks) ? rawUnfinishedTasks.find(task => task.json.id === currentTaskId) : rawUnfinishedTasks !== null ? rawUnfinishedTasks : {};
+const currentOptionTitles = rawSession?.current_option_titles;
+const currentRawNf = currentTaskId !== null && Array.isArray(rawNf) ? rawNf.find(item => item.number === currentRawTask.nfe) : null;
 
 const dicionario = $('Dicionario').first().json;
 const menus = dicionario.menus;
@@ -27,35 +28,22 @@ const interactiveReplyDescription = parser.interactive_reply_description;
 
 
 // ==========================================
-// PROCESSAMENTO DE TAREFAS
-// ==========================================
-
-const parsedRawTasks = rawActiveTasks.map(task => {
-    if (!task || !task.json){
-        return null;
-    }
-
-    return {
-        id: task.json.id,
-        address: task.json.address,
-        task_type: (task.json.task_type === 0) ? "Entrega" : task.json.task_type,
-        notes: task.json.notes,
-        nfe: task.json.nfe,
-        latitude: task.json.latitude,
-        longitude: task.json.longitude
-    }
-}).filter(task => task !== null);
-
-// ==========================================
 // TRANSFORMA AS TAREFAS EM UM MENU 
 // ==========================================
 
 function formatTaskListOptions(){
-    let taskListOptions = parsedRawTasks.map((task, index) => ({
+    let taskListOptions = []
+    if (rawUnfinishedTasks === null){
+    }else if(Array.isArray(rawUnfinishedTasks)){
+        taskListOptions.push(rawUnfinishedTasks.map((task, index) => ({
         id: index,
         title: (task?.address || "Endereço não informado").substring(0, 24),
         description: `ID: ${task?.id}`.substring(0, 72)
-    }));
+    })));
+    }else{
+        taskListOptions.push(rawUnfinishedTasks);
+    }
+    
 
     taskListOptions.push(
         {
@@ -173,12 +161,10 @@ function showMenu(menuName) {
     const menu = menus[menuName];
 
     if (!menu) {
-        switch (menuName) {
-            case menuName.includes("confirma_nf"):
-                return showMenu("confirmacao_sucesso");
-            default:
-                return buildText(`Menu "${menuName}" não encontrado.`);
+        if (menuName.includes("confirmar_nf")) {
+            return showMenu("confirmacao_sucesso");
         }
+        return buildText(`Menu "${menuName}" não encontrado.`);
     }
 
     switch (menu.type) {
@@ -207,10 +193,10 @@ function showMenu(menuName) {
 // Extrai os títulos da da lista de objetos de opções e transforma em uma lista
 function formatNextOptionTitles(menuName) {
 
-    // Trata a entrada caso não inclua 'confirma_nf'
+    // Trata a entrada caso inclua 'confirmar_nf'
     if (!menus[menuName]) {
         switch (menuName) {
-            case menuName.includes("confirma_nf"):
+            case menuName.includes("confirmar_nf"):
                 return formatNextOptionTitles("confirmacao_sucesso");
             default:
                 return buildText(`Menu "${menuName}" não encontrado.`);
@@ -253,11 +239,11 @@ function processStateDirectly(ctx) {
 
     switch (ctx.input_type) { // Switch case para os tipos de entrada
         case 'text':
-            if (ctx.current_state === 'CONFIRMAR_NF_SUCESSO' || ctx.current_state === 'CONFIRMAR_NF_PENDENCIA' || ctx.current_state === 'CONFIRMAR_NF_INSUCESSO') {
-                return processarConfirmarNF(ctx);
-            } else if(ctx.current_state === 'INFORMAR_NF_SUCESSO' || ctx.current_state === 'INFORMAR_NF_PENDENCIA' || ctx.current_state === 'INFORMAR_NF_INSUCESSO'){
+            if(ctx.current_state === 'INFORMAR_NF_SUCESSO' || ctx.current_state === 'INFORMAR_NF_PENDENCIA' || ctx.current_state === 'INFORMAR_NF_INSUCESSO'){
                 return processarInformarNF(ctx);
-            }else {
+            }else if (ctx.current_state === 'INFORMAR_RECEBEDOR'){
+                return processarInformarRecebedor(ctx);
+            }else{
                 return opcaoInvalida(ctx);
             }
         case 'interactive':
@@ -279,11 +265,11 @@ function processStateDirectly(ctx) {
                     case 'CONFIRMAR_NF_SUCESSO':
                     case 'CONFIRMAR_NF_PENDENCIA':
                     case 'CONFIRMAR_NF_INSUCESSO':
-                        return naoEntendi(ctx); // States esperam inputType === text
+                        return processarConfirmarNF(ctx); // States esperam inputType === text
                     case 'ENVIAR_COMPROVANTE':
                         return naoEntendi(ctx); // States esperam inputType === image
                     case 'INFORMAR_RECEBEDOR':
-                        return processarInformarRecebedor(ctx);
+                        return naoEntendi(ctx); // State espera inputType === text
                     case 'RELATAR_PROBLEMA':
                         return processarRelatarProblema(ctx);
                     case 'SELECAO_PENDENCIA':
@@ -383,16 +369,17 @@ function processarMenuPrincipal(ctx) {
 
 
 function processarSelecaoEntregas(ctx) {
-    rawSelectedTask = parsedRawTasks[ctx.interactive_reply_id];
-    return {
-        next: 'CONFIRMACAO_ENTREGA',
-        reply: [
-            showMenu('confirmacao_entrega'),
-            buildText(`Endereço: ${rawSelectedTask.address}\nID: ${rawSelectedTask.id}`)
+  const selectedTask = ctx.task_list_options[ctx.interactive_reply_id];
+  return {
+    next: 'CONFIRMACAO_ENTREGA',
+      reply: [
+        showMenu('confirmacao_entrega'),
+        buildText(`Endereço: ${selectedTask.address}
+NF: ${selectedTask.nfe}`)
         ],
-        task_id: rawSelectedTask.id,
-        next_option_titles: formatNextOptionTitles('confirmacao_entrega')
-    }
+    task_id: selectedTask.id,
+    next_option_titles: formatNextOptionTitles('confirmacao_entrega')
+  }
 }
 
 
@@ -424,17 +411,23 @@ function processarRelatorioEntrega(ctx) {
         case 0:
             return {
                 next: 'INFORMAR_NF_SUCESSO',
-                reply: buildText("Por favor, informe o número da NF para continuar.")
+                reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),
+                    buildText("Por favor, digite o número para continuar.")
+                ]
             }
         case 1:
             return {
                 next: 'INFORMAR_NF_PENDENCIA',
-                reply: buildText("Por favor, informe o número da NF para continuar.")
+                reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),
+                    buildText("Por favor, digite o número para continuar.")
+                ]
             }
         case 2:
             return {
                 next: 'INFORMAR_NF_INSUCESSO',
-                reply: buildText("Por favor, informe o número da NF para continuar.")
+                reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),
+                    buildText("Por favor, digite o número para continuar.")
+                ]
             }
         case 3:
             return {
@@ -448,7 +441,7 @@ function processarRelatorioEntrega(ctx) {
 function processarInformarNF(ctx) {
 
     const nfDigitada = ctx.text.replace(/\D/g, "");
-    const nfDigitadaInfo = rawNf
+    const nfDigitadaInfo = Array.isArray(rawNf) ? rawNf.find(item => item.number === nfDigitada) : rawNf;
 
     if (nfDigitada === ctx.current_task_nf) {
         switch (ctx.current_state) {
@@ -457,11 +450,10 @@ function processarInformarNF(ctx) {
                     next: 'CONFIRMAR_NF_SUCESSO',
                     reply: [showMenu('confirmacao_sucesso'),
                         buildText(`Detalhes da nota
-                            Número: ${nfDigitadaInfo.number}
-                            Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
-                            Peso: ${String(nfDigitadaInfo.weight)}kg
-                            Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}
-                            `)
+    Número: ${nfDigitadaInfo.number}
+    Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
+    Peso: ${String(nfDigitadaInfo.weight)}kg
+    Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}`)
                     ],
                     nfe: nfDigitada,
                     next_option_titles: formatNextOptionTitles('confirmacao_sucesso')
@@ -471,11 +463,10 @@ function processarInformarNF(ctx) {
                     next: 'CONFIRMAR_NF_PENDENCIA',
                     reply: [showMenu('confirmacao_sucesso'),
                         buildText(`Detalhes da nota
-                            Número: ${nfDigitadaInfo.number}
-                            Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
-                            Peso: ${String(nfDigitadaInfo.weight)}kg
-                            Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}
-                            `)
+    Número: ${nfDigitadaInfo.number}
+    Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
+    Peso: ${String(nfDigitadaInfo.weight)}kg
+    Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}`)
                     ],
                     nfe: nfDigitada,
                     next_option_titles: formatNextOptionTitles('confirmacao_sucesso')
@@ -485,11 +476,10 @@ function processarInformarNF(ctx) {
                     next: 'CONFIRMAR_NF_INSUCESSO',
                     reply: [showMenu('confirmacao_sucesso'),
                         buildText(`Detalhes da nota
-                            Número: ${nfDigitadaInfo.number}
-                            Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
-                            Peso: ${String(nfDigitadaInfo.weight)}kg
-                            Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}
-                            `)
+    Número: ${nfDigitadaInfo.number}
+    Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
+    Peso: ${String(nfDigitadaInfo.weight)}kg
+    Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}`)
                     ],
                     nfe: nfDigitada,
                     next_option_titles: formatNextOptionTitles('confirmacao_sucesso')
@@ -533,8 +523,8 @@ function processarConfirmarNF(ctx) {
 
 function processarEnviarComprovante(ctx) {
     if (dadosComprovante.destinatario === ctx.current_raw_task.destinatario
-        && dadosComprovante.date === ctx.current_raw_task.date
-        && dadosComprovante.documento === ctx.current_raw_task.documento
+        && dadosComprovante.date === formatDate(ctx.current_raw_task.date)
+        && (dadosComprovante.nfe === ctx.current_raw_task.nfe || dadosComprovante.cte === ctx.current_raw_task.cte_code)
         && dadosComprovante.carimbo) {
         return {
             next: 'INFORMAR_RECEBEDOR',
@@ -557,7 +547,8 @@ function processarInformarRecebedor(ctx) {
             task_status: 2,
             recebedor: ctx.text,
             task_id: null,
-            window_end: nowISO()
+            window_end: nowISO(),
+            active: false
         }
     }
     return {
@@ -576,53 +567,38 @@ function processarRelatarProblema(ctx) {
 }
 
 function processarSelecionarTipoPendencia(ctx) {
-    if (ctx.input_type === 'interactive' && ctx.interactive_reply_id < 3) {
-        const tiposPendencia = ["avaria", "falta", "inversão"]
-        return {
-            next: 'DETALHES_PENDENCIA',
-            reply: showMenu('detalhes_pendencia'),
-            tipo_pendencia: tiposPendencia[ctx.interactive_reply_id],
-            next_option_titles: formatNextOptionTitles('detalhes_pendencia')
-        }
+    return {
+        next: 'DETALHES_PENDENCIA',
+        reply: showMenu('detalhes_pendencia'),
+        tipo_pendencia: ctx.interactive_reply_title,
+        next_option_titles: formatNextOptionTitles('detalhes_pendencia')
     }
 }
+
 
 function processarSelecionarCaracteristicaPendencia(ctx) {
-    if (ctx.input_type === 'interactive' && ctx.interactive_reply_id < 2) {
-        const caracteristicasPendencia = ["total", "parcial"]
-        return {
-            next: 'FINISHED',
-            reply: buildText(`Obrigado. o status da tarefa ${ctx.current_task_id} foi atualizado para "Pendência ${caracteristicasPendencia[ctx.interactive_reply_id]} do tipo: ${ctx.tipo_pendencia}`),
-            tipo_pendencia: caracteristicasPendencia[ctx.interactive_reply_id],
-            task_status: 3,
-            task_id: null,
-            window_end: nowISO()
-        }
+    return {
+        next: 'FINISHED',
+        reply: buildText(`Obrigado. o status da tarefa ${ctx.current_task_id} foi atualizado para "Pendência ${ctx.interactive_reply_title} do tipo: ${ctx.tipo_pendencia}`),
+        tipo_pendencia: ctx.tipo_pendencia + ctx.interactive_reply_title,
+        task_status: 3,
+        task_id: null,
+        window_end: nowISO()
     }
 }
+
 
 function processarSelecionarMotivoInsucesso(ctx) {
-
-    const motivos = [
-        "Comprovante Retido",
-        "Divergência Comercial",
-        "Endereço não localizado",
-        "Destinatário ausente",
-        "Recusa/Impossibilidade"
-    ];
-    const motivoIndex = ctx.interactive_reply_id;
-
-    if (motivoIndex >= 0 && motivoIndex < motivos.length) {
-        return {
-            next: 'FINISHED',
-            reply: buildText(`O status da tarefa ${ctx.current_task_id} foi atualizado para: "Insucesso por ${motivos[motivoIndex]}"`),
-            motivo_insucesso: motivos[motivoIndex],
-            task_status: 4,
-            task_id: null,
-            window_end: nowISO()
-        }
+    return {
+        next: 'FINISHED',
+        reply: buildText(`O status da tarefa ${ctx.current_task_id} foi atualizado para: "Insucesso por ${motivos[motivoIndex]}"`),
+        motivo_insucesso: ctx.interactive_reply_title,
+        task_status: 4,
+        task_id: null,
+        window_end: nowISO()
     }
 }
+
 
 
 // ==========================================
@@ -640,10 +616,10 @@ const context = {
     current_task_id: currentTaskId,
     current_raw_task: currentRawTask,
     task_list_options: taskListOptions,
-    parsed_raw_tasks: parsedRawTasks,
     address: currentRawTask?.address,
     task_id: currentTaskId || null,
     current_task_nf: currentRawTask?.nfe,
+    current_raw_nf: currentRawNf,
     tipo_pendencia: currentRawTask?.tipo_pendencia || null,
     caracteristica_pendencia: currentRawTask?.caracteristica_pendencia || null,
     motivo_insucesso: currentRawTask?.motivo_insucesso || null
@@ -715,7 +691,8 @@ return [{
             receiver_name: recebedor,
             tipo_pendencia: tipoPendencia,
             caracteristica_pendencia: caracteristicaPendencia,
-            motivo_insucesso: motivoInsucesso
+            motivo_insucesso: motivoInsucesso,
+            updated_at: nowISO()
         } : null,
         download_media: downloadMedia
     }
