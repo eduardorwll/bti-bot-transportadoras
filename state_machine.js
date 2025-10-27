@@ -662,7 +662,7 @@ if (retries >= 3) {
     result.active = false;
 }
 
-const downloadMedia = 'downloadMedia' in result ? true : false;
+const downloadMedia = 'download_media' in result ? true : false;
 const userReplyIsArray = Array.isArray(result.reply);
 
 // ==========================================
