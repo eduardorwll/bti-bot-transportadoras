@@ -12,7 +12,7 @@ const currentState = rawSession?.state || 'MENU_PRINCIPAL';
 const currentTaskId = rawSession?.task_id || null;
 const currentRawTask = Array.isArray(rawUnfinishedTasks) ? rawUnfinishedTasks.find(task => task.json.id === currentTaskId) : rawUnfinishedTasks !== null ? rawUnfinishedTasks : {};
 const currentOptionTitles = rawSession?.current_option_titles;
-const currentRawNf = currentTaskId !== null && Array.isArray(rawNf) ? rawNf.find(item => item.number === currentRawTask.nfe) : null;
+const currentRawNf = currentTaskId !== null && Array.isArray(rawNf) ? rawNf.find(item => item.number === currentRawTask.nfe) : rawNf !== null ? rawNf : null;
 
 const dicionario = $('Dicionario').first().json;
 const menus = dicionario.menus;
@@ -683,8 +683,8 @@ return [{
             updated_at: nowISO(),
             current_option_titles: nextOptionTitles
         },
-        task_update: nextTaskId ? {
-            id: nextTaskId,
+        task_update: {
+            id: currentTaskId,
             task_status: taskStatus,
             window_start: windowStart,
             window_end: windowEnd,
@@ -693,7 +693,7 @@ return [{
             caracteristica_pendencia: caracteristicaPendencia,
             motivo_insucesso: motivoInsucesso,
             updated_at: nowISO()
-        } : null,
+        },
         download_media: downloadMedia
     }
 }];
