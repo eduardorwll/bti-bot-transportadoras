@@ -4,13 +4,13 @@
 
 const parser = $('Parser numero/mensagem').first().json;
 const rawSession = $('Get last session').first().json || {}
-const rawActiveTasks = $('Get raw activeTasks').all();
+const rawActiveTasks = $('Get raw active tasks').all();
 const dadosComprovante = $('COMPROVANTE').first().json || {}
 
 const currentState = rawSession?.state || 'MENU_PRINCIPAL';
 const currentTaskId = rawSession?.taskId || null;
 const currentRawTask = rawActiveTasks?.find(task => task.json.id === currentTaskId)?.json || {}
-const currentOptionsTitles = rawSession?.currentOptionTitles
+const currentOptionTitles = rawSession?.current_option_titles
 
 const dicionario = $('Dicionario').first().json;
 const menus = dicionario.menus;
@@ -20,8 +20,8 @@ const inputType = parser.type;
 const text = (parser.text || '');
 
 // reply_list - Do webhook do Whatsapp (Já parseado)
-const interactiveReplyId = parser.interactive_reply_id;
-const interactiveReplyTitle = parser.interactive_reply_itle;
+const interactiveReplyId = parseInt(parser.interactive_reply_id);
+const interactiveReplyTitle = parser.interactive_reply_title;
 const interactiveReplyDescription = parser.interactive_reply_description;
 
 
@@ -50,8 +50,8 @@ const parsedRawTasks = rawActiveTasks.map(task => {
 function formatTaskListOptions(){
     let taskListOptions = parsedRawTasks.map((task, index) => ({
         id: index,
-        title: (task.address || "Endereço não informado").substring(0, 24),
-        description: `ID: ${task.id}`.substring(0, 72)
+        title: (task?.address || "Endereço não informado").substring(0, 24),
+        description: `ID: ${task?.id}`.substring(0, 72)
     }));
 
     taskListOptions.push(
@@ -186,7 +186,7 @@ function showMenu(menuName) {
                 return buildText(`Erro: opções inválidas no menu "${menuName}".`);
             }
 
-            return [buildList(menu.header, menu.body, options), nextOptionTitles];
+            return buildList(menu.header, menu.body, options);
         }
 
         default:
@@ -207,10 +207,14 @@ function formatNextOptionTitles(menuName) {
         }
     }
 
-    const nextOptionTitles = [];
-    menus[menuName].options.forEach((option) => (option.id !== 999 && option.id !== 998) ? nextOptionTitles.push(option.title) : null);
-
-    return nextOptionTitle;
+    let nextOptionTitles = [];
+    if(menus[menuName].options === 'taskList'){
+        nextOptionTitles = 'taskList';
+    }else{
+        menus[menuName].options.forEach((option) => (option.id !== 999 && option.id !== 998) ? nextOptionTitles.push(option.title) : null);
+    }
+    
+    return nextOptionTitles;
 }
 
 // ==========================================
@@ -230,22 +234,22 @@ function processStateDirectly(ctx) {
     // Retorno para o menu anterior
     if (ctx.interactiveReplyId === 998) {
         return {
-            next: ctx.currentState.toUppperCase(),
-            reply: showMenu(ctx.currentState.toLowerCase()),
-            nextOptionTitles: formatNextOptionTitles(ctx.currentState.toLowerCase())
+            next: ctx.current_state.toUppperCase(),
+            reply: showMenu(ctx.current_state.toLowerCase()),
+            next_option_titles: formatNextOptionTitles(ctx.current_state.toLowerCase())
         }
     }
 
-    switch (ctx.inputType) { // Switch case para os tipos de entrada
+    switch (ctx.input_type) { // Switch case para os tipos de entrada
         case 'text':
-            if (ctx.currentState === 'CONFIRMAR_NF_SUCESSO' || ctx.currentState === 'CONFIRMAR_NF_PENDENCIA' || ctx.currentState === 'CONFIRMAR_NF_INSUCESSO') {
+            if (ctx.current_state === 'CONFIRMAR_NF_SUCESSO' || ctx.current_state === 'CONFIRMAR_NF_PENDENCIA' || ctx.current_state === 'CONFIRMAR_NF_INSUCESSO') {
                 return processarConfirmarNF(ctx);
             } else {
                 return opcaoInvalida(ctx);
             }
         case 'interactive':
-            if (ctx.currentOptionTitles.includes(ctx.interactiveReplyTitle)) {
-                switch (ctx.currentState) {
+            if (ctx.current_option_titles.includes(ctx.interactive_reply_title) || ctx.current_option_titles === 'taskList') {
+                switch (ctx.current_state) {
                     case 'FINISHED':
                     case 'MENU_PRINCIPAL':
                         return processarMenuPrincipal(ctx);
@@ -280,9 +284,7 @@ function processStateDirectly(ctx) {
                     default:
                         return {
                             next: 'FINISHED',
-                            reply: [
-                                buildText("Estado não reconhecido.")
-                            ]
+                            reply: buildText("Estado não reconhecido.")
                         }
                 }
             } else {
@@ -290,7 +292,7 @@ function processStateDirectly(ctx) {
             }
 
         case 'image':
-            if (ctx.currentState === 'ENVIAR_COMPROVANTE') {
+            if (ctx.current_state === 'ENVIAR_COMPROVANTE') {
                 return processarEnviarComprovante(ctx);
             } else {
                 return naoEntendi(ctx);
@@ -347,7 +349,7 @@ function processarMenuPrincipal(ctx) {
                 next_option_titles: formatNextOptionTitles('selecao_entregas')
             }
         case 1:
-            if (ctx.current_task_id) {
+            if (ctx.current_task_id !== null) {
                 return {
                     next: 'RELATORIO_ENTREGA',
                     reply: showMenu('relatorio_entrega'),
@@ -597,7 +599,7 @@ const context = {
     interactive_reply_title: interactiveReplyTitle,
     interactive_reply_description: interactiveReplyDescription,
     text: text,
-    current_option_titles: currentOptionsTitles,
+    current_option_titles: currentOptionTitles,
     current_state: currentState,
     current_task_id: currentTaskId,
     current_raw_task: currentRawTask,
@@ -619,7 +621,7 @@ try {
         next: 'MENU_PRINCIPAL',
         reply: [buildText("Erro interno. Retornando ao menu principal."), showMenu('menu_principal')],
         active: true,
-        nextOptionTitles: formatNextOptionTitles('menu_principal')
+        next_option_titles: formatNextOptionTitles('menu_principal')
     }
 }
 
@@ -674,7 +676,7 @@ return [{
             task_status: taskStatus,
             window_start: windowStart,
             window_end: windowEnd,
-            recebedor: recebedor,
+            receiver_name: recebedor,
             tipo_pendencia: tipoPendencia,
             caracteristica_pendencia: caracteristicaPendencia,
             motivo_insucesso: motivoInsucesso
