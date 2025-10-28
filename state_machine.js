@@ -22,10 +22,6 @@ const currentState = rawSession?.state || 'MENU_PRINCIPAL';
 const currentTaskId = rawSession?.task_id || null;
 const currentOptionTitles = rawSession?.current_option_titles;
 
-// ==========================================
-// VARIÁVEIS PRINCIPAIS (o que realmente será retornado)
-// ==========================================
-
 // Tarefas e NFs (podem ser únicas ou múltiplas)
 const rawUnfinishedTasks = normalizeObj($('Get raw active tasks').all());
 const rawNf = normalizeObj($('Get NF from manifest id').all());
@@ -386,7 +382,9 @@ function processarMenuPrincipal(ctx) {
             if (ctx.current_task_id !== null) {
                 return {
                     next: 'RELATORIO_ENTREGA',
-                    reply: showMenu('relatorio_entrega'),
+                    reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),
+                buildText("Por favor, selecione a opção para continuar.")
+                ],
                     next_option_titles: formatNextOptionTitles('relatorio_entrega')
                 }
             } else {
@@ -404,7 +402,7 @@ function processarMenuPrincipal(ctx) {
 
 
 function processarSelecaoEntregas(ctx) {
-    const selectedTask = rawUnfinishedTasks === null ? null : Array.isArray(rawUnfinishedTasks) ? rawUnfinishedTasks[parseInt(ctx.interactive_reply_id)] : rawUnfinishedTasks;
+    const selectedTask = rawUnfinishedTasks === null ? null : Array.isArray(rawUnfinishedTasks) ? rawUnfinishedTasks[ctx.interactive_reply_id] : rawUnfinishedTasks;
     
     return {
         next: 'CONFIRMACAO_ENTREGA',
@@ -417,6 +415,7 @@ NF: ${selectedTask.nfe}`)
         next_option_titles: formatNextOptionTitles('confirmacao_entrega')
     }
 }
+
 
 
 function processarConfirmacaoEntrega(ctx) {
