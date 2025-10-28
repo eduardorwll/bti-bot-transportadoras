@@ -382,8 +382,8 @@ function processarMenuPrincipal(ctx) {
             if (ctx.current_task_id !== null) {
                 return {
                     next: 'RELATORIO_ENTREGA',
-                    reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),
-                buildText("Por favor, selecione a opção para continuar.")
+                    reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}. Por favor, selecione a opção abaixo para continuar.`),
+                showMenu('relatorio_entrega')
                 ],
                     next_option_titles: formatNextOptionTitles('relatorio_entrega')
                 }
