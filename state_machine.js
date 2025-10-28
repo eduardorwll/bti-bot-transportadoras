@@ -1,18 +1,42 @@
+function parsingObjetos(obj) {
+    const itens = obj;
+    // Verifica se é array válido
+    if (!Array.isArray(itens) || itens.length === 0) {
+        return 'dww';
+    }
+    
+    // Filtra objetos não vazios
+    const objetosValidos = itens.filter(item => 
+        item && typeof item === 'object' && Object.keys(item).length > 0
+    );
+    
+    if (objetosValidos.length === 0) {
+        return 'wdawd'; // [{}] ou todos objetos vazios
+    }
+    
+    if (objetosValidos.length === 1) {
+        return objetosValidos[0].json; // único objeto não vazio
+    }
+    
+    return 'a'; // mais de um objeto não vazio
+}
+
+
 // ==========================================
 // INICIALIZAÇÃO DE DADOS
 // ==========================================
 
 const parser = $('Parser numero/mensagem').first().json;
 const rawSession = $('Get last session').first().json || {}
-const rawUnfinishedTasks = Array.isArray($('Get raw active tasks')) ? $('Get raw active tasks').all() : $('Get raw active tasks') !== null ? $('Get raw active tasks').first().json : {};
+const rawUnfinishedTasks = parsingObjetos($('Get raw active tasks').all());
 const dadosComprovante = $('COMPROVANTE').first().json || {};
-const rawNf = Array.isArray($('Get NF from manifest id')) ? $('Get NF from manifest id').all() : $('Get NF from manifest id').first().json;
+const rawNf = parsingObjetos($('Get NF from manifest id').all());
 
 const currentState = rawSession?.state || 'MENU_PRINCIPAL';
 const currentTaskId = rawSession?.task_id || null;
-const currentRawTask = Array.isArray(rawUnfinishedTasks) ? rawUnfinishedTasks.find(task => task.json.id === currentTaskId) : rawUnfinishedTasks !== null ? rawUnfinishedTasks : {};
+const currentRawTask = rawUnfinishedTasks === null ? null : Array.isArray(rawUnfinishedTasks) ? rawUnfinishedTasks.find(task => task.json.id === currentTaskId) : rawUnfinishedTasks;
 const currentOptionTitles = rawSession?.current_option_titles;
-const currentRawNf = currentTaskId !== null && Array.isArray(rawNf) ? rawNf.find(item => item.number === currentRawTask.nfe) : rawNf !== null ? rawNf : null;
+const currentRawNf = rawNf === null ? null : Array.isArray(rawNf) ? rawNf.find(item => item.number === currentRawTask.nfe) : rawNf;
 
 const dicionario = $('Dicionario').first().json;
 const menus = dicionario.menus;
@@ -31,19 +55,23 @@ const interactiveReplyDescription = parser.interactive_reply_description;
 // TRANSFORMA AS TAREFAS EM UM MENU 
 // ==========================================
 
-function formatTaskListOptions(){
-    let taskListOptions = []
-    if (rawUnfinishedTasks === null){
-    }else if(Array.isArray(rawUnfinishedTasks)){
+function formatTaskListOptions() {
+    let taskListOptions = [];
+    if (rawUnfinishedTasks === null) {
+    } else if (Array.isArray(rawUnfinishedTasks)) {
         taskListOptions.push(rawUnfinishedTasks.map((task, index) => ({
-        id: index,
-        title: (task?.address || "Endereço não informado").substring(0, 24),
-        description: `ID: ${task?.id}`.substring(0, 72)
-    })));
-    }else{
-        taskListOptions.push(rawUnfinishedTasks);
+            id: index,
+            title: (task?.address || "Endereço não informado"),
+            description: `ID: ${task?.id}`
+        })));
+    } else {
+        taskListOptions.push({
+            id: 0,
+            title: rawUnfinishedTasks.address,
+            description: `ID: ${rawUnfinishedTasks.id}`
+        });
     }
-    
+
 
     taskListOptions.push(
         {
@@ -101,10 +129,10 @@ function buildList(header, body, rows) {
             type: "list",
             header: {
                 type: "text",
-                text: header.substring(0, 60)
+                text: header
             },
             body: {
-                text: (body || " ").substring(0, 1024)
+                text: (body || " ")
             },
             action: {
                 button: "Opções",
@@ -112,8 +140,8 @@ function buildList(header, body, rows) {
                     title: "Menu",
                     rows: rows.map(row => ({
                         id: String(row.id),
-                        title: row.title.substring(0, 24),
-                        description: row.description ? row.description.substring(0, 72) : ""
+                        title: row.title,
+                        description: row.description ? row.description : ""
                     }))
                 }]
             }
@@ -204,12 +232,12 @@ function formatNextOptionTitles(menuName) {
     }
 
     let nextOptionTitles = [];
-    if(menus[menuName].options === 'taskList'){
+    if (menus[menuName].options === 'taskList') {
         nextOptionTitles = 'taskList';
-    }else{
+    } else {
         menus[menuName].options.forEach((option) => (option.id !== 999 && option.id !== 998) ? nextOptionTitles.push(option.title) : null);
     }
-    
+
     return nextOptionTitles;
 }
 
@@ -239,11 +267,11 @@ function processStateDirectly(ctx) {
 
     switch (ctx.input_type) { // Switch case para os tipos de entrada
         case 'text':
-            if(ctx.current_state === 'INFORMAR_NF_SUCESSO' || ctx.current_state === 'INFORMAR_NF_PENDENCIA' || ctx.current_state === 'INFORMAR_NF_INSUCESSO'){
+            if (ctx.current_state === 'INFORMAR_NF_SUCESSO' || ctx.current_state === 'INFORMAR_NF_PENDENCIA' || ctx.current_state === 'INFORMAR_NF_INSUCESSO') {
                 return processarInformarNF(ctx);
-            }else if (ctx.current_state === 'INFORMAR_RECEBEDOR'){
+            } else if (ctx.current_state === 'INFORMAR_RECEBEDOR') {
                 return processarInformarRecebedor(ctx);
-            }else{
+            } else {
                 return opcaoInvalida(ctx);
             }
         case 'interactive':
@@ -369,17 +397,18 @@ function processarMenuPrincipal(ctx) {
 
 
 function processarSelecaoEntregas(ctx) {
-  const selectedTask = ctx.task_list_options[ctx.interactive_reply_id];
-  return {
-    next: 'CONFIRMACAO_ENTREGA',
-      reply: [
-        showMenu('confirmacao_entrega'),
-        buildText(`Endereço: ${selectedTask.address}
+    const selectedTask = rawUnfinishedTasks === null ? null : Array.isArray(rawUnfinishedTasks) ? rawUnfinishedTasks[parseInt(ctx.interactive_reply_id)] : rawUnfinishedTasks;
+    
+    return {
+        next: 'CONFIRMACAO_ENTREGA',
+        reply: [
+            showMenu('confirmacao_entrega'),
+            buildText(`Endereço: ${selectedTask.address}
 NF: ${selectedTask.nfe}`)
         ],
-    task_id: selectedTask.id,
-    next_option_titles: formatNextOptionTitles('confirmacao_entrega')
-  }
+        task_id: selectedTask.id,
+        next_option_titles: formatNextOptionTitles('confirmacao_entrega')
+    }
 }
 
 
@@ -412,21 +441,21 @@ function processarRelatorioEntrega(ctx) {
             return {
                 next: 'INFORMAR_NF_SUCESSO',
                 reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),
-                    buildText("Por favor, digite o número para continuar.")
+                buildText("Por favor, digite o número para continuar.")
                 ]
             }
         case 1:
             return {
                 next: 'INFORMAR_NF_PENDENCIA',
                 reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),
-                    buildText("Por favor, digite o número para continuar.")
+                buildText("Por favor, digite o número para continuar.")
                 ]
             }
         case 2:
             return {
                 next: 'INFORMAR_NF_INSUCESSO',
                 reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),
-                    buildText("Por favor, digite o número para continuar.")
+                buildText("Por favor, digite o número para continuar.")
                 ]
             }
         case 3:
@@ -449,7 +478,7 @@ function processarInformarNF(ctx) {
                 return {
                     next: 'CONFIRMAR_NF_SUCESSO',
                     reply: [showMenu('confirmacao_sucesso'),
-                        buildText(`Detalhes da nota
+                    buildText(`Detalhes da nota
     Número: ${nfDigitadaInfo.number}
     Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
     Peso: ${String(nfDigitadaInfo.weight)}kg
@@ -462,7 +491,7 @@ function processarInformarNF(ctx) {
                 return {
                     next: 'CONFIRMAR_NF_PENDENCIA',
                     reply: [showMenu('confirmacao_sucesso'),
-                        buildText(`Detalhes da nota
+                    buildText(`Detalhes da nota
     Número: ${nfDigitadaInfo.number}
     Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
     Peso: ${String(nfDigitadaInfo.weight)}kg
@@ -475,7 +504,7 @@ function processarInformarNF(ctx) {
                 return {
                     next: 'CONFIRMAR_NF_INSUCESSO',
                     reply: [showMenu('confirmacao_sucesso'),
-                        buildText(`Detalhes da nota
+                    buildText(`Detalhes da nota
     Número: ${nfDigitadaInfo.number}
     Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}
     Peso: ${String(nfDigitadaInfo.weight)}kg
@@ -543,7 +572,7 @@ function processarInformarRecebedor(ctx) {
     if (ctx.input_type === 'text') {
         return {
             next: 'FINISHED',
-            reply: buildText(`Obrigado, status da tarefa: ${ctx.current_task_id} atualizado para "Sucesso"!`),
+            reply: buildText(`Obrigado, status da tarefa ${ctx.current_task_id} foi atualizado para "Sucesso"!`),
             task_status: 2,
             recebedor: ctx.text,
             task_id: null,
@@ -643,16 +672,16 @@ try {
 const nextState = result.next || 'MENU_PRINCIPAL';
 const retries = result.inc_retry ? (rawSession.retries || 0) + 1 : 0;
 const active = 'active' in result ? result.active : true;
-const nextTaskId = 'task_id' in result ? result.task_id : currentTaskId;
+const nextTaskId = 'task_id' in result ? result.task_id : currentTaskId ? currentTaskId : null;
 const nextOptionTitles = 'next_option_titles' in result ? result.next_option_titles : null;
 
-const taskStatus = 'task_status' in result ? result.task_status : currentRawTask.task_status;
-const windowStart = 'window_start' in result ? result.window_start : currentRawTask.window_start;
-const windowEnd = 'window_end' in result ? result.window_end : currentRawTask.window_end;
-const recebedor = 'recebedor' in result ? result.recebedor : currentRawTask.recebedor;
-const tipoPendencia = 'tipo_pendencia' in result ? result.tipo_pendencia : currentRawTask.tipo_pendencia;
-const caracteristicaPendencia = 'caracteristica_pendencia' in result ? result.caracteristica_pendencia : currentRawTask.caracteristica_pendencia;
-const motivoInsucesso = 'motivo_insucesso' in result ? result.motivo_insucesso : currentRawTask.motivo_insucesso;
+const taskStatus = 'task_status' in result ? result.task_status : currentRawTask ? currentRawTask.task_status : null;
+const windowStart = 'window_start' in result ? result.window_start : currentRawTask ? currentRawTask.window_start : null;
+const windowEnd = 'window_end' in result ? result.window_end : currentRawTask ? currentRawTask.window_end : null;
+const recebedor = 'recebedor' in result ? result.recebedor : currentRawTask ? currentRawTask.recebedor : null;
+const tipoPendencia = 'tipo_pendencia' in result ? result.tipo_pendencia : currentRawTask ? currentRawTask.tipo_pendencia : null;
+const caracteristicaPendencia = 'caracteristica_pendencia' in result ? result.caracteristica_pendencia : currentRawTask ? currentRawTask.caracteristica_pendencia : null;
+const motivoInsucesso = 'motivo_insucesso' in result ? result.motivo_insucesso : currentRawTask ? currentRawTask.motivo_insucesso : null;
 
 
 // Verifica o número de tentativas e cancela a sessão caso >= 3

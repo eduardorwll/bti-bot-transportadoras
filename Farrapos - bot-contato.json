@@ -1,0 +1,1472 @@
+{
+  "name": "Farrapos - bot-contato",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const msg = $json[\"body\"][\"entry\"][\"0\"][\"changes\"][\"0\"][\"value\"][\"messages\"][\"0\"] || {};\nconst text = (msg.text?.body || \"\").trim();\n\nconst interactiveReplyId = msg.interactive?.list_reply?.id ?? null;\nconst interactiveReplyTitle = msg.interactive?.list_reply?.title ?? null;\nconst interactiveReplyDescription = msg.interactive?.list_reply?.description ?? null;\n\nconst rawNumber = msg.from || \"\";\nlet parsedPhoneNumber = rawNumber.replace(/[^\\d]/g, \"\");\n\nif (parsedPhoneNumber.length === 12) {\n  parsedPhoneNumber = parsedPhoneNumber.slice(0,4) + \"9\" + parsedPhoneNumber.slice(4);\n}\nreturn [{ json: { \n  parsed_phone_number: `${parsedPhoneNumber}`,\n  message_id: msg.id,\n  type: msg.type,\n  text: text.toUpperCase(),\n  interactive_reply_id: interactiveReplyId,\n  interactive_reply_title: interactiveReplyTitle,\n  interactive_reply_description: interactiveReplyDescription\n  } \n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "2bd1eabe-08d3-4d91-b3e8-941251892472",
+      "name": "Parser numero/mensagem"
+    },
+    {
+      "parameters": {
+        "url": "https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/wa_session",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "wa_id",
+              "value": "=eq.{{ $json.parsed_phone_number }}"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            },
+            {
+              "name": "order",
+              "value": "updated_at.desc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        0
+      ],
+      "id": "c164dab8-4d84-47e6-9ab5-c47dcd39cd1e",
+      "name": "Get last session",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v22.0/764981153363033/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $('Parser numero/mensagem').item.json.parsedPhoneNumber }}\",\n  \"type\": \"text\",\n  \"text\": {\n    \"body\": \"Seu número não está registrado.\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1344,
+        448
+      ],
+      "id": "d9374fbd-ab35-40fd-95da-d061737fbaab",
+      "name": "Número não está registrado",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "6DyQbUy3Ty2nyzEV",
+          "name": "Token Rewell"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2d342224-5770-481d-bd86-8bb62b2882a7",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        240
+      ],
+      "id": "d04a4f2f-a361-4287-8353-53a3739351e4",
+      "name": "Número registrado?"
+    },
+    {
+      "parameters": {
+        "content": "## Número não existe no banco de dados, cancela a consulta\n",
+        "height": 272,
+        "width": 368,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        352
+      ],
+      "id": "bfc3fc6c-84cc-4bf8-b2f5-7e3f626a25bf",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c5db1e13-4141-4556-a02e-b549b9180b77",
+              "leftValue": "={{ $('Get last session').first().json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "1eec921e-b4da-4e05-97e9-eb6966961379",
+      "name": "First Session?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9d821757-2622-4945-b5d8-87e29193bf9d",
+              "leftValue": "={{ $('Get last session').item.json.active }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "427a8d5b-14e7-46e1-bcf3-0898f4be7a66",
+              "leftValue": "={{ $('Get last session').item.json.state }}",
+              "rightValue": "FINISHED",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1376,
+        -64
+      ],
+      "id": "016ee7ab-70f8-40d1-b176-57877cef671a",
+      "name": "Atendimento em andamento?"
+    },
+    {
+      "parameters": {
+        "content": "## Inicia o menu inicial\n",
+        "height": 224,
+        "width": 480,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        48
+      ],
+      "id": "896fb4ac-87bb-4656-bc02-6657945893cd",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v22.0/764981153363033/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('Parser numero/mensagem').item.json.parsed_phone_number }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"list\",\n    \"header\": {\n      \"type\": \"text\",\n      \"text\": \"Menu principal: \"\n    },\n    \"body\": {\n      \"text\": \"Selecione uma das opções abaixo para continuar:\"\n    },\n    \"action\": {\n      \"button\": \"Selecionar\",\n      \"sections\": [\n        {\n          \"title\": \"Opções de Atendimento\",\n          \"rows\": [\n        { \"id\": 0, \"title\": \"Entregas\", \"description\": \"Ver e escolher entrega.\" },\n        { \"id\": 1, \"title\": \"Status\", \"description\": \"Atualizar status\" },\n        { \"id\": 999, \"title\": \"Cancelar\", \"description\": \"Cancelar atendimento\" }\n      ]\n        }\n      ]\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2224,
+        112
+      ],
+      "id": "cd2a3884-7926-49b6-b2e5-3e5f857788a2",
+      "name": "Start menu",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "6DyQbUy3Ty2nyzEV",
+          "name": "Token Rewell"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "wa_session",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "wa_id",
+              "fieldValue": "={{ $('Parser numero/mensagem').item.json.parsed_phone_number }}"
+            },
+            {
+              "fieldId": "state",
+              "fieldValue": "=MENU_PRINCIPAL"
+            },
+            {
+              "fieldId": "employee_id",
+              "fieldValue": "={{ $('Get employee info').item.json.id }}"
+            },
+            {
+              "fieldId": "context",
+              "fieldValue": "={{ \n{\n\"name\":$('Get employee info').item.json.name,\n\"plate\":$json.plate\n}\n}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1696,
+        128
+      ],
+      "id": "f7cb3d9c-c14a-41a6-b299-bf3e9c0be714",
+      "name": "Start first session",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "wa_session",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "employee_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Get last session').item.json.employee_id }}"
+            },
+            {
+              "keyName": "state",
+              "condition": "eq",
+              "keyValue": "FINISHED"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "state",
+              "fieldValue": "MENU_PRINCIPAL"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ DateTime.now() }}"
+            },
+            {
+              "fieldId": "retries",
+              "fieldValue": "0"
+            },
+            {
+              "fieldId": "active",
+              "fieldValue": "={{ true }}"
+            },
+            {
+              "fieldId": "current_option_titles",
+              "fieldValue": "={{ [\"Entregas\",\"Status\"] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        -32
+      ],
+      "id": "4a582fa2-d299-410a-b380-b45f5a4b277d",
+      "name": "Start new session",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function parsingObjetos(obj) {\n    const itens = obj;\n    // Verifica se é array válido\n    if (!Array.isArray(itens) || itens.length === 0) {\n        return 'dww';\n    }\n    \n    // Filtra objetos não vazios\n    const objetosValidos = itens.filter(item => \n        item && typeof item === 'object' && Object.keys(item).length > 0\n    );\n    \n    if (objetosValidos.length === 0) {\n        return 'wdawd'; // [{}] ou todos objetos vazios\n    }\n    \n    if (objetosValidos.length === 1) {\n        return objetosValidos[0].json; // único objeto não vazio\n    }\n    \n    return 'a'; // mais de um objeto não vazio\n}\n\n\n// ==========================================\n// INICIALIZAÇÃO DE DADOS\n// ==========================================\n\nconst parser = $('Parser numero/mensagem').first().json;\nconst rawSession = $('Get last session').first().json || {}\nconst rawUnfinishedTasks = parsingObjetos($('Get raw active tasks').all());\nconst dadosComprovante = $('COMPROVANTE').first().json || {};\nconst rawNf = parsingObjetos($('Get NF from manifest id').all());\n\nconst currentState = rawSession?.state || 'MENU_PRINCIPAL';\nconst currentTaskId = rawSession?.task_id || null;\nconst currentRawTask = rawUnfinishedTasks === null ? null : Array.isArray(rawUnfinishedTasks) ? rawUnfinishedTasks.find(task => task.json.id === currentTaskId) : rawUnfinishedTasks;\nconst currentOptionTitles = rawSession?.current_option_titles;\nconst currentRawNf = rawNf === null ? null : Array.isArray(rawNf) ? rawNf.find(item => item.number === currentRawTask.nfe) : rawNf;\n\nconst dicionario = $('Dicionario').first().json;\nconst menus = dicionario.menus;\n\nconst waId = parser.parsed_phone_number;\nconst inputType = parser.type;\nconst text = (parser.text || '');\n\n// reply_list - Do webhook do Whatsapp (Já parseado)\nconst interactiveReplyId = parseInt(parser.interactive_reply_id);\nconst interactiveReplyTitle = parser.interactive_reply_title;\nconst interactiveReplyDescription = parser.interactive_reply_description;\n\n\n// ==========================================\n// TRANSFORMA AS TAREFAS EM UM MENU \n// ==========================================\n\nfunction formatTaskListOptions() {\n    let taskListOptions = [];\n    if (rawUnfinishedTasks === null) {\n    } else if (Array.isArray(rawUnfinishedTasks)) {\n        taskListOptions.push(rawUnfinishedTasks.map((task, index) => ({\n            id: index,\n            title: (task?.address || \"Endereço não informado\"),\n            description: `ID: ${task?.id}`\n        })));\n    } else {\n        taskListOptions.push({\n            id: 0,\n            title: rawUnfinishedTasks.address,\n            description: `ID: ${rawUnfinishedTasks.id}`\n        });\n    }\n\n\n    taskListOptions.push(\n        {\n            id: 998,\n            title: \"↩️ Voltar\",\n            description: \"Retornar ao menu principal\"\n        },\n        {\n            id: 999,\n            title: \"❌ Cancelar\",\n            description: \"Cancelar atendimento\"\n        }\n    );\n\n    return taskListOptions;\n}\n\nconst taskListOptions = formatTaskListOptions()\n\n\n// ==========================================\n// FUNÇÕES UTILITÁRIAS\n// ==========================================\n\nfunction nowISO() {\n    return new Date().toISOString();\n}\n\nfunction formatDate(dataTimestamp) {\n    const data = new Date(dataTimestamp);\n    return data.toLocaleDateString('pt-BR');\n}\n\n// ==========================================\n// CONSTRUTORES DE MENSAGENS WHATSAPP\n// ==========================================\n\nfunction buildText(body) {\n    return {\n        messaging_product: \"whatsapp\",\n        recipient_type: \"individual\",\n        to: waId,\n        type: \"text\",\n        text: { body }\n    }\n}\n\nfunction buildList(header, body, rows) {\n    return {\n        messaging_product: \"whatsapp\",\n        recipient_type: \"individual\",\n        to: waId,\n        type: \"interactive\",\n        interactive: {\n            type: \"list\",\n            header: {\n                type: \"text\",\n                text: header\n            },\n            body: {\n                text: (body || \" \")\n            },\n            action: {\n                button: \"Opções\",\n                sections: [{\n                    title: \"Menu\",\n                    rows: rows.map(row => ({\n                        id: String(row.id),\n                        title: row.title,\n                        description: row.description ? row.description : \"\"\n                    }))\n                }]\n            }\n        }\n    }\n}\n\nfunction buildGMapsButton(lat, long) {\n    return {\n        messaging_product: \"whatsapp\",\n        recipient_type: \"individual\",\n        to: waId,\n        type: \"interactive\",\n        interactive: {\n            type: \"cta_url\",\n            header: {\n                type: \"image\",\n                image: {\n                    link: \"https://imgs.search.brave.com/1fpCuNTA-nXXZ4pN036omMc5vZ6jAehjLTlnkIIMr1I/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjE5/MDkzNjY0Mi9waG90/by90aGUtZ29vZ2xl/LW1hcHMtbG9nby1h/cHBlYXJzLW9uLWEt/c21hcnRwaG9uZS1z/Y3JlZW4taW4tdGhp/cy1pbGx1c3RyYXRp/b24tcGhvdG8taW4t/cmVuby11bml0ZWQu/anBnP3M9NjEyeDYx/MiZ3PTAmaz0yMCZj/PUNnNzg2U1l2TkJv/YzU4WUNpWUdhaVZS/ZG9MX2ZDNHdtQ2ZB/bVl4ek80akU9\"\n                }\n            },\n            body: {\n                text: `Status da tarefa ${currentTaskId} alterado para: \"Em andamento\"`\n            },\n            action: {\n                name: \"cta_url\",\n                parameters: {\n                    display_text: \"Abrir no Google Maps\",\n                    url: `https://www.google.com/maps/search/?api=1&query=${lat},${long}`\n                }\n            },\n            footer: {\n                text: \"Clique abaixo para abrir a localização no Google Maps.\"\n            }\n        }\n    }\n}\n\n// ==========================================\n// MENUS\n// ==========================================\n\nfunction showMenu(menuName) {\n\n    const menu = menus[menuName];\n\n    if (!menu) {\n        if (menuName.includes(\"confirmar_nf\")) {\n            return showMenu(\"confirmacao_sucesso\");\n        }\n        return buildText(`Menu \"${menuName}\" não encontrado.`);\n    }\n\n    switch (menu.type) {\n        case 'text':\n            return buildText(menu.content);\n\n        case 'list': {\n            let options = menu.options;\n\n            if (options === 'taskList') {\n                options = taskListOptions;\n            }\n\n            if (!Array.isArray(options)) {\n                return buildText(`Erro: opções inválidas no menu \"${menuName}\".`);\n            }\n\n            return buildList(menu.header, menu.body, options);\n        }\n\n        default:\n            return buildText(\"Tipo de menu não suportado\");\n    }\n}\n\n// Extrai os títulos da da lista de objetos de opções e transforma em uma lista\nfunction formatNextOptionTitles(menuName) {\n\n    // Trata a entrada caso inclua 'confirmar_nf'\n    if (!menus[menuName]) {\n        switch (menuName) {\n            case menuName.includes(\"confirmar_nf\"):\n                return formatNextOptionTitles(\"confirmacao_sucesso\");\n            default:\n                return buildText(`Menu \"${menuName}\" não encontrado.`);\n        }\n    }\n\n    let nextOptionTitles = [];\n    if (menus[menuName].options === 'taskList') {\n        nextOptionTitles = 'taskList';\n    } else {\n        menus[menuName].options.forEach((option) => (option.id !== 999 && option.id !== 998) ? nextOptionTitles.push(option.title) : null);\n    }\n\n    return nextOptionTitles;\n}\n\n// ==========================================\n// MÁQUINA DE ESTADOS - PROCESSAMENTO\n// ==========================================\n\nfunction processStateDirectly(ctx) {\n    // Cancelamento da sessão\n    if (ctx.interactive_reply_id === 999) {\n        return {\n            next: 'FINISHED',\n            reply: showMenu('cancelamento'),\n            active: false,\n            next_option_titles: null\n        }\n    }\n\n    // Retorno para o menu anterior\n    if (ctx.interactive_reply_id === 998) {\n        return {\n            next: 'MENU_PRINCIPAL',\n            reply: showMenu('menu_principal'),\n            next_option_titles: formatNextOptionTitles('menu_principal')\n        }\n    }\n\n    switch (ctx.input_type) { // Switch case para os tipos de entrada\n        case 'text':\n            if (ctx.current_state === 'INFORMAR_NF_SUCESSO' || ctx.current_state === 'INFORMAR_NF_PENDENCIA' || ctx.current_state === 'INFORMAR_NF_INSUCESSO') {\n                return processarInformarNF(ctx);\n            } else if (ctx.current_state === 'INFORMAR_RECEBEDOR') {\n                return processarInformarRecebedor(ctx);\n            } else {\n                return opcaoInvalida(ctx);\n            }\n        case 'interactive':\n            if (ctx.current_option_titles.includes(ctx.interactive_reply_title) || ctx.current_option_titles === 'taskList') {\n                switch (ctx.current_state) {\n                    case 'FINISHED':\n                    case 'MENU_PRINCIPAL':\n                        return processarMenuPrincipal(ctx);\n                    case 'SELECAO_ENTREGAS':\n                        return processarSelecaoEntregas(ctx);\n                    case 'CONFIRMACAO_ENTREGA':\n                        return processarConfirmacaoEntrega(ctx);\n                    case 'RELATORIO_ENTREGA':\n                        return processarRelatorioEntrega(ctx);\n                    case 'INFORMAR_NF_SUCESSO':\n                    case 'INFORMAR_NF_PENDENCIA':\n                    case 'INFORMAR_NF_INSUCESSO':\n                        return naoEntendi(ctx); // States esperam inputType === text\n                    case 'CONFIRMAR_NF_SUCESSO':\n                    case 'CONFIRMAR_NF_PENDENCIA':\n                    case 'CONFIRMAR_NF_INSUCESSO':\n                        return processarConfirmarNF(ctx); // States esperam inputType === text\n                    case 'ENVIAR_COMPROVANTE':\n                        return naoEntendi(ctx); // States esperam inputType === image\n                    case 'INFORMAR_RECEBEDOR':\n                        return naoEntendi(ctx); // State espera inputType === text\n                    case 'RELATAR_PROBLEMA':\n                        return processarRelatarProblema(ctx);\n                    case 'SELECAO_PENDENCIA':\n                        return processarSelecionarTipoPendencia(ctx);\n                    case 'DETALHES_PENDENCIA':\n                        return processarSelecionarCaracteristicaPendencia(ctx);\n                    case 'SELECAO_MOTIVO_INSUCESSO':\n                        return processarSelecionarMotivoInsucesso(ctx);\n\n                    // FALLBACK CASO STATE NÃO SEJA RECONHECIDO\n                    default:\n                        return {\n                            next: 'FINISHED',\n                            reply: buildText(\"Estado não reconhecido.\")\n                        }\n                }\n            } else {\n                return opcaoInvalida(ctx)\n            }\n\n        case 'image':\n            if (ctx.current_state === 'ENVIAR_COMPROVANTE') {\n                return processarEnviarComprovante(ctx);\n            } else {\n                return naoEntendi(ctx);\n            }\n\n        // FALLBACK CASO TIPO DE ENTRADA NÃO SEJA RECONHECIDO\n        default:\n            return naoEntendi(ctx);\n    }\n}\n\n// ==========================================\n// FUNÇÕES DE FALLBACK\n// ==========================================\n\n// Tipo de entrada compatível mas resposta invalidada\nfunction naoEntendi(ctx) {\n    return {\n        next: ctx.current_state,\n        reply: [\n            buildText('Não entendi, responda novamente.'),\n            showMenu(ctx.current_state.toLowerCase())\n        ],\n        inc_retry: true,\n        next_option_titles: formatNextOptionTitles(ctx.current_state.toLowerCase())\n    }\n}\n\n// Opção não existe no menu\nfunction opcaoInvalida(ctx) {\n    return {\n        next: ctx.current_state,\n        reply: [\n            buildText('Opção inválida, escolha do menu.'),\n            showMenu(ctx.current_state.toLowerCase())\n        ],\n        inc_retry: true,\n        next_option_titles: formatNextOptionTitles(ctx.current_state.toLowerCase())\n    }\n}\n\n\n// ==========================================\n// PROCESSADORES DE ESTADO\n// ==========================================\n\nfunction processarMenuPrincipal(ctx) {\n\n    switch (ctx.interactive_reply_id) {\n        case 0:\n            return {\n                next: 'SELECAO_ENTREGAS',\n                reply: showMenu('selecao_entregas'),\n                next_option_titles: formatNextOptionTitles('selecao_entregas')\n            }\n        case 1:\n            if (ctx.current_task_id !== null) {\n                return {\n                    next: 'RELATORIO_ENTREGA',\n                    reply: showMenu('relatorio_entrega'),\n                    next_option_titles: formatNextOptionTitles('relatorio_entrega')\n                }\n            } else {\n                return {\n                    next: 'SELECAO_ENTREGAS',\n                    reply: [\n                        buildText('Nenhuma tarefa em andamento, selecione do menu a seguir:'),\n                        showMenu('selecao_entregas'),\n                    ],\n                    next_option_titles: formatNextOptionTitles('selecao_entregas')\n                }\n            }\n    }\n}\n\n\nfunction processarSelecaoEntregas(ctx) {\n    const selectedTask = rawUnfinishedTasks === null ? null : Array.isArray(rawUnfinishedTasks) ? rawUnfinishedTasks[parseInt(ctx.interactive_reply_id)] : rawUnfinishedTasks;\n    \n    return {\n        next: 'CONFIRMACAO_ENTREGA',\n        reply: [\n            showMenu('confirmacao_entrega'),\n            buildText(`Endereço: ${selectedTask.address}\nNF: ${selectedTask.nfe}`)\n        ],\n        task_id: selectedTask.id,\n        next_option_titles: formatNextOptionTitles('confirmacao_entrega')\n    }\n}\n\n\nfunction processarConfirmacaoEntrega(ctx) {\n\n    switch (ctx.interactive_reply_id) {\n        case 0:\n            return {\n                next: 'FINISHED',\n                reply: buildGMapsButton(ctx.current_raw_task.latitude, ctx.current_raw_task.longitude),\n                task_status: 1,\n                window_start: nowISO(),\n                active: false\n            }\n        case 1:\n            return {\n                next: 'SELECAO_ENTREGAS',\n                reply: showMenu('selecao_entregas'),\n                task_id: null,\n                next_option_titles: formatNextOptionTitles('selecao_entregas')\n            }\n    }\n}\n\n\nfunction processarRelatorioEntrega(ctx) {\n\n    switch (ctx.interactive_reply_id) {\n        case 0:\n            return {\n                next: 'INFORMAR_NF_SUCESSO',\n                reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),\n                buildText(\"Por favor, digite o número para continuar.\")\n                ]\n            }\n        case 1:\n            return {\n                next: 'INFORMAR_NF_PENDENCIA',\n                reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),\n                buildText(\"Por favor, digite o número para continuar.\")\n                ]\n            }\n        case 2:\n            return {\n                next: 'INFORMAR_NF_INSUCESSO',\n                reply: [buildText(`A  tarefa selecionada atualmente é vinculada a NF: ${ctx.current_raw_task.nfe}`),\n                buildText(\"Por favor, digite o número para continuar.\")\n                ]\n            }\n        case 3:\n            return {\n                next: 'SELECAO_ENTREGAS',\n                reply: showMenu('selecao_entregas'),\n                next_option_titles: formatNextOptionTitles('selecao_entregas')\n            }\n    }\n}\n\nfunction processarInformarNF(ctx) {\n\n    const nfDigitada = ctx.text.replace(/\\D/g, \"\");\n    const nfDigitadaInfo = Array.isArray(rawNf) ? rawNf.find(item => item.number === nfDigitada) : rawNf;\n\n    if (nfDigitada === ctx.current_task_nf) {\n        switch (ctx.current_state) {\n            case 'INFORMAR_NF_SUCESSO':\n                return {\n                    next: 'CONFIRMAR_NF_SUCESSO',\n                    reply: [showMenu('confirmacao_sucesso'),\n                    buildText(`Detalhes da nota\n    Número: ${nfDigitadaInfo.number}\n    Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}\n    Peso: ${String(nfDigitadaInfo.weight)}kg\n    Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}`)\n                    ],\n                    nfe: nfDigitada,\n                    next_option_titles: formatNextOptionTitles('confirmacao_sucesso')\n                }\n            case 'INFORMAR_NF_PENDENCIA':\n                return {\n                    next: 'CONFIRMAR_NF_PENDENCIA',\n                    reply: [showMenu('confirmacao_sucesso'),\n                    buildText(`Detalhes da nota\n    Número: ${nfDigitadaInfo.number}\n    Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}\n    Peso: ${String(nfDigitadaInfo.weight)}kg\n    Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}`)\n                    ],\n                    nfe: nfDigitada,\n                    next_option_titles: formatNextOptionTitles('confirmacao_sucesso')\n                }\n            case 'INFORMAR_NF_INSUCESSO':\n                return {\n                    next: 'CONFIRMAR_NF_INSUCESSO',\n                    reply: [showMenu('confirmacao_sucesso'),\n                    buildText(`Detalhes da nota\n    Número: ${nfDigitadaInfo.number}\n    Quantidade de volumes: ${String(nfDigitadaInfo.volume_count)}\n    Peso: ${String(nfDigitadaInfo.weight)}kg\n    Data de emissão: ${formatDate(nfDigitadaInfo.issue_date)}`)\n                    ],\n                    nfe: nfDigitada,\n                    next_option_titles: formatNextOptionTitles('confirmacao_sucesso')\n                }\n        }\n    }\n}\n\n\nfunction processarConfirmarNF(ctx) {\n\n    switch (ctx.interactive_reply_id) {\n        case 0:\n            switch (ctx.current_state) {\n                case 'CONFIRMAR_NF_SUCESSO':\n                    return {\n                        next: 'ENVIAR_COMPROVANTE',\n                        reply: buildText('Por favor, envie a foto do comprovante:')\n                    }\n                case 'CONFIRMAR_NF_PENDENCIA':\n                    return {\n                        next: 'SELECAO_PENDENCIA',\n                        reply: showMenu('selecao_pendencia'),\n                        next_option_titles: formatNextOptionTitles('selecao_pendencia')\n                    }\n                case 'CONFIRMAR_NF_INSUCESSO':\n                    return {\n                        next: 'SELECAO_MOTIVO_INSUCESSO',\n                        reply: showMenu('selecao_motivo_pendencia'),\n                        next_option_titles: formatNextOptionTitles('selecao_motivo_pendencia')\n                    }\n            }\n        case 1:\n            return {\n                next: 'RELATAR_PROBLEMA',\n                reply: buildText('Por favor, envie o relato da incongruência:'),\n            }\n    }\n}\n\n\nfunction processarEnviarComprovante(ctx) {\n    if (dadosComprovante.destinatario === ctx.current_raw_task.destinatario\n        && dadosComprovante.date === ctx.current_raw_task.date\n        && (dadosComprovante.nfe === ctx.current_raw_task.nfe || dadosComprovante.cte === ctx.current_raw_task.cte_code)\n        && dadosComprovante.carimbo === true) {\n        return {\n            next: 'INFORMAR_RECEBEDOR',\n            reply: buildText('✅ Imagem recebida e verificada. Qual o nome do recebedor do pacote?'),\n            download_media: true\n        }\n    }\n    return {\n        next: 'ENVIAR_COMPROVANTE',\n        reply: buildText('Não foi possível verificar as informações na foto. Por favor, envie uma nova.'),\n        inc_retry: true\n    }\n}\n\nfunction processarInformarRecebedor(ctx) {\n    if (ctx.input_type === 'text') {\n        return {\n            next: 'FINISHED',\n            reply: buildText(`Obrigado, status da tarefa ${ctx.current_task_id} foi atualizado para \"Sucesso\"!`),\n            task_status: 2,\n            recebedor: ctx.text,\n            task_id: null,\n            window_end: nowISO(),\n            active: false\n        }\n    }\n    return {\n        next: 'INFORMAR_RECEBEDOR',\n        reply: buildText('Favor responder em texto. Qual o nome do recebedor?'),\n        inc_retry: true\n    }\n}\n\nfunction processarRelatarProblema(ctx) {\n    return {\n        next: 'MENU_PRINCIPAL',\n        reply: buildText('Funcionalidade em desenvolvimento.'),\n        active: true\n    }\n}\n\nfunction processarSelecionarTipoPendencia(ctx) {\n    return {\n        next: 'DETALHES_PENDENCIA',\n        reply: showMenu('detalhes_pendencia'),\n        tipo_pendencia: ctx.interactive_reply_title,\n        next_option_titles: formatNextOptionTitles('detalhes_pendencia')\n    }\n}\n\n\nfunction processarSelecionarCaracteristicaPendencia(ctx) {\n    return {\n        next: 'FINISHED',\n        reply: buildText(`Obrigado. o status da tarefa ${ctx.current_task_id} foi atualizado para \"Pendência ${ctx.interactive_reply_title} do tipo: ${ctx.tipo_pendencia}`),\n        tipo_pendencia: ctx.tipo_pendencia + ctx.interactive_reply_title,\n        task_status: 3,\n        task_id: null,\n        window_end: nowISO()\n    }\n}\n\n\nfunction processarSelecionarMotivoInsucesso(ctx) {\n    return {\n        next: 'FINISHED',\n        reply: buildText(`O status da tarefa ${ctx.current_task_id} foi atualizado para: \"Insucesso por ${motivos[motivoIndex]}\"`),\n        motivo_insucesso: ctx.interactive_reply_title,\n        task_status: 4,\n        task_id: null,\n        window_end: nowISO()\n    }\n}\n\n\n\n// ==========================================\n// CONTEXTO E EXECUÇÃO\n// ==========================================\n\nconst context = {\n    input_type: inputType,\n    interactive_reply_id: interactiveReplyId,\n    interactive_reply_title: interactiveReplyTitle,\n    interactive_reply_description: interactiveReplyDescription,\n    text: text,\n    current_option_titles: currentOptionTitles,\n    current_state: currentState,\n    current_task_id: currentTaskId,\n    current_raw_task: currentRawTask,\n    task_list_options: taskListOptions,\n    address: currentRawTask?.address,\n    task_id: currentTaskId || null,\n    current_task_nf: currentRawTask?.nfe,\n    current_raw_nf: currentRawNf,\n    tipo_pendencia: currentRawTask?.tipo_pendencia || null,\n    caracteristica_pendencia: currentRawTask?.caracteristica_pendencia || null,\n    motivo_insucesso: currentRawTask?.motivo_insucesso || null\n}\n\nlet result;\ntry {\n    result = processStateDirectly(context);\n} catch (e) {\n    result = {\n        next: 'MENU_PRINCIPAL',\n        reply: [buildText(\"Erro interno. Retornando ao menu principal.\"), showMenu('menu_principal')],\n        active: true,\n        next_option_titles: formatNextOptionTitles('menu_principal')\n    }\n}\n\n// ==========================================================\n// VARIÁVEIS PARA OS UPDATES E DEFINIÇÃO DOS DEFAULT VALUES\n// ==========================================================\nconst nextState = result.next || 'MENU_PRINCIPAL';\nconst retries = result.inc_retry ? (rawSession.retries || 0) + 1 : 0;\nconst active = 'active' in result ? result.active : true;\nconst nextTaskId = 'task_id' in result ? result.task_id : currentTaskId ? currentTaskId : null;\nconst nextOptionTitles = 'next_option_titles' in result ? result.next_option_titles : null;\n\nconst taskStatus = 'task_status' in result ? result.task_status : currentRawTask ? currentRawTask.task_status : null;\nconst windowStart = 'window_start' in result ? result.window_start : currentRawTask ? currentRawTask.window_start : null;\nconst windowEnd = 'window_end' in result ? result.window_end : currentRawTask ? currentRawTask.window_end : null;\nconst recebedor = 'recebedor' in result ? result.recebedor : currentRawTask ? currentRawTask.recebedor : null;\nconst tipoPendencia = 'tipo_pendencia' in result ? result.tipo_pendencia : currentRawTask ? currentRawTask.tipo_pendencia : null;\nconst caracteristicaPendencia = 'caracteristica_pendencia' in result ? result.caracteristica_pendencia : currentRawTask ? currentRawTask.caracteristica_pendencia : null;\nconst motivoInsucesso = 'motivo_insucesso' in result ? result.motivo_insucesso : currentRawTask ? currentRawTask.motivo_insucesso : null;\n\n\n// Verifica o número de tentativas e cancela a sessão caso >= 3\nif (retries >= 3) {\n    result.reply = buildText(\"Muitas tentativas inválidas. Encerrando atendimento.\");\n    result.next = 'FINISHED';\n    result.active = false;\n}\n\nconst downloadMedia = 'download_media' in result ? true : false;\nconst userReplyIsArray = Array.isArray(result.reply);\n\n// ==========================================\n// SAÍDA FINAL\n// ==========================================\n\nreturn [{\n    json: {\n        reply: result.reply,\n        user_reply_is_array: userReplyIsArray,\n        session_update: {\n            employee_id: rawSession.employee_id,\n            state: nextState,\n            context: context,\n            retries: retries,\n            active: active,\n            task_id: nextTaskId,\n            updated_at: nowISO(),\n            current_option_titles: nextOptionTitles\n        },\n        task_update: {\n            id: currentTaskId,\n            task_status: taskStatus,\n            window_start: windowStart,\n            window_end: windowEnd,\n            receiver_name: recebedor,\n            tipo_pendencia: tipoPendencia,\n            caracteristica_pendencia: caracteristicaPendencia,\n            motivo_insucesso: motivoInsucesso,\n            updated_at: nowISO()\n        },\n        download_media: downloadMedia\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2928,
+        -288
+      ],
+      "id": "9905a16d-c90e-4593-a794-31541e2b08fa",
+      "name": "State Engine"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/log_json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"wa_id\": \"{{ $('Parser numero/mensagem').item.json.parsed_phone_number }}\",\n    \"log_type\": \"RECEIVED\",\n    \"content\": {\n      \"type\": \"{{ $('Parser numero/mensagem').item.json.type }}\",\n      \"text\": \"{{ $('Parser numero/mensagem').item.json.text }}\",\n      \"interactive_id\": \"{{ $('Parser numero/mensagem').item.json.interactive_id }}\"\n    }\n  }\n]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "bdba8e87-97ec-4fc8-9d37-85d78b071d0f",
+      "name": "Log RECEIVED",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/log_json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"wa_id\": \"{{ $('Parser numero/mensagem').item.json.parsed_phone_number }}\",\n    \"log_type\": \"SENT\",\n    \"content\": {{ JSON.stringify($('State Engine').item.json.reply) }}\n\n  }\n]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4384,
+        -304
+      ],
+      "id": "ab2c01b1-db08-4510-876b-ba0e014cf0e7",
+      "name": "Log SENT",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/log_json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"wa_id\": \"{{ $('Parser numero/mensagem').item.json.parsed_phone_number }}\",\n    \"log_type\": \"SENT\",\n    \"content\": {\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('Parser numero/mensagem').item.json.parsedPhoneNumber }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"list\",\n    \"header\": {\n      \"type\": \"text\",\n      \"text\": \"Escolha o Tipo de Atendimento\"\n    },\n    \"body\": {\n      \"text\": \"Selecione uma das opções abaixo para continuar:\"\n    },\n    \"footer\": {\n      \"text\": \"Sistema de Atendimento\"\n    },\n    \"action\": {\n      \"button\": \"Selecionar\",\n      \"sections\": [\n        {\n          \"title\": \"Opções de Atendimento\",\n          \"rows\": [\n            {\n              \"id\": \"0\",\n              \"title\": \"Entrega Rota Normal\",\n              \"description\": \"Seguir com entrega padrão\"\n            },\n            {\n              \"id\": \"1\",\n              \"title\": \"Agendamento\",\n              \"description\": \"Agendar horário para entrega\"\n            },\n            {\n              \"id\": \"2\",\n              \"title\": \"Cancelar\",\n              \"description\": \"Cancelar atendimento.\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n}\n\n  }\n]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2432,
+        112
+      ],
+      "id": "007c972d-9a8a-4291-8386-94be53a5f09d",
+      "name": "Log SENT1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"menus\": {\n    \"menu_principal\": {\n      \"type\": \"list\",\n      \"header\": \"Menu principal: \",\n      \"body\": \"Escolha uma das opções abaixo: \",\n      \"options\": [\n        { \"id\": 0, \"title\": \"Entregas\", \"description\": \"Ver e escolher entrega.\" },\n        { \"id\": 1, \"title\": \"Status\", \"description\": \"Atualizar status\" },\n        { \"id\": 999, \"title\": \"Cancelar\", \"description\": \"Cancelar atendimento\" }\n      ]\n    },\n    \"selecao_entregas\": {\n      \"type\": \"list\",\n      \"header\": \"Entregas pendentes\",\n      \"body\": \"Selecione uma das opções abaixo\",\n      \"options\": \"taskList\"\n    },\n    \"cancelamento\": {\n      \"type\": \"text\",\n      \"content\": \"Atendimento cancelado. Obrigado!\"\n    },\n    \"relatorio_entrega\": {\n      \"type\": \"list\",\n      \"header\": \"Escolha o Status de Entrega\",\n      \"body\": \"Selecione uma das opções abaixo:\",\n      \"options\": [\n        { \"id\": 0, \"title\": \"Sucesso\", \"description\": \"Entrega realizada\" },\n        { \"id\": 1, \"title\": \"Pendência\", \"description\": \"Entrega com pendência\" },\n        { \"id\": 2, \"title\": \"Insucesso\", \"description\": \"Entrega não realizada\" },\n        { \"id\": 998, \"title\": \"Voltar\", \"description\": \"Retornar ao menu anterior\" },\n        { \"id\": 999, \"title\": \"Cancelar\", \"description\": \"Cancelar atendimento\" }\n      ]\n    },\n    \"confirmacao_entrega\": {\n      \"type\": \"list\",\n      \"header\": \"Confirma a escolha da seguinte tarefa?\",\n      \"body\": \"Selecione uma das opções abaixo:\",\n      \"options\": [\n        { \"id\": 0, \"title\": \"Sim\" },\n        { \"id\": 1, \"title\": \"Não\" }\n      ]\n    },\n    \"selecao_pendencia\": {\n      \"type\": \"list\",\n      \"header\": \"Informe o tipo de pendência:\",\n      \"body\": \"Selecione uma das opções abaixo:\",\n      \"options\": [\n        { \"id\": 0, \"title\": \"Avaria\" },\n        { \"id\": 1, \"title\": \"Falta\" },\n        { \"id\": 2, \"title\": \"Inversão/Troca de volumes\" },\n        { \"id\": 998, \"title\": \"Voltar\", \"description\": \"Retornar ao menu anterior\" },\n        { \"id\": 999, \"title\": \"Cancelar\", \"description\": \"Cancelar atendimento\" }\n      ]\n    },\n    \"detalhes_pendencia\": {\n      \"type\": \"list\",\n      \"header\": \"A pendência é total ou parcial?\",\n      \"body\": \"Selecione uma das opções abaixo:\",\n      \"options\": [\n        { \"id\": 0, \"title\": \"Total\" },\n        { \"id\": 1, \"title\": \"Parcial\" },\n        { \"id\": 998, \"title\": \"Voltar\", \"description\": \"Retornar ao menu anterior\" },\n        { \"id\": 999, \"title\": \"Cancelar\", \"description\": \"Cancelar atendimento\" }\n\n      ]\n    },\n    \"selecao_motivo_insucesso\": {\n      \"type\": \"list\",\n      \"header\": \"Informe o motivo do insucesso:\",\n      \"body\": \"Selecione uma das opções abaixo:\",\n      \"options\": [\n        { \"id\": 0, \"title\": \"Comprovante Retido\" },\n        { \"id\": 1, \"title\": \"Divergência Comercial\" },\n        { \"id\": 2, \"title\": \"Endereço não localizado\" },\n        { \"id\": 3, \"title\": \"Destinatário ausente\" },\n        { \"id\": 4, \"title\": \"Recusa/Impossibilidade\" },\n        { \"id\": 998, \"title\": \"Voltar\", \"description\": \"Retornar ao menu anterior\" },\n        { \"id\": 999, \"title\": \"Cancelar\", \"description\": \"Cancelar atendimento\" }\n      ]\n    },\n    \"confirmacao_sucesso\": {\n      \"type\": \"list\",\n      \"header\": \"Confirma os dados da NF?\",\n      \"body\": \"Selecione uma das opções abaixo:\",\n      \"options\": [\n        { \"id\": 0, \"title\": \"Sim\" },\n        { \"id\": 1, \"title\": \"Não\" }\n      ]\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2720,
+        -288
+      ],
+      "id": "37dea3e9-12ce-4d4f-b664-a30355cca0af",
+      "name": "Dicionario"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/task",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=id",
+              "value": "=eq.{{ $('State Engine').item.json.task_update.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('State Engine').item.json.task_update }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4160,
+        -304
+      ],
+      "id": "1f96694e-9872-4e3d-8bda-41c534d92e61",
+      "name": "UPDATE Task",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/wa_session",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=wa_id",
+              "value": "=eq.{{ $('Parser numero/mensagem').item.json.parsed_phone_number }}"
+            },
+            {
+              "name": "active",
+              "value": "eq.true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('State Engine').item.json.session_update }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3936,
+        -304
+      ],
+      "id": "ce33153a-eae6-400e-9c0d-43ec9e9ce699",
+      "name": "UPDATE State",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/764981153363033/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('State Engine').item.json.reply[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3472,
+        -384
+      ],
+      "id": "104c7462-c95d-45b5-adbc-30f7397c8be2",
+      "name": "POST reply[0]",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "6DyQbUy3Ty2nyzEV",
+          "name": "Token Rewell"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/764981153363033/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('State Engine').item.json.reply[1] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3664,
+        -384
+      ],
+      "id": "ecf7a64c-d94a-4d90-a094-de5990c14ffe",
+      "name": "POST reply[1]",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "6DyQbUy3Ty2nyzEV",
+          "name": "Token Rewell"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/764981153363033/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.reply }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3584,
+        -192
+      ],
+      "id": "93a99834-1556-4988-9016-7ef15bfae41b",
+      "name": "POST reply",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "6DyQbUy3Ty2nyzEV",
+          "name": "Token Rewell"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d63a031a-88cb-4a63-8b29-3259979f2613",
+              "leftValue": "={{ $json.user_reply_is_array }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3184,
+        -288
+      ],
+      "id": "73815634-0d6e-4d1f-9214-1a7deb6f8dfc",
+      "name": "Mais de um reply?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4f78107f-e3ff-43cf-865d-611ffdeb31d4",
+              "leftValue": "={{ $('Parser numero/mensagem').item.json.type }}",
+              "rightValue": "image",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2096,
+        -304
+      ],
+      "id": "b66a0ab8-2ec7-45ae-96ba-a54d296494bf",
+      "name": "É imagem?"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"destinatario\": \"Nome Destinatario\",\n  \"date\": \"2025-01-15\",\n  \"cte\": \"2525\",\n  \"nfe\": \"123456\",\n  \"carimbo\": true\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2496,
+        -288
+      ],
+      "id": "f6bfd53c-ca3a-41a7-810e-c8c905d69a98",
+      "name": "COMPROVANTE"
+    },
+    {
+      "parameters": {
+        "content": "### AQUI VAI FICAR O AGENTE DE IA QUE VAI EXTRAIR AS INFORMACOES DO COMPROVANTE (SE TRUE);\n\nSE O NOME, DATA, DOCUMENTO E CARIMBO ESTÃO DEVIDAMENTE PREENCHIDOS\n\nO node edit faz o parsing",
+        "height": 304,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        -560
+      ],
+      "id": "2d706840-f4eb-4bbb-9f05-d40eb9a3df31",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $('Respond').item.json.body.entry[0].changes[0].value.messages[0].image.id }}"
+      },
+      "id": "2e407a55-7691-43bf-9635-58ad22a9d80f",
+      "name": "Fetch Media Download URL",
+      "type": "n8n-nodes-base.whatsApp",
+      "position": [
+        4832,
+        -336
+      ],
+      "webhookId": "b052dd6a-55b8-4195-a64e-c0088b7419cc",
+      "typeVersion": 1,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "6DyQbUy3Ty2nyzEV",
+          "name": "Token Rewell"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "id": "466c8576-223c-4d62-94ff-f69c477734fe",
+      "name": "Download Media File",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        5056,
+        -336
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "NBrFC4iwQCLVsswH",
+          "name": "Supabase Farrapos - HTTP"
+        },
+        "whatsAppApi": {
+          "id": "6DyQbUy3Ty2nyzEV",
+          "name": "Token Rewell"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8da4829b-b9cf-4d2e-bcfd-72b3951a09e0",
+              "leftValue": "={{ $('State Engine').first().json.download_media }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4592,
+        -304
+      ],
+      "id": "e3e1b3ca-3391-4ec0-af82-e8e6a1807b4f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://pljiqvdifpjbinxdadmz.supabase.co/storage/v1/object/images/Comprovantes/{{ `nf${$('UPDATE Task').item.json.nfe}_${$('UPDATE Task').item.json.updated_at}` }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "97f68efc-8f16-4dbd-972d-9b4783d33b12",
+      "name": "Upload object",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        5264,
+        -336
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://pljiqvdifpjbinxdadmz.supabase.co/storage/v1/object/sign/{{ $json.body.Key }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "expiresIn",
+              "value": "60"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "9a3653d3-d9e4-46aa-873f-46800e0e1a40",
+      "name": "Generate presigned URL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        5504,
+        -336
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/image",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $json.body.signedURL }}\",\n  \"task_id\": \"{{ $('State Engine').item.json.session_update.context.current_raw_task.id }}\",\n  \"manifest_id\": \"{{ $('State Engine').item.json.session_update.context.current_raw_task.manifest_id }}\",\n  \"nf_id\": \"{{ $('State Engine').item.json.session_update.context.current_raw_nf.id }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5744,
+        -336
+      ],
+      "id": "43ba2501-f0a5-4048-933b-b0c5ad6726c0",
+      "name": "POST image_reference",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Verificar como o numero de telefone vem do erp pra fazer o parsing, buscar o id do funcionário no banco e adicionar à coluna de wa_id",
+        "height": 112
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        384
+      ],
+      "id": "965d0f4f-bbaf-439a-9974-c044f5eda901",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "url": "https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/task",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "employee_id",
+              "value": "=eq.{{ $('Get last session').item.json.employee_id }}"
+            },
+            {
+              "name": "order",
+              "value": "created_at.asc"
+            },
+            {
+              "name": "task_status",
+              "value": "neq.2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1728,
+        -304
+      ],
+      "id": "cda98026-41ad-4c81-b8a1-1cb6b4a38375",
+      "name": "Get raw active tasks",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/nf",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "manifest_id",
+              "value": "=eq.{{ $json.manifest_id }}"
+            },
+            {
+              "name": "order",
+              "value": "updated_at.desc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1920,
+        -304
+      ],
+      "id": "2a36979f-c01a-4815-9d89-875c24eda658",
+      "name": "Get NF from manifest id",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "id": "bab996e2-cce7-44d0-b3fd-a6fc6b28aeca",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        -16,
+        -368
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "8a765e57-8e39-4547-a99a-0458df2b75f4",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.body.entry[0].changes[0].value.messages[0] }}",
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "028c0ef8-575b-431a-9ba8-a956c27f6c26",
+      "name": "Is message?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -16,
+        16
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1fea1f5f-81c0-48ad-ae13-41e0f8e474ed",
+        "options": {}
+      },
+      "id": "ea689924-4254-4849-ae05-3b10a6b60b60",
+      "name": "Respond",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -240,
+        16
+      ],
+      "webhookId": "c4cbc1c4-e1f5-4ea5-bd9a-c5f697493985",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "path": "1fea1f5f-81c0-48ad-ae13-41e0f8e474ed",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "074fbc89-7247-49c9-a314-4899a981329d",
+      "name": "Verify",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -240,
+        -368
+      ],
+      "webhookId": "793f285b-9da7-4a5e-97ce-f0976c113db5",
+      "typeVersion": 1.1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Parser numero/mensagem": {
+      "main": [
+        [
+          {
+            "node": "Get last session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get last session": {
+      "main": [
+        [
+          {
+            "node": "Log RECEIVED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Número registrado?": {
+      "main": [
+        [
+          {
+            "node": "Start first session",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Número não está registrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "First Session?": {
+      "main": [
+        [
+          {
+            "node": "Número registrado?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Atendimento em andamento?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atendimento em andamento?": {
+      "main": [
+        [
+          {
+            "node": "Get raw active tasks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Start new session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start menu": {
+      "main": [
+        [
+          {
+            "node": "Log SENT1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start first session": {
+      "main": [
+        [
+          {
+            "node": "Start menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start new session": {
+      "main": [
+        [
+          {
+            "node": "Start menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State Engine": {
+      "main": [
+        [
+          {
+            "node": "Mais de um reply?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log RECEIVED": {
+      "main": [
+        [
+          {
+            "node": "First Session?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dicionario": {
+      "main": [
+        [
+          {
+            "node": "State Engine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UPDATE Task": {
+      "main": [
+        [
+          {
+            "node": "Log SENT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UPDATE State": {
+      "main": [
+        [
+          {
+            "node": "UPDATE Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST reply[0]": {
+      "main": [
+        [
+          {
+            "node": "POST reply[1]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST reply[1]": {
+      "main": [
+        [
+          {
+            "node": "UPDATE State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST reply": {
+      "main": [
+        [
+          {
+            "node": "UPDATE State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mais de um reply?": {
+      "main": [
+        [
+          {
+            "node": "POST reply[0]",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "POST reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É imagem?": {
+      "main": [
+        [
+          {
+            "node": "COMPROVANTE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "COMPROVANTE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "COMPROVANTE": {
+      "main": [
+        [
+          {
+            "node": "Dicionario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Media Download URL": {
+      "main": [
+        [
+          {
+            "node": "Download Media File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log SENT": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Fetch Media Download URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Download Media File": {
+      "main": [
+        [
+          {
+            "node": "Upload object",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload object": {
+      "main": [
+        [
+          {
+            "node": "Generate presigned URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate presigned URL": {
+      "main": [
+        [
+          {
+            "node": "POST image_reference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get raw active tasks": {
+      "main": [
+        [
+          {
+            "node": "Get NF from manifest id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get NF from manifest id": {
+      "main": [
+        [
+          {
+            "node": "É imagem?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is message?": {
+      "main": [
+        [
+          {
+            "node": "Parser numero/mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond": {
+      "main": [
+        [
+          {
+            "node": "Is message?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "8bc49adf-636a-4681-b859-486b0984277c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aa6df07db1b386814570ffd65bf5a1bc78881504b712a406d3a96a243fdeef75"
+  },
+  "id": "5iAt9hjMLQEFrqhY",
+  "tags": []
+}
