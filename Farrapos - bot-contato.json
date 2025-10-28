@@ -21,7 +21,7 @@
         "nodeCredentialType": "supabaseApi",
         "sendQuery": true,
         "queryParameters": {
-          "parameters": [
+          "parameters":[
             {
               "name": "wa_id",
               "value": "=eq.{{ $json.parsed_phone_number }}"
