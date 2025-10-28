@@ -1,42 +1,44 @@
-function parsingObjetos(obj) {
-    const itens = obj;
-    // Verifica se é array válido
-    if (!Array.isArray(itens) || itens.length === 0) {
-        return 'dww';
-    }
-    
-    // Filtra objetos não vazios
-    const objetosValidos = itens.filter(item => 
-        item && typeof item === 'object' && Object.keys(item).length > 0
-    );
-    
-    if (objetosValidos.length === 0) {
-        return 'wdawd'; // [{}] ou todos objetos vazios
-    }
-    
-    if (objetosValidos.length === 1) {
-        return objetosValidos[0].json; // único objeto não vazio
-    }
-    
-    return 'a'; // mais de um objeto não vazio
+function normalizeObj(obj) {
+  // Garante que seja um array e extrai sempre o JSON puro
+  const list = Array.isArray(obj) ? obj : [];
+  const valid = list
+    .map(item => item?.json ?? item)
+    .filter(t => t && Object.keys(t).length > 0);
+
+  if (valid.length > 1) return valid;   // múltiplos
+  if (valid.length === 1) return valid[0]; // único
+  return null;                          // nenhum
 }
 
-
 // ==========================================
-// INICIALIZAÇÃO DE DADOS
+// INICIALIZAÇÃO DE DADOS (mantido igual ao seu original)
 // ==========================================
 
 const parser = $('Parser numero/mensagem').first().json;
-const rawSession = $('Get last session').first().json || {}
-const rawUnfinishedTasks = parsingObjetos($('Get raw active tasks').all());
+const rawSession = $('Get last session').first().json || {};
 const dadosComprovante = $('COMPROVANTE').first().json || {};
-const rawNf = parsingObjetos($('Get NF from manifest id').all());
 
 const currentState = rawSession?.state || 'MENU_PRINCIPAL';
 const currentTaskId = rawSession?.task_id || null;
-const currentRawTask = rawUnfinishedTasks === null ? null : Array.isArray(rawUnfinishedTasks) ? rawUnfinishedTasks.find(task => task.json.id === currentTaskId) : rawUnfinishedTasks;
 const currentOptionTitles = rawSession?.current_option_titles;
-const currentRawNf = rawNf === null ? null : Array.isArray(rawNf) ? rawNf.find(item => item.number === currentRawTask.nfe) : rawNf;
+
+// ==========================================
+// VARIÁVEIS PRINCIPAIS (o que realmente será retornado)
+// ==========================================
+
+// Tarefas e NFs (podem ser únicas ou múltiplas)
+const rawUnfinishedTasks = normalizeObj($('Get raw active tasks').all());
+const rawNf = normalizeObj($('Get NF from manifest id').all());
+
+// Tarefa atual
+const currentRawTask = Array.isArray(rawUnfinishedTasks)
+  ? rawUnfinishedTasks.find(task => task?.id === currentTaskId) || null
+  : rawUnfinishedTasks || null;
+
+// NF atual vinculada à tarefa (via número da NF)
+const currentRawNf = Array.isArray(rawNf)
+  ? rawNf.find(item => item?.number === currentRawTask?.nfe) || null
+  : rawNf || null;
 
 const dicionario = $('Dicionario').first().json;
 const menus = dicionario.menus;
@@ -56,40 +58,45 @@ const interactiveReplyDescription = parser.interactive_reply_description;
 // ==========================================
 
 function formatTaskListOptions() {
-    let taskListOptions = [];
-    if (rawUnfinishedTasks === null) {
-    } else if (Array.isArray(rawUnfinishedTasks)) {
-        taskListOptions.push(rawUnfinishedTasks.map((task, index) => ({
-            id: index,
-            title: (task?.address || "Endereço não informado"),
-            description: `ID: ${task?.id}`
-        })));
-    } else {
-        taskListOptions.push({
-            id: 0,
-            title: rawUnfinishedTasks.address,
-            description: `ID: ${rawUnfinishedTasks.id}`
-        });
-    }
+  const taskListOptions = [];
 
-
+  if (rawUnfinishedTasks === null) {
+    // Nenhuma tarefa ativa
+  } else if (Array.isArray(rawUnfinishedTasks)) {
     taskListOptions.push(
-        {
-            id: 998,
-            title: "↩️ Voltar",
-            description: "Retornar ao menu principal"
-        },
-        {
-            id: 999,
-            title: "❌ Cancelar",
-            description: "Cancelar atendimento"
-        }
+      ...rawUnfinishedTasks.map((task, index) => ({
+        id: index,
+        title: task?.address || "Endereço não informado",
+        description: `ID: ${task?.id}`
+      }))
     );
+  } else {
+    taskListOptions.push({
+      id: 0,
+      title: rawUnfinishedTasks.address || "Endereço não informado",
+      description: `ID: ${rawUnfinishedTasks.id}`
+    });
+  }
 
-    return taskListOptions;
+  // Itens padrão
+  taskListOptions.push(
+    {
+      id: 998,
+      title: "↩️ Voltar",
+      description: "Retornar ao menu principal"
+    },
+    {
+      id: 999,
+      title: "❌ Cancelar",
+      description: "Cancelar atendimento"
+    }
+  );
+
+  return taskListOptions;
 }
 
-const taskListOptions = formatTaskListOptions()
+const taskListOptions = formatTaskListOptions();
+
 
 
 // ==========================================
