@@ -117,3 +117,5 @@ const context = {
     caracteristica_pendencia: currentRawTask?.caracteristica_pendencia || null,
     motivo_insucesso: currentRawTask?.motivo_insucesso || null
 }
+
+return context
