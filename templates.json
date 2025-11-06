@@ -2,8 +2,7 @@
   "menus": {
     "menu_principal": {
       "type": "list",
-      "header": "Menu principal: ",
-      "body": "Escolha uma das opções abaixo: ",
+      "header": "Menu principal ",
       "options": [
         { "id": 0, "title": "Entregas", "description": "Ver e escolher entrega." },
         { "id": 1, "title": "Status", "description": "Atualizar status" },
@@ -13,7 +12,6 @@
     "selecao_entregas": {
       "type": "list",
       "header": "Entregas pendentes",
-      "body": "Selecione uma das opções abaixo",
       "options": "taskList"
     },
     "cancelamento": {
@@ -23,7 +21,6 @@
     "relatorio_entrega": {
       "type": "list",
       "header": "Escolha o Status de Entrega",
-      "body": "Selecione uma das opções abaixo:",
       "options": [
         { "id": 0, "title": "Sucesso", "description": "Entrega realizada" },
         { "id": 1, "title": "Pendência", "description": "Entrega com pendência" },
@@ -32,19 +29,14 @@
         { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
       ]
     },
-    "confirmacao_entrega": {
-      "type": "list",
-      "header": "Confirma a escolha da seguinte tarefa?",
-      "body": "Selecione uma das opções abaixo:",
-      "options": [
-        { "id": 0, "title": "Sim" },
-        { "id": 1, "title": "Não" }
-      ]
+    "confirmacao_escolha": {
+      "type": "button",
+      "header": "Confirma a escolha da tarefa?",
+      "options": ["Sim", "Não"]
     },
     "selecao_pendencia": {
       "type": "list",
       "header": "Informe o tipo de pendência:",
-      "body": "Selecione uma das opções abaixo:",
       "options": [
         { "id": 0, "title": "Avaria" },
         { "id": 1, "title": "Falta" },
@@ -56,7 +48,6 @@
     "detalhes_pendencia": {
       "type": "list",
       "header": "A pendência é total ou parcial?",
-      "body": "Selecione uma das opções abaixo:",
       "options": [
         { "id": 0, "title": "Total" },
         { "id": 1, "title": "Parcial" },
@@ -68,7 +59,6 @@
     "selecao_motivo_insucesso": {
       "type": "list",
       "header": "Informe o motivo do insucesso:",
-      "body": "Selecione uma das opções abaixo:",
       "options": [
         { "id": 0, "title": "Comprovante Retido" },
         { "id": 1, "title": "Divergência Comercial" },
@@ -79,14 +69,10 @@
         { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
       ]
     },
-    "confirmacao_sucesso": {
-      "type": "list",
+    "confirmacao_nf": {
+      "type": "button",
       "header": "Confirma os dados da NF?",
-      "body": "Selecione uma das opções abaixo:",
-      "options": [
-        { "id": 0, "title": "Sim" },
-        { "id": 1, "title": "Não" }
-      ]
+      "options": ["Sim", "Não"]
     }
   }
 }
