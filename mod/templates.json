@@ -1,0 +1,78 @@
+{
+  "menus": {
+    "menu_principal": {
+      "type": "list",
+      "header": "Menu principal ",
+      "options": [
+        { "id": 0, "title": "Entregas", "description": "Ver e escolher entrega." },
+        { "id": 1, "title": "Status", "description": "Atualizar status" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
+      ]
+    },
+    "selecao_entregas": {
+      "type": "list",
+      "header": "Entregas pendentes",
+      "options": "taskList"
+    },
+    "cancelamento": {
+      "type": "text",
+      "content": "Atendimento cancelado. Obrigado!"
+    },
+    "relatorio_entrega": {
+      "type": "list",
+      "header": "Escolha o Status de Entrega",
+      "options": [
+        { "id": 0, "title": "Sucesso", "description": "Entrega realizada" },
+        { "id": 1, "title": "Pendência", "description": "Entrega com pendência" },
+        { "id": 2, "title": "Insucesso", "description": "Entrega não realizada" },
+        { "id": 998, "title": "Voltar", "description": "Retornar ao menu anterior" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
+      ]
+    },
+    "confirmacao_escolha": {
+      "type": "button",
+      "header": "Confirma a escolha da tarefa?",
+      "options": ["Sim", "Não"]
+    },
+    "selecao_pendencia": {
+      "type": "list",
+      "header": "Informe o tipo de pendência:",
+      "options": [
+        { "id": 0, "title": "Avaria" },
+        { "id": 1, "title": "Falta" },
+        { "id": 2, "title": "Inversão/Troca de volumes" },
+        { "id": 998, "title": "Voltar", "description": "Retornar ao menu anterior" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
+      ]
+    },
+    "detalhes_pendencia": {
+      "type": "list",
+      "header": "A pendência é total ou parcial?",
+      "options": [
+        { "id": 0, "title": "Total" },
+        { "id": 1, "title": "Parcial" },
+        { "id": 998, "title": "Voltar", "description": "Retornar ao menu anterior" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
+
+      ]
+    },
+    "selecao_motivo_insucesso": {
+      "type": "list",
+      "header": "Informe o motivo do insucesso:",
+      "options": [
+        { "id": 0, "title": "Comprovante Retido" },
+        { "id": 1, "title": "Divergência Comercial" },
+        { "id": 2, "title": "Endereço não localizado" },
+        { "id": 3, "title": "Destinatário ausente" },
+        { "id": 4, "title": "Recusa/Impossibilidade" },
+        { "id": 998, "title": "Voltar", "description": "Retornar ao menu anterior" },
+        { "id": 999, "title": "Cancelar", "description": "Cancelar atendimento" }
+      ]
+    },
+    "confirmacao_nf": {
+      "type": "button",
+      "header": "Confirma os dados da NF?",
+      "options": ["Sim", "Não"]
+    }
+  }
+}
