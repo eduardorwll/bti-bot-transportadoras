@@ -1,0 +1,37 @@
+{
+    "messaging_product": "whatsapp",
+    "recipient_type": "individual",
+    "to": "{{ $('Parser numero/mensagem').item.json.parsed_phone_number }}",
+    "type": "interactive",
+    "interactive": {
+        "type": "button",
+        "header": {
+            "type": "text",
+            "text": "Bem vindo!"
+        },
+        "body": {
+            "text": "Esse número pertence à {{ $('Puxa todos os dados do funcionário').item.json.nome }}, dono do veículo de placa {{ $('Puxa as informações do veículo').item.json.placa }}?"
+        },
+        "footer": {
+            "text": "Escolha uma das opções abaixo"
+        },
+        "action": {
+            "buttons": [
+                {
+                    "type": "reply",
+                    "reply": {
+                        "id": "0",
+                        "title": "Sim, sou eu"
+                    }
+                },
+                {
+                    "type": "reply",
+                    "reply": {
+                        "id": "1",
+                        "title": "Não sou eu"
+                    }
+                }
+            ]
+        }
+    }
+}

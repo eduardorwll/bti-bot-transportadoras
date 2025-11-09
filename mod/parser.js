@@ -1,23 +1,30 @@
-const msg = $json["body"]["entry"]["0"]["changes"]["0"]["value"]["messages"]["0"] || {};
-const text = (msg.text?.body || "").trim();
+const mensagem = $input.first().json.body.entry[0].changes[0].value.messages[0];
 
-const interactiveReplyId = msg.interactive?.list_reply?.id ?? null;
-const interactiveReplyTitle = msg.interactive?.list_reply?.title ?? null;
-const interactiveReplyDescription = msg.interactive?.list_reply?.description ?? null;
+const texto = (mensagem.texto?.body || "").trim().toUpperCase();
+const replyType = mensagem.type
 
-const rawNumber = msg.from || "";
-let parsedPhoneNumber = rawNumber.replace(/[^\d]/g, "");
+// Resposta Interativa
+const tipoRespostaInterativa = mensagem.interactive?.type ?? null;
+const respostaInterativa = mensagem.interactive?.[tipoRespostaInterativa];
+const idRespostaInterativa = respostaInterativa?.id ?? null;
+const tituloRespostaInterativa = respostaInterativa?.title ?? null;
+const descricaoRespostaInterativa = respostaInterativa?.description ?? null;
 
-if (parsedPhoneNumber.length === 12) {
-  parsedPhoneNumber = parsedPhoneNumber.slice(0,4) + "9" + parsedPhoneNumber.slice(4);
+const numeroBruto = mensagem.from || "";
+let numeroTelefoneFormatado = numeroBruto.replace(/[^\d]/g, "");
+
+if (numeroTelefoneFormatado.length === 12) {
+  numeroTelefoneFormatado = numeroTelefoneFormatado.slice(0,4) + "9" + numeroTelefoneFormatado.slice(4);
 }
-return [{ json: { 
-  parsed_phone_number: `${parsedPhoneNumber}`,
-  message_id: msg.id,
-  type: msg.type,
-  text: text.toUpperCase(),
-  interactive_reply_id: interactiveReplyId,
-  interactive_reply_title: interactiveReplyTitle,
-  interactive_reply_description: interactiveReplyDescription
+
+// Retorno
+return { json: { 
+  id_whatsapp: `${numeroTelefoneFormatado}`,
+  tipo_resposta: replyType,
+  tipo_resposta_interativa: tipoRespostaInterativa,
+  id_resposta_interativa: idRespostaInterativa,
+  titulo_resposta_interativa: tituloRespostaInterativa,
+  descricao_resposta_interativa: descricaoRespostaInterativa,
+  texto: texto === "" ? null : texto
   } 
-}];
+}
