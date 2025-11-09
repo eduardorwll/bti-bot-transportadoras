@@ -21,7 +21,7 @@ function construtorTexto (body) {
     }
 }
 
-function construtortemplate (header, rows) {
+function construtorTemplate (header, rows) {
     return {
         messaging_product: "whatsapp",
         recipient_type: "individual",
