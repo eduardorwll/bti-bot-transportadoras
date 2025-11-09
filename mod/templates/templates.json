@@ -14,7 +14,7 @@
       "header": "Entregas pendentes",
       "options": "taskList"
     },
-    "cancelamento": {
+    "encerramento": {
       "type": "text",
       "content": "Atendimento cancelado. Obrigado!"
     },
