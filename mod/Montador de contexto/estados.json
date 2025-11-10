@@ -1,11 +1,12 @@
 {
     "BEM_VINDO": {
-            "0": "",
-            "1": ""
+        "0": "MENU_PRINCIPAL",
+        "1": "NUMERO_ERRADO"
     },
     "MENU_PRINCIPAL":{
         "0": "",
-        "1": ""
+        "1": "",
+        "2": ""
     }
 
     
