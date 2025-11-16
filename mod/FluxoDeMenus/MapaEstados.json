@@ -1,0 +1,196 @@
+{
+    "MENU_PRINCIPAL_1":{
+        "0": "SELECAO_TAREFAS",  
+        "1": "ATUALIZAR_STATUS"
+    },
+    "MENU_PRINCIPAL_2":{
+        "0": "SELECAO_TAREFAS"
+    },
+
+
+
+    "ATUALIZAR_STATUS": {
+        "0": "CONFIRMAR_CTE_SUCESSO",
+        "1": "CONFIRMAR_CTE_PENDENCIA",
+        "2": "CONFIRMAR_CTE_INSUCESSO"
+    },
+
+
+
+    "CONFIRMAR_CTE_SUCESSO": {
+        "0": "FOTO_CANHOTO_SUCESSO",
+        "1": "SELECAO_TAREFAS"
+    },
+    "CONFIRMAR_CTE_PENDENCIA": {
+        "0": "SELECAO_TIPO_PENDENCIA_1",
+        "1": "SELECAO_TAREFAS"
+    },
+    "CONFIRMAR_CTE_INSUCESSO": {
+        "0": "SELECAO_TIPO_INSUCESSO",
+        "1": "SELECAO_TAREFAS"
+    },
+
+
+
+    "SELECAO_TIPO_PENDENCIA_1": {
+        "interactive_id": "SELECAO_TIPO_PENDENCIA_2"
+    },
+    "SELECAO_TIPO_PENDENCIA_2": {
+        "0": "FOTO_RESSALVA_NFD_PENDENCIA",
+        "1": "FOTO_NFD_PENDENCIA"
+    },
+
+    "FOTO_RESSALVA_NFD_PENDENCIA": {
+        "image": "FOTO_CARGA_PENDENCIA"
+    },
+    "FOTO_NFD_PENDENCIA": {
+        "image": "FOTO_CARGA_PENDENCIA"
+    },
+    "FOTO_CARGA_PENDENCIA": {
+        "image": "OBRIGADO_PENDENCIA"
+    },
+
+
+
+    "OBRIGADO_PENDENCIA": {
+        "none": "SELECAO_TAREFAS"
+    },
+
+    "FOTO_CANHOTO_SUCESSO": {
+        "image": "NOME_RECEBEDOR_SUCESSO"
+    },
+    "NOME_RECEBEDOR_SUCESSO": {
+        "text": "OBRIGADO_SUCESSO"
+    },
+
+
+
+    "OBRIGADO_SUCESSO": {
+        "none": "SELECAO_TAREFAS"
+    },
+
+
+
+    "SELECAO_TIPO_INSUCESSO": {
+        "0": "LOC_COMPROVANTE_RETIDO",
+        "1": "LOC_DIVERGENCIA",
+        "2": "LOC_ENDERECO_NAO_ENCONTRADO",
+        "3": "LOC_DESTINATARIO_AUSENTE",
+        "4": "LOC_RECUSA"
+    },
+
+
+
+    "LOC_COMPROVANTE_RETIDO": {
+        "location": "AGUARDAR_TORRE_COMPROVANTE_RETIDO"
+    },
+    "LOC_DIVERGENCIA": {
+        "location": "NOME_RECEBEDOR_DIVERGENCIA"
+    },
+    "LOC_ENDERECO_NAO_ENCONTRADO": {
+        "location": "FOTO_LOCAL_ENDERECO_NAO_ENCONTRADO"
+    },
+    "LOC_DESTINATARIO_AUSENTE": {
+        "location": "FOTO_LOCAL_AUSENCIA"
+    },
+    "LOC_RECUSA": {
+        "location": "NOME_RECEBEDOR_RECUSA"
+    },
+
+
+
+    "AGUARDAR_TORRE_COMPROVANTE_RETIDO": {
+        "0": "FOTO_TERMO_RETENCAO",
+        "1": "FOTO_CANHOTO_SUCESSO"
+    },
+
+
+
+    "FOTO_TERMO_RETENCAO": {
+        "image": "OBRIGADO_RETENCAO_APROVADA"
+    },
+    "OBRIGADO_RETENCAO_APROVADA": {
+        "none": "SELECAO_TAREFAS"
+    },
+
+
+
+    "NOME_RECEBEDOR_DIVERGENCIA": {
+        "text": "NUMERO_RECEBEDOR_DIVERGENCIA"
+    },
+    "NOME_RECEBEDOR_RECUSA": {
+        "text": "NUMERO_RECEBEDOR_RECUSA"
+    },
+
+
+
+    "NUMERO_RECEBEDOR_DIVERGENCIA": {
+        "text": "DETALHAR_OCORRENCIA_DIVERGENCIA"
+    },
+    "NUMERO_RECEBEDOR_RECUSA": {
+        "text": "DETALHAR_OCORRENCIA_RECUSA"
+    },
+    
+    "DETALHAR_OCORRENCIA_DIVERGENCIA": {
+        "text": "AGUARDAR_TORRE_DIVERGENCIA"
+    },
+    "DETALHAR_OCORRENCIA_RECUSA": {
+        "text": "AGUARDAR_TORRE_RECUSA"
+    },
+
+    "AGUARDAR_TORRE_DIVERGENCIA": {
+        "0": "FOTO_RESSALVA_NFD_DIVERGENCIA"
+    },
+    "AGUARDAR_TORRE_RECUSA": {
+        "0": "FOTO_RESSALVA_RECUSA"
+    },
+
+
+    "FOTO_RESSALVA_NFD_DIVERGENCIA": {
+        "image": "OBRIGADO_OCORRENCIA_REGISTRADA"
+    },
+    "FOTO_RESSALVA_RECUSA": {
+        "image": "OBRIGADO_OCORRENCIA_REGISTRADA"
+    },
+
+
+    "OBRIGADO_OCORRENCIA_REGISTRADA": {
+        "none": "SELECAO_TAREFAS"
+    },
+
+
+
+    "FOTO_LOCAL_ENDERECO_NAO_ENCONTRADO": {
+        "image": "AGUARDAR_TORRE_ENDERECO_NAO_ENCONTRADO"
+    },
+    "FOTO_LOCAL_AUSENCIA": {
+        "image": "AGUARDAR_TORRE_AUSENCIA"
+    },
+
+    "AGUARDAR_TORRE_ENDERECO_NAO_ENCONTRADO": {
+        "0": "ENDERECO_ESTA_CORRETO",
+        "1": "ENDERECO_ESTA_ERRADO"
+    },
+    "AGUARDAR_TORRE_AUSENCIA": {
+        "0": "DESTINATARIO_CONTATADO",
+        "1": "DESTINATARIO_NAO_CONTATADO"
+    },
+
+    "ENDERECO_ESTA_CORRETO": {
+        "text": "CONTINUA_COM_TORRE"
+    },
+    "ENDERECO_ESTA_ERRADO": {
+        "none": "SELECAO_TAREFAS"
+    },
+
+    "DESTINATARIO_CONTATADO": {
+        "text": "CONTINUA_COM_TORRE"
+    },
+    "DESTINATARIO_NAO_CONTATADO": {
+        "none": "SELECAO_TAREFAS"
+    },
+
+    "CONTINUA_COM_TORRE": {
+        "text": "SELECAO_TAREFAS"
+    }
+}
