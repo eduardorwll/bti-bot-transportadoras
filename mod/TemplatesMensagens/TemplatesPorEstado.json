@@ -1,0 +1,413 @@
+{
+  "ENCERRAMENTO": {
+    "type": "text",
+    "content": "*OBRIGADO*\n\nAtendimento cancelado."
+  },
+
+  "CONTINUA_COM_TORRE": {
+    "type": "text",
+    "content": "A partir desse ponto a conversa segue com um atendente até que o mesmo finalize o atendimento. \n Envie uma mensagem de texto para retornar ao menu de tarefas"
+  },
+
+
+
+  "CONFIRMAR_TORRE_COMPROVANTE_RETIDO": {
+    "type": "button",
+    "header": "SIMULAÇÃO TORRE",
+    "options": [
+      {
+        "id": 0,
+        "title": "Aprovar"
+      },
+      {
+        "id": 1,
+        "title": "Negar"
+      }
+    ]
+  },
+
+  "CONFIRMAR_TORRE_DIVERGENCIA": {
+    "type": "button",
+    "header": "SIMULAÇÃO TORRE",
+    "options": [
+      {
+        "id": 0,
+        "title": "Aprovar retorno"
+      }
+    ]
+  },
+
+  "CONFIRMAR_TORRE_RECUSA": {
+    "type": "button",
+    "header": "SIMULAÇÃO TORRE",
+    "options": [
+      {
+        "id": 0,
+        "title": "Aprovar retorno"
+      }
+    ]
+  },
+
+  "CONFIRMAR_TORRE_ENDERECO_NAO_ENCONTRADO": {
+    "type": "button",
+    "header": "SIMULAÇÃO TORRE",
+    "options": [
+      {
+        "id": 0,
+        "title": "Endereço correto"
+      },
+      {
+        "id": 1,
+        "title": "Endereço errado"
+      }
+    ]
+  },
+
+  "CONFIRMAR_TORRE_AUSENCIA": {
+    "type": "button",
+    "header": "SIMULAÇÃO TORRE",
+    "options": [
+      {
+        "id": 0,
+        "title": "Destinatario contatado"
+      },
+      {
+        "id": 1,
+        "title": "Destinatario "
+      }
+    ]
+  },
+
+
+
+
+
+  "MENU_PRINCIPAL_1": {
+    "type": "button",
+    "header": "Menu principal ",
+    "options": [
+      {
+        "id": 0,
+        "title": "Escolher tarefa"
+      },
+      {
+        "id": 1,
+        "title": "Atualizar status"
+      }
+    ]
+  },
+  "MENU_PRINCIPAL_2": {
+    "type": "button",
+    "header": "Menu principal ",
+    "options": [
+      {
+        "id": 0,
+        "title": "Escolher tarefa"
+      }
+    ]
+  },
+
+  
+
+  "SELECAO_TAREFAS": {
+    "type": "list",
+    "header": "Escolher tarefa",
+    "options": "taskList"
+  },
+
+
+
+  "ATUALIZAR_STATUS": {
+    "type": "button",
+    "header": "Escolha o Status de Entrega",
+    "options": [
+      {
+        "id": 0,
+        "title": "Sucesso"
+      },
+      {
+        "id": 1,
+        "title": "Pendência"
+      },
+      {
+        "id": 2,
+        "title": "Insucesso"
+      }
+    ]
+  },
+
+
+
+  "CONFIRMAR_CTE_SUCESSO": {
+    "type": "button",
+    "header": "Confirma a escolha da tarefa?",
+    "options": [
+      {
+        "id": 0,
+        "title": "Sim"
+      },
+      {
+        "id": 1,
+        "title": "Não"
+      }
+    ]
+  },
+  "CONFIRMAR_CTE_PENDENCIA": {
+    "type": "button",
+    "header": "Confirma a escolha da tarefa?",
+    "options": [
+      {
+        "id": 0,
+        "title": "Sim"
+      },
+      {
+        "id": 1,
+        "title": "Não"
+      }
+    ]
+  },
+  "CONFIRMAR_CTE_INSUCESSO": {
+    "type": "button",
+    "header": "Confirma a escolha da tarefa?",
+    "options": [
+      {
+        "id": 0,
+        "title": "Sim"
+      },
+      {
+        "id": 1,
+        "title": "Não"
+      }
+    ]
+  },
+
+
+  "FOTO_CANHOTO_SUCESSO": {
+    "type": "text",
+    "content": "*REGISTRO DE SUCESSO*\n\nPor favor, envie uma foto nítida do canhoto que evidencie a presença do código do CTe, carimbo, nome do remetente e destinatário, e endereço"
+  },
+  "NOME_RECEBEDOR_SUCESSO": {
+    "type": "text",
+    "content": "*REGISTRO DE SUCESSO*\n\nPor favor, envie o nome do recebedor da entrega"
+  },
+  "OBRIGADO_SUCESSO": {
+    "type": "text",
+    "content": "*OBRIGADO*\n\nTarefa realizada com sucesso"
+  },
+
+
+  "SELECAO_TIPO_PENDENCIA_1": {
+    "type": "button",
+    "header": "Informe o tipo de pendência:",
+    "options": [
+      {
+        "id": 0,
+        "title": "Avaria"
+      },
+      {
+        "id": 1,
+        "title": "Falta"
+      },
+      {
+        "id": 2,
+        "title": "Inversão"
+      }
+    ]
+  },
+  "SELECAO_TIPO_PENDENCIA_2": {
+    "type": "button",
+    "header": "A pendência é total ou parcial?",
+    "options": [
+      {
+        "id": 0,
+        "title": "Total"
+      },
+      {
+        "id": 1,
+        "title": "Parcial"
+      }
+    ]
+  },
+
+
+
+  "FOTO_RESSALVA_NFD_PENDENCIA": {
+    "type": "text",
+    "content": "*REGISTRO DE PENDÊNCIA*\n\nPor favor, envie uma foto nítida da ressalva ou do NFD"
+  },
+  "FOTO_NFD_PENDENCIA": {
+    "type": "text",
+    "content": "*REGISTRO DE PENDÊNCIA*\n\nPor favor, envie uma foto nítida do NFD"
+  },
+  "FOTO_CARGA_PENDENCIA": {
+    "type": "text",
+    "content": "*REGISTRO DE PENDÊNCIA*\n\nObrigado, agora envie uma foto da carga"
+  },
+  "OBRIGADO_PENDENCIA": {
+    "type": "text",
+    "content": "*OBRIGADO*\n\nOcorrência de pendência registrada com sucesso"
+  },
+
+  
+  
+  "SELECAO_TIPO_INSUCESSO": {
+    "type": "list",
+    "header": "Motivo do insucesso:",
+    "options": [
+      {
+        "id": 0,
+        "title": "Comprovante Retido"
+      },
+      {
+        "id": 1,
+        "title": "Divergência Comercial"
+      },
+      {
+        "id": 2,
+        "title": "Endereço não localizado"
+      },
+      {
+        "id": 3,
+        "title": "Destinatário ausente"
+      },
+      {
+        "id": 4,
+        "title": "Recusa/Impossibilidade"
+      }
+    ]
+  },
+
+
+
+  "LOC_COMPROVANTE_RETIDO": {
+    "type": "text",
+    "content": "*REGISTRO RETENÇÃO*\n\nPor favor, envie sua localização"
+  },
+  "LOC_DIVERGENCIA": {
+    "type": "text",
+    "content": "*REGISTRO DIVERGÊNCIA*\n\nPor favor, envie sua localização"
+  },
+  "LOC_ENDERECO_NAO_ENCONTRADO": {
+    "type": "text",
+    "content": "*REGISTRO ENDEREÇO NÃO ENCONTRADO*\n\nPor favor, envie sua localização"
+  },
+  "LOC_DESTINATARIO_AUSENTE": {
+    "type": "text",
+    "content": "*REGISTRO AUSÊNCIA*\n\nPor favor, envie sua localização"
+  },
+  "LOC_RECUSA": {
+    "type": "text",
+    "content": "*REGISTRO RECUSA*\n\nPor favor, envie sua localização"
+  },
+
+
+
+  "AGUARDAR_TORRE_COMPROVANTE_RETIDO": {
+    "type": "text",
+    "content": "*AGUARDE*\n\nEstamos entrando em contato com o remetente, por favor aguarde"
+  },
+
+
+
+  "RETENCAO_COMPROVANTE_APROVADA": {
+    "type": "text",
+    "content": "*REGISTRO RETENÇÃO*\n\nA retenção foi a aprovada, por favor envie a foto do termo de retenção assinado"
+  },
+  "RETENCAO_COMPROVANTE_DESAPROVADA": {
+    "type": "text",
+    "content": "*REGISTRO RETENÇÃO*\n\nA retenção não foi aprovada. Para prosseguir, envie uma foto nítida do canhoto que evidencie a presença do código do CTe, carimbo, nome do remetente e destinatário, e endereço"
+  },
+
+  "FOTO_TERMO_RETENCAO": {
+    "type": "text",
+    "content": "*REGISTRO RETENÇÃO*\n\nPor favor, envie uma foto do termo de retenção"
+  },
+  "OBRIGADO_RETENCAO_APROVADA": {
+    "type": "text",
+    "content": "*OBRIGADO*\n\nOcorrência registrada com sucesso"
+  },
+
+
+
+  "NOME_RECEBEDOR_DIVERGENCIA": {
+    "type": "text",
+    "content": "*REGISTRO DIVERGÊNCIA*\n\nPor favor, envie o nome do recebedor da entrega"
+  },
+  "NOME_RECEBEDOR_RECUSA": {
+    "type": "text",
+    "content": "*REGISTRO RECUSA*\n\nPor favor, envie o nome do recebedor da entrega"
+  },
+
+  "NUMERO_RECEBEDOR_DIVERGENCIA": {
+    "type": "text",
+    "content": "*REGISTRO DIVERGÊNCIA*\n\nPor favor, envie o número para contato do recebedor da entrega"
+  },
+  "NUMERO_RECEBEDOR_RECUSA": {
+    "type": "text",
+    "content": "*REGISTRO RECUSA*\n\nPor favor, envie o número para contato do recebedor da entrega"
+  },
+
+  "DETALHAR_OCORRENCIA_DIVERGENCIA": {
+    "type": "text",
+    "content": "*REGISTRO DIVERGÊNCIA*\n\nPor favor, envie uma só mensagem para detalhar o ocorrido"
+  },
+  "DETALHAR_OCORRENCIA_RECUSA": {
+    "type": "text",
+    "content": "*REGISTRO RECUSA*\n\nPor favor, envie uma só mensagem para detalhar o ocorrido"
+  },
+
+  "AGUARDAR_TORRE_DIVERGENCIA": {
+    "type": "text",
+    "content": "*AGUARDE*\n\nEstamos entrando em contato com o cliente, por favor aguarde retorno"
+  },
+
+  "AGUARDAR_TORRE_RECUSA": {
+    "type": "text",
+    "content": "*AGUARDE*\n\nEstamos entrando em contato com o cliente, por favor aguarde retorno"
+  },
+
+
+  "OBRIGADO_OCORRENCIA_REGISTRADA": {
+    "type": "text",
+    "content": "*OBRIGADO*\n\nOcorrência registrada com sucesso"
+  },
+
+
+
+  "FOTO_LOCAL_ENDERECO_NAO_ENCONTRADO": {
+    "type": "text",
+    "content": "*REGISTRO ENDEREÇO NÃO ENCONTRADO*\n\nPor favor, envie uma foto do local onde você se encontra"
+  },
+  "FOTO_LOCAL_AUSENCIA": {
+    "type": "text",
+    "content": "*REGISTRO AUSÊNCIA*\n\nPor favor, envie uma foto do local onde você se encontra"
+  },
+
+  "AGUARDAR_TORRE_ENDERECO_NAO_ENCONTRADO": {
+    "type": "text",
+    "content": "*AGUARDE*\n\nEstamos verificando os dados do endereço de entrega, por favor aguarde retorno"
+  },
+
+  "AGUARDAR_TORRE_AUSENCIA": {
+    "type": "text",
+    "content": "*AGUARDE*\n\nEstamos entrando em contato com o cliente, por favor aguarde retorno"
+  },
+
+  "ENDERECO_ESTA_CORRETO": {
+    "type": "text",
+    "content": "*REGISTRO ENDEREÇO NÃO ENCONTRADO*\n\nO endereço está correto, responda essa mensagem para falar com a torre e receber mais informações"
+  },
+  "ENDERECO_ESTA_ERRADO": {
+    "type": "text",
+    "content": "*REGISTRO ENDEREÇO NÃO ENCONTRADO*\n\nO endereço está incorreto, veículo liberado para retirada, retorne com carga para a unidade"
+  },
+
+  "DESTINATARIO_CONTATADO": {
+    "type": "text",
+    "content": "*REGISTRO AUSÊNCIA*\n\nDestinatário foi contatado, responda essa mensagem para falar com a torre e receber mais informações"
+  },
+  "DESTINATARIO_NAO_CONTATADO": {
+    "type": "text",
+    "content": "*REGISTRO AUSÊNCIA*\n\nO destinatário naão foi contatado, veículo liberado para retirada, retorne com carga para a unidade"
+  }
+}

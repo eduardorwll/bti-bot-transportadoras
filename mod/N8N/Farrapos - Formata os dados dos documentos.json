@@ -1,0 +1,870 @@
+{
+  "name": "Farrapos - Formata os dados dos documentos",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "bc2777bd-d6bd-4ea9-bf06-f1367985b729",
+      "name": "Inicia pelo workflow de Verificação"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "notasfiscais",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "tarefa_id",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        0
+      ],
+      "id": "c63b342e-07e1-40cc-9188-40d6f9376b48",
+      "name": "Pega as NFs com o id da tarefa",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "tarefas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        480
+      ],
+      "id": "6e326fd0-c2bd-42f3-a1b2-96b1086c929c",
+      "name": "Agrega todos itens em um array de tarefas"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "152e93b8-be29-4df5-9b7a-7b0ee2e5a492",
+              "name": "idTarefa",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "6bb48960-3064-4afc-b36a-1e60c29b585d",
+              "name": "idPai",
+              "value": "={{ $json.manifesto_id }}",
+              "type": "string"
+            },
+            {
+              "id": "cea3579b-8c2f-43c7-8d83-1114e9fefd6e",
+              "name": "codigoCTe",
+              "value": "={{ $json.codigo_cte }}",
+              "type": "string"
+            },
+            {
+              "id": "1ca1841e-daea-4985-9d9c-ad482ef5056b",
+              "name": "enderecoLatitude",
+              "value": "={{ $json.latitude }}",
+              "type": "string"
+            },
+            {
+              "id": "a3b9e5aa-8b43-4a73-b3ae-a6c452a70bbd",
+              "name": "enderecoLongitude",
+              "value": "={{ $json.longitude }}",
+              "type": "string"
+            },
+            {
+              "id": "632cee46-201d-410f-b3d0-3f52a7b5691b",
+              "name": "enderecoEntrega",
+              "value": "={{ $json.endereco }}",
+              "type": "string"
+            },
+            {
+              "id": "37db0faa-27ba-4126-9346-823a1f5ca441",
+              "name": "remetente",
+              "value": "={{ $json.remetente }}",
+              "type": "string"
+            },
+            {
+              "id": "9dfb9d2d-5307-47fa-8fd0-d879f0da861e",
+              "name": "destinatario",
+              "value": "={{ $json.destinatario }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1056,
+        480
+      ],
+      "id": "deb90dd2-ae0b-441c-9415-41dfbc6de6d4",
+      "name": "Seleciona campos uteis para o menu de tarefas"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e751d854-63a2-45e1-a833-aecf489d3f20",
+              "name": "idNF",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "63fc275e-b0fc-4e9d-97d9-9cb22c49101d",
+              "name": "idPai",
+              "value": "={{ $json.tarefa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a2c329f4-4677-4b21-84cb-eeadbb4e6d4e",
+              "name": "codigoNF",
+              "value": "={{ $json.numero }}",
+              "type": "string"
+            },
+            {
+              "id": "8ea16e7a-623d-452b-9704-6d4d44eb3416",
+              "name": "valorNF",
+              "value": "={{ $json.valor }}",
+              "type": "number"
+            },
+            {
+              "id": "e1363b3a-9070-49ab-88b5-35667c84d26a",
+              "name": "pesoNF",
+              "value": "={{ $json.peso }}",
+              "type": "number"
+            },
+            {
+              "id": "5b4c26d9-a1a9-4b79-9d47-98eababe8198",
+              "name": "volumesNF",
+              "value": "={{ $json.quantidade_volume }}",
+              "type": "number"
+            },
+            {
+              "id": "b180d5f1-51be-4681-bd27-dfcb95c395f8",
+              "name": "emissaoNF",
+              "value": "={{ $json.data_emissao }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        272
+      ],
+      "id": "6ea6fcd5-db3a-4f0f-9994-2067ee169a7e",
+      "name": "Seleciona campos uteis para o menu de notas"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "notas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        272
+      ],
+      "id": "b5c60afd-0719-4670-91ba-0c18bfc1442f",
+      "name": "Agrega todos itens em um array de notas"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e751d854-63a2-45e1-a833-aecf489d3f20",
+              "name": "idManifesto",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "3a2ac094-f097-4871-9670-bcd0ffb60918",
+              "name": "observacao",
+              "value": "={{ $json.observacao }}",
+              "type": "string"
+            },
+            {
+              "id": "89b4d15b-87dd-4079-b402-08fa3d232dbc",
+              "name": "dataEmissao",
+              "value": "={{ $json.data_emissao }}",
+              "type": "string"
+            },
+            {
+              "id": "217fb995-7679-45d7-832b-ceba13a93b69",
+              "name": "numero",
+              "value": "={{ $json.numero_manifesto }}",
+              "type": "string"
+            },
+            {
+              "id": "51d71172-0da2-42ca-ad26-87896620822c",
+              "name": "uf",
+              "value": "={{ $json.uf }}",
+              "type": "string"
+            },
+            {
+              "id": "a492f8ce-dd6b-451c-83f8-5970acef787a",
+              "name": "prioridade",
+              "value": "={{ $json.prioridade }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        704
+      ],
+      "id": "ae2b9051-f504-4fb9-99b9-f28248db945a",
+      "name": "Seleciona campos uteis para o menu de manifestos"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "manifestos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        688
+      ],
+      "id": "40b40fe1-a360-4428-bb3a-3943d24be2fc",
+      "name": "Agrega todos itens em um array de manifestos"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1920,
+        464
+      ],
+      "id": "6cd12eb3-8ed0-495a-bbef-0170ebe9ea0c",
+      "name": "Junta todos arrays"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "manifestos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        -320
+      ],
+      "id": "81c7b596-b564-49ba-98d3-02fdffb9d2a2",
+      "name": "Cria array com todos dados dos manifestos"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "tarefas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        -160
+      ],
+      "id": "42f8b844-03f5-4c08-ae91-7d0fcb2e67e4",
+      "name": "Cria array com todos dados das tarefas"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "notas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        0
+      ],
+      "id": "b8831bd7-c505-4852-bacd-ed8b6c34b8aa",
+      "name": "Cria array com todos dados das notas"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1952,
+        -288
+      ],
+      "id": "53930fca-bf61-49f9-b338-ee8ceff85cd9",
+      "name": "Une todos arrays"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "dados_brutos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        -256
+      ],
+      "id": "8ee3a5eb-9dc7-4487-832e-0e5e9804f58b",
+      "name": "Cria array com os arrays dos dados brutos"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "dados_filtrados",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        480
+      ],
+      "id": "99c3d643-d76e-482d-823a-12dd00069d42",
+      "name": "Cria array com os arrays dos dados uteis"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ocorrencias",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "tarefa_id",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        -480
+      ],
+      "id": "cba25eb0-232e-4089-a826-6dadef49c27d",
+      "name": "Pega todas ocorrências",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "ocorrencias",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        -480
+      ],
+      "id": "71da1f45-ca90-4a96-b9b6-5e19066cb854",
+      "name": "Cria array com todos dados das ocorrencias"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2432,
+        160
+      ],
+      "id": "07c81f62-74c4-4225-88f0-5debf199899d",
+      "name": "Junta os dois"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "dados_documentos_fiscais",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        160
+      ],
+      "id": "c31fa0f4-5044-4c26-976d-f4a5b1a58a9f",
+      "name": "Cria array com dados brutos e filtrados"
+    },
+    {
+      "parameters": {
+        "url": "https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/manifestos",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "funcionario_id",
+              "value": "=eq.{{ $json.sessao.funcionario_id }}"
+            },
+            {
+              "name": "order",
+              "value": "data_criacao.asc"
+            },
+            {
+              "name": "status",
+              "value": "neq.2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        688,
+        0
+      ],
+      "id": "7c9daea0-027e-4006-8b7f-f62eab07a8fa",
+      "name": "Pega manifestos ativos do funcionario",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://pljiqvdifpjbinxdadmz.supabase.co/rest/v1/tarefas",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "manifesto_id",
+              "value": "=eq.{{ $json.id }}"
+            },
+            {
+              "name": "order",
+              "value": "data_criacao.asc"
+            },
+            {
+              "name": "status",
+              "value": "neq.2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "ef813ff3-e9c5-43cb-b1ee-bd6fee9e9f3c",
+      "name": "Pega tarefas ativas dos manifestos",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1f2MLqKps462P7gw",
+          "name": "Supabase Farrapos"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Rbj3NhFcalbjs9MX",
+          "mode": "list",
+          "cachedResultName": "Farrapos - Montador de contexto"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3168,
+        160
+      ],
+      "id": "41ca6097-3372-435b-a5a5-d8ffd04fe1dd",
+      "name": "Executa workflow de montagem do contexto"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "93bfdc5a-aed5-4ca0-bfbc-6e6297af32da",
+              "name": "sessao",
+              "value": "={{ $('Inicia pelo workflow de Verificação').item.json.sessao }}",
+              "type": "object"
+            },
+            {
+              "id": "5c254677-6559-4ac1-97af-620f5d56ba17",
+              "name": "resposta_whatsapp",
+              "value": "={{ $('Inicia pelo workflow de Verificação').item.json.resposta_whatsapp }}",
+              "type": "object"
+            },
+            {
+              "id": "529e7b4e-7c30-4509-96df-ea9bdca076fa",
+              "name": "dados_documentos_fiscais",
+              "value": "={{ $json.dados_documentos_fiscais }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2848,
+        160
+      ],
+      "id": "dc3fe55b-8bba-4cb7-9e7d-f864862fe2ae",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Inicia pelo workflow de Verificação": {
+      "main": [
+        [
+          {
+            "node": "Pega manifestos ativos do funcionario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega as NFs com o id da tarefa": {
+      "main": [
+        [
+          {
+            "node": "Seleciona campos uteis para o menu de notas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Cria array com todos dados das notas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleciona campos uteis para o menu de tarefas": {
+      "main": [
+        [
+          {
+            "node": "Agrega todos itens em um array de tarefas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleciona campos uteis para o menu de notas": {
+      "main": [
+        [
+          {
+            "node": "Agrega todos itens em um array de notas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleciona campos uteis para o menu de manifestos": {
+      "main": [
+        [
+          {
+            "node": "Agrega todos itens em um array de manifestos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrega todos itens em um array de notas": {
+      "main": [
+        [
+          {
+            "node": "Junta todos arrays",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrega todos itens em um array de tarefas": {
+      "main": [
+        [
+          {
+            "node": "Junta todos arrays",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Agrega todos itens em um array de manifestos": {
+      "main": [
+        [
+          {
+            "node": "Junta todos arrays",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Junta todos arrays": {
+      "main": [
+        [
+          {
+            "node": "Cria array com os arrays dos dados uteis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria array com todos dados dos manifestos": {
+      "main": [
+        [
+          {
+            "node": "Une todos arrays",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Cria array com todos dados das tarefas": {
+      "main": [
+        [
+          {
+            "node": "Une todos arrays",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Cria array com todos dados das notas": {
+      "main": [
+        [
+          {
+            "node": "Une todos arrays",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Une todos arrays": {
+      "main": [
+        [
+          {
+            "node": "Cria array com os arrays dos dados brutos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega todas ocorrências": {
+      "main": [
+        [
+          {
+            "node": "Cria array com todos dados das ocorrencias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria array com todos dados das ocorrencias": {
+      "main": [
+        [
+          {
+            "node": "Une todos arrays",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria array com os arrays dos dados brutos": {
+      "main": [
+        [
+          {
+            "node": "Junta os dois",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria array com os arrays dos dados uteis": {
+      "main": [
+        [
+          {
+            "node": "Junta os dois",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Junta os dois": {
+      "main": [
+        [
+          {
+            "node": "Cria array com dados brutos e filtrados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega manifestos ativos do funcionario": {
+      "main": [
+        [
+          {
+            "node": "Cria array com todos dados dos manifestos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Pega tarefas ativas dos manifestos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Seleciona campos uteis para o menu de manifestos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega tarefas ativas dos manifestos": {
+      "main": [
+        [
+          {
+            "node": "Cria array com todos dados das tarefas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Pega todas ocorrências",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Pega as NFs com o id da tarefa",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Seleciona campos uteis para o menu de tarefas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria array com dados brutos e filtrados": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Executa workflow de montagem do contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "667eeca6-0fac-4e58-a27b-5cff63b89b31",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aa6df07db1b386814570ffd65bf5a1bc78881504b712a406d3a96a243fdeef75"
+  },
+  "id": "VijAMGONWhWzLInR",
+  "tags": []
+}
