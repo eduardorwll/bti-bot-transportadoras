@@ -3,6 +3,7 @@
 
 # Exceções - arquivos SQL que devem ser versionados
 !DatabaseCompponents/database.sql
+!Queries/*.sql
 
 # Arquivos de configuração e logs
 DatabaseCompponents/.env
