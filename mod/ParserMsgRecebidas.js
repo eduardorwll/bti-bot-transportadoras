@@ -1,6 +1,6 @@
 const mensagem = $input.first().json.body.entry[0].changes[0].value.messages[0];
 
-const texto = (mensagem.texto?.body || "").trim().toUpperCase();
+const texto = (mensagem.text?.body || "").trim().toUpperCase();
 const replyType = mensagem.type
 
 // Resposta Interativa

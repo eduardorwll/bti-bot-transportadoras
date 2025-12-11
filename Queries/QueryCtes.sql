@@ -1,8 +1,7 @@
 SELECT
     A.ope001_codigo,
     A.cte001_codigo,
-    DEST.uf
-    DEST.xmun,
+    DEST.uf DEST.xmun,
     DEST.xlgr,
     DEST.nro,
     DEST.xbairro,

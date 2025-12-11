@@ -1,25 +1,28 @@
 let contexto = $input.first().json
-const tarefas = $('Inicia pelo workflow dos dados de documentos').first().json.dados_documentos_fiscais[1].dados_filtrados[1].tarefas
-const tarefasBrutas = $('Inicia pelo workflow dos dados de documentos').first().json.dados_documentos_fiscais[0].dados_brutos[2].tarefas
+const tarefas = $('Inicia pelo workflow dos dados de documentos').first().json.dados_brutos[2].tarefas
 
 const cteEscolhida = $input.first().json.cte_tarefa_atual ??(contexto.descricao_resposta_interativa !== null ? (contexto.descricao_resposta_interativa).match(/CTe:\s*(\d+)/)[1] : null)
-const idTarefaEscolhida = $input.first().json.id_tarefa_atual ?? (cteEscolhida !== null ? (tarefas.find(tarefa => tarefa.codigoCTe === cteEscolhida)).idTarefa : null)
+const idTarefaEscolhida = $input.first().json.id_tarefa_atual ?? (cteEscolhida !== null ? (tarefas.find(tarefa => tarefa.cte001_codigo === cteEscolhida)).cte001_codigo : null)
+
+// Armazenar input uma única vez para evitar múltiplas chamadas
+const inputJson = $input.first().json
+const currentId = inputJson.id_tarefa_atual
 
 // Inicializar os objetos
 let resultado = {
     payloadSessao: {
-      cte_tarefa_atual: $input.first().json.cte_tarefa_atual, 
+      cte_tarefa_atual: inputJson.cte_tarefa_atual, 
       ativo: true, 
-      id_tarefa_atual: $input.first().json.id_tarefa_atual, 
-      estado: $input.first().json.proximo_estado, 
-      escolha_automatica: $input.first().json.escolha_automatica, 
-      tarefas_ordenadas_previamente: $input.first().json.tarefas_ordenadas_previamente
+      id_tarefa_atual: currentId, 
+      estado: inputJson.proximo_estado, 
+      escolha_automatica: inputJson.escolha_automatica, 
+      tarefas_ordenadas_previamente: inputJson.tarefas_ordenadas_previamente
     },
   
     payloadTarefas: {
-      codigo_cte: $input.first().json.cte_tarefa_atual, 
-      id_tarefa: $input.first().json.id_tarefa_atual,
-      status: $input.first().json.id_tarefa_atual !== null ? (tarefasBrutas.find(tarefa => tarefa.id === $input.first().json.id_tarefa_atual)).status : null
+      codigo_cte: inputJson.cte_tarefa_atual, 
+      id_tarefa: currentId,
+      status: currentId !== null ? (tarefasBrutas.find(tarefa => tarefa.id === currentId)).status : null
     },
 
     registroOcorrencia: {
@@ -32,6 +35,7 @@ let resultado = {
     contexto: contexto
 }
 
+// Atualiza a tarefa/cte atual no payload de sessão e finaliza a sessão atual
 switch(resultado.contexto.estado_atual){
   case 'OBRIGADO_SUCESSO':
   case 'OBRIGADO_PENDENCIA':
@@ -48,100 +52,43 @@ switch(resultado.contexto.estado_atual){
 
     resultado.payloadSessao.id_tarefa_atual = idTarefaEscolhida
     resultado.payloadSessao.cte_tarefa_atual = cteEscolhida
+
     resultado.payloadSessao.ativo = false
     resultado.payloadSessao.estado = "FINALIZADO"
 }
 
-switch (resultado.contexto.proximo_estado){
-    case 'ENCERRAMENTO':
-        resultado.payloadSessao.ativo = false
-        resultado.payloadSessao.estado = 'FINALIZADO'
-        break
+// Gerencia o estado final e status das tarefas
+if (resultado.contexto.proximo_estado === ENCERRAMENTO){
+    resultado.payloadSessao.ativo = false
+    resultado.payloadSessao.estado = 'FINALIZADO'
+}else {
+    let novoStatus;
+    switch(resultado.contexto.proximo_estado){
+        case 'CONTINUA_COM_TORRE':
+        case 'OBRIGADO_RETENCAO_APROVADA':
+        case 'ENDERECO_ESTA_ERRADO':
+        case 'OBRIGADO_OCORRENCIA_REGISTRADA':
+            novoStatus = "4"
+            break
+        case 'OBRIGADO_SUCESSO': 
+            novoStatus = "2"
+            break
+        case 'OBRIGADO_PENDENCIA': 
+            novoStatus = "3"
+            break
+    }
 
-    case 'CONTINUA_COM_TORRE':
-        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida
-        resultado.payloadTarefas.codigo_cte = cteEscolhida
-        resultado.payloadTarefas.status = "4"
+    // Atualizar payloads apenas uma vez com o novo status
+    resultado.payloadTarefas.id_tarefa = idTarefaEscolhida
+    resultado.payloadTarefas.codigo_cte = cteEscolhida
+    resultado.payloadTarefas.status = novoStatus
 
-        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida
-        resultado.contexto.id_tarefa_atual = cteEscolhida
+    resultado.contexto.cte_tarefa_atual = cteEscolhida
+    resultado.contexto.id_tarefa_atual = idTarefaEscolhida
 
-        resultado.payloadSessao.id_tarefa_atual = null
-        resultado.payloadSessao.cte_tarefa_atual = null
-
-        break
-
-    case 'OBRIGADO_SUCESSO':
-        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida
-        resultado.payloadTarefas.codigo_cte = cteEscolhida
-        resultado.payloadTarefas.status = "2"
-
-        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida
-        resultado.contexto.id_tarefa_atual = cteEscolhida
-
-        resultado.payloadSessao.id_tarefa_atual = null
-        resultado.payloadSessao.cte_tarefa_atual = null
-
-        resultado.contexto.mensagens_consecutivas = "1"
-        break
-    
-    case 'OBRIGADO_PENDENCIA':
-        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida
-        resultado.payloadTarefas.codigo_cte = cteEscolhida
-        resultado.payloadTarefas.status = "3"
-
-        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida
-        resultado.contexto.id_tarefa_atual = cteEscolhida
-
-        resultado.payloadSessao.id_tarefa_atual = null
-        resultado.payloadSessao.cte_tarefa_atual = null
-
-        resultado.contexto.mensagens_consecutivas = "1"
-        break
-    
-    case 'OBRIGADO_RETENCAO_APROVADA':
-        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida
-        resultado.payloadTarefas.codigo_cte = cteEscolhida
-        resultado.payloadTarefas.status = "4"
-
-        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida
-        resultado.contexto.id_tarefa_atual = cteEscolhida
-
-        resultado.payloadSessao.id_tarefa_atual = null
-        resultado.payloadSessao.cte_tarefa_atual = null
-
-        resultado.contexto.mensagens_consecutivas = "1"
-        break
-
-    case 'ENDERECO_ESTA_ERRADO':
-        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida
-        resultado.payloadTarefas.codigo_cte = cteEscolhida
-        resultado.payloadTarefas.status = "4"
-
-        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida
-        resultado.contexto.id_tarefa_atual = cteEscolhida
-
-        resultado.payloadSessao.id_tarefa_atual = null
-        resultado.payloadSessao.cte_tarefa_atual = null
-
-        resultado.contexto.mensagens_consecutivas = "1"
-        break
-
-    case 'OBRIGADO_OCORRENCIA_REGISTRADA':
-        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida
-        resultado.payloadTarefas.codigo_cte = cteEscolhida
-        resultado.payloadTarefas.status = "4"
-
-        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida
-        resultado.contexto.id_tarefa_atual = cteEscolhida
-
-        resultado.payloadSessao.id_tarefa_atual = null
-        resultado.payloadSessao.cte_tarefa_atual = null
-
-        resultado.contexto.mensagens_consecutivas = "1"
-        break
+    resultado.payloadSessao.id_tarefa_atual = null
+    resultado.payloadSessao.cte_tarefa_atual = null    
 }
-
 
 // Esse trecho serve para enviar a mensagem de simulação da torre enquanto não temos isso no fluxo
 switch (resultado.contexto.proximo_estado){
