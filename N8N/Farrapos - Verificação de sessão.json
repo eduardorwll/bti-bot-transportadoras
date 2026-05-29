@@ -1,5 +1,4 @@
 {
-  "name": "Farrapos - Verificação de sessão",
   "nodes": [
     {
       "parameters": {
@@ -29,42 +28,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -240,
-        112
+        -976,
+        1072
       ],
-      "id": "8a9fc76a-69e0-4c22-85bc-e93415deb5dc",
+      "id": "5b08a8cc-21ef-4ca6-bfa5-3edff9343736",
       "name": "Atendimento em andamento?"
-    },
-    {
-      "parameters": {
-        "respondWith": "text",
-        "responseBody": "={{ $json.query['hub.challenge'] }}",
-        "options": {}
-      },
-      "id": "5d53ad51-e8d4-46ca-af02-15f3277f3fe9",
-      "name": "Respond to Webhook",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "position": [
-        -1792,
-        -272
-      ],
-      "typeVersion": 1
-    },
-    {
-      "parameters": {
-        "path": "1fea1f5f-81c0-48ad-ae13-41e0f8e474ed",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "d03e4de9-ccef-4ce6-9d1e-9cd7adb9de13",
-      "name": "Verify",
-      "type": "n8n-nodes-base.webhook",
-      "position": [
-        -2032,
-        -272
-      ],
-      "webhookId": "793f285b-9da7-4a5e-97ce-f0976c113db5",
-      "typeVersion": 1.1
     },
     {
       "parameters": {
@@ -94,47 +62,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -672,
-        96
+        -1616,
+        1056
       ],
-      "id": "8803b3f7-731c-4e8a-a967-685092a45957",
+      "id": "792f4ba8-01c9-468a-89d4-d36c9463cc12",
       "name": "É a primeira sessão?"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 1
-          },
-          "conditions": [
-            {
-              "id": "8a765e57-8e39-4547-a99a-0458df2b75f4",
-              "operator": {
-                "type": "object",
-                "operation": "exists",
-                "singleValue": true
-              },
-              "leftValue": "={{ $item(\"0\").$node[\"Recebe mensagens da API do Whatsapp\"].json[\"body\"][\"entry\"][\"0\"][\"changes\"][\"0\"][\"value\"][\"messages\"][\"0\"] }}",
-              "rightValue": ""
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {
-          "looseTypeValidation": true
-        }
-      },
-      "id": "6b1a077c-0b1d-47b8-b65c-fcad5e553552",
-      "name": "É mensagem?",
-      "type": "n8n-nodes-base.if",
-      "position": [
-        -1808,
-        96
-      ],
-      "typeVersion": 2
     },
     {
       "parameters": {
@@ -144,9 +76,9 @@
         "filters": {
           "conditions": [
             {
-              "keyName": "funcionario_id",
+              "keyName": "fun001_codigo",
               "condition": "eq",
-              "keyValue": "={{ $('Puxa a última sessão que do número').item.json.funcionario_id }}"
+              "keyValue": "={{ $('Puxa a última sessão que do número').item.json.fun001_codigo }}"
             }
           ]
         },
@@ -170,10 +102,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        240,
-        320
+        -432,
+        1152
       ],
-      "id": "aadb7618-f0a7-40f4-9e19-57cba4204955",
+      "id": "3b648128-e146-43aa-b56c-5df6ed9d3a8d",
       "name": "Inicia a nova sessão de conversa",
       "credentials": {
         "supabaseApi": {
@@ -189,15 +121,15 @@
           "fieldValues": [
             {
               "fieldId": "id_whatsapp",
-              "fieldValue": "={{ $('Puxa todos os dados do funcionário').item.json.id_whatsapp }}"
+              "fieldValue": "={{ $('Puxa todos os dados do número').item.json.id_whatsapp }}"
             },
             {
               "fieldId": "estado",
               "fieldValue": "=BEM_VINDO"
             },
             {
-              "fieldId": "funcionario_id",
-              "fieldValue": "={{ $('Puxa todos os dados do funcionário').first().json.id }}"
+              "fieldId": "fun001_codigo",
+              "fieldValue": "={{ $('Puxa todos os dados do número').first().json.fun001_codigo }}"
             },
             {
               "fieldId": "data_atualizacao",
@@ -213,10 +145,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        224,
-        -224
+        -224,
+        704
       ],
-      "id": "c32a5bab-2148-4287-a0ff-bcb52b8901bd",
+      "id": "136f0b04-b669-40f2-a1e0-bda17ed627ae",
       "name": "Cria a sessão de conversa",
       "credentials": {
         "supabaseApi": {
@@ -231,51 +163,15 @@
         "path": "1fea1f5f-81c0-48ad-ae13-41e0f8e474ed",
         "options": {}
       },
-      "id": "e0a9bd64-fb21-4e2e-9283-69c3d56bc59c",
+      "id": "633f0e0b-5300-4542-8cba-1d9e3783b8a5",
       "name": "Recebe mensagens da API do Whatsapp",
       "type": "n8n-nodes-base.webhook",
       "position": [
-        -2016,
-        96
+        -3040,
+        1056
       ],
       "webhookId": "c4cbc1c4-e1f5-4ea5-bd9a-c5f697493985",
       "typeVersion": 1.1
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 1
-          },
-          "conditions": [
-            {
-              "id": "8a765e57-8e39-4547-a99a-0458df2b75f4",
-              "operator": {
-                "type": "object",
-                "operation": "exists",
-                "singleValue": true
-              },
-              "leftValue": "={{ $item(\"0\").$node[\"Recebe mensagens da API do Whatsapp\"].json[\"body\"][\"entry\"][\"0\"][\"changes\"][\"0\"][\"value\"][\"messages\"][\"0\"] }}",
-              "rightValue": ""
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {
-          "looseTypeValidation": true
-        }
-      },
-      "id": "7b683e69-0602-4bd7-bc1c-f8d8d4dfe44e",
-      "name": "Is message?",
-      "type": "n8n-nodes-base.if",
-      "position": [
-        -1808,
-        96
-      ],
-      "typeVersion": 2
     },
     {
       "parameters": {
@@ -293,10 +189,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -1328,
-        96
+        -2272,
+        1056
       ],
-      "id": "53b46d27-18f1-47da-bf35-ed02cf611b30",
+      "id": "791058a8-55ef-4175-a615-be6e233e84d5",
       "name": "Puxa a última sessão que do número",
       "alwaysOutputData": true,
       "credentials": {
@@ -306,19 +202,6 @@
         }
       },
       "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "jsCode": "const mensagem = $input.first().json.body.entry[0].changes[0].value.messages[0];\n\nconst texto = (mensagem.texto?.body || \"\").trim().toUpperCase();\nconst replyType = mensagem.type\n\n// Resposta Interativa\nconst tipoRespostaInterativa = mensagem.interactive?.type ?? null;\nconst respostaInterativa = mensagem.interactive?.[tipoRespostaInterativa];\nconst idRespostaInterativa = respostaInterativa?.id ?? null;\nconst tituloRespostaInterativa = respostaInterativa?.title ?? null;\nconst descricaoRespostaInterativa = respostaInterativa?.description ?? null;\n\nconst numeroBruto = mensagem.from || \"\";\nlet numeroTelefoneFormatado = numeroBruto.replace(/[^\\d]/g, \"\");\n\nif (numeroTelefoneFormatado.length === 12) {\n  numeroTelefoneFormatado = numeroTelefoneFormatado.slice(0,4) + \"9\" + numeroTelefoneFormatado.slice(4);\n}\n\n// Retorno\nreturn { json: { \n  id_whatsapp: `${numeroTelefoneFormatado}`,\n  tipo_resposta: replyType,\n  tipo_resposta_interativa: tipoRespostaInterativa,\n  id_resposta_interativa: idRespostaInterativa,\n  titulo_resposta_interativa: tituloRespostaInterativa,\n  descricao_resposta_interativa: descricaoRespostaInterativa,\n  resposta_texto: texto === \"\" ? null : texto\n  } \n}"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1568,
-        80
-      ],
-      "id": "4855f837-6986-4dcf-8bf2-ae4585603d3b",
-      "name": "Parser numero/mensagem"
     },
     {
       "parameters": {
@@ -336,7 +219,7 @@
               "rightValue": "",
               "operator": {
                 "type": "object",
-                "operation": "notEmpty",
+                "operation": "empty",
                 "singleValue": true
               }
             }
@@ -348,16 +231,16 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -240,
-        -384
+        -1120,
+        576
       ],
-      "id": "7c37e6b6-3e57-4662-bd3e-a4ccef50e379",
+      "id": "6e701ff9-1abd-4adb-888b-a0d6c09094ff",
       "name": "Número não está registrado"
     },
     {
       "parameters": {
         "operation": "sendAndWait",
-        "phoneNumberId": "764981153363033",
+        "phoneNumberId": "853762957828721",
         "recipientPhoneNumber": "={{ $('Parser numero/mensagem').item.json.id_whatsapp }}",
         "message": "=Seu número não está registrado no sistema!",
         "responseType": "customForm",
@@ -370,7 +253,7 @@
             },
             {
               "fieldLabel": "Qual é seu CPF/CNPJ?",
-              "placeholder": "123.456.789-01",
+              "placeholder": "12345678901",
               "requiredField": true
             },
             {
@@ -409,16 +292,16 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1,
       "position": [
-        32,
-        -576
+        -704,
+        384
       ],
-      "id": "391041ff-299a-4a92-a432-67c6722fd50e",
+      "id": "afa86023-6870-45af-875e-23e8b30a8af8",
       "name": "Envia mensagem e formulário de erro",
       "webhookId": "bcce6af5-c6e0-4cf8-95b9-7fe0993f723b",
       "credentials": {
         "whatsAppApi": {
-          "id": "6DyQbUy3Ty2nyzEV",
-          "name": "Token Rewell"
+          "id": "1drs0e7LTkRTk9Yc",
+          "name": "WhatsApp account"
         }
       }
     },
@@ -445,7 +328,7 @@
             },
             {
               "fieldId": "numero_relator",
-              "fieldValue": "={{ $('Teste').item.json.id_whatsapp }}"
+              "fieldValue": "={{ $('Parser').item.json.id_whatsapp }}"
             }
           ]
         }
@@ -453,10 +336,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        496,
-        -688
+        -240,
+        272
       ],
-      "id": "a8ac5f46-5533-48ac-91c4-9b903fd8d75d",
+      "id": "27acc8af-05ab-4147-ae96-81878f7c1688",
       "name": "Registra problema no banco",
       "credentials": {
         "supabaseApi": {
@@ -493,40 +376,40 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        240,
-        -576
+        -496,
+        384
       ],
-      "id": "bc9a911b-dc54-485c-9d13-1d688f376e89",
+      "id": "eb89601d-4f2e-49a0-a6bf-a7d4a77b5be8",
       "name": "Houve reposta ao formulário?"
     },
     {
       "parameters": {
         "operation": "send",
-        "phoneNumberId": "764981153363033",
-        "recipientPhoneNumber": "={{ $('Parser numero/mensagem').item.json.id_whatsapp }}",
+        "phoneNumberId": "933469666510389",
+        "recipientPhoneNumber": "=5553991200844",
         "textBody": "Nenhuma resposta recebida dentro de uma hora, cancelando atendimento.",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1,
       "position": [
-        496,
-        -464
+        -240,
+        496
       ],
-      "id": "ed384246-2cf3-4b16-9d71-eeabc4bdc734",
+      "id": "0c9a95f8-4e77-4a51-9ca8-b9ef41b00994",
       "name": "Finaliza conversa por timeout",
       "webhookId": "17f2ead1-515b-4318-8f05-2291bb3dcd60",
       "credentials": {
         "whatsAppApi": {
-          "id": "6DyQbUy3Ty2nyzEV",
-          "name": "Token Rewell"
+          "id": "1drs0e7LTkRTk9Yc",
+          "name": "WhatsApp account"
         }
       }
     },
     {
       "parameters": {
         "operation": "send",
-        "phoneNumberId": "764981153363033",
+        "phoneNumberId": "933469666510389",
         "recipientPhoneNumber": "={{ $('Parser numero/mensagem').item.json.id_whatsapp }}",
         "textBody": "Muito obrigado pelo feedback, o problema foi repassado à TI.",
         "additionalFields": {}
@@ -534,16 +417,16 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1,
       "position": [
-        704,
-        -688
+        -32,
+        272
       ],
-      "id": "dd39462a-db10-43b4-ac5b-c3cd7f312618",
+      "id": "13356954-d40c-453e-8b64-e55f71990f5f",
       "name": "Finaliza conversa agradecendo feedback",
       "webhookId": "17f2ead1-515b-4318-8f05-2291bb3dcd60",
       "credentials": {
         "whatsAppApi": {
-          "id": "6DyQbUy3Ty2nyzEV",
-          "name": "Token Rewell"
+          "id": "1drs0e7LTkRTk9Yc",
+          "name": "WhatsApp account"
         }
       }
     },
@@ -560,14 +443,8 @@
             {
               "id": "80d36f5b-2d0f-4615-8a33-ea82474a6f75",
               "name": "resposta_whatsapp",
-              "value": "={{ $node[\"Parser numero/mensagem\"].json }}",
+              "value": "={{ $node[\"Parser\"].json }}",
               "type": "object"
-            },
-            {
-              "id": "cfdeea9d-23cd-42b0-88be-9e1acf37fdcb",
-              "name": "sessao.image_id",
-              "value": "={{ $('Recebe mensagens da API do Whatsapp').item.json.body.entry[0].changes[0].value.messages[0].interactive.type === 'image' ? $('Recebe mensagens da API do Whatsapp').item.json.body.entry[0].changes[0].value.messages[0].image.id : null }}",
-              "type": "string"
             }
           ]
         },
@@ -576,10 +453,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        496,
-        96
+        -240,
+        1056
       ],
-      "id": "c36d73a7-c0cf-449d-af9e-34a996cb0706",
+      "id": "2a73c8c2-4b21-4d65-bb43-018a6ebdf596",
       "name": "Passa adiante os dados da sessão"
     },
     {
@@ -590,7 +467,7 @@
           "conditions": [
             {
               "keyName": "funcionario_id",
-              "keyValue": "={{ $('Puxa a última sessão que do número').first().json.funcionario_id }}"
+              "keyValue": "={{ $('Puxa a última sessão que do número').first().json.fun001_codigo }}"
             }
           ]
         }
@@ -598,10 +475,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -1104,
-        96
+        -1824,
+        1056
       ],
-      "id": "ef436275-b8cc-46dd-893e-18dd40da18c7",
+      "id": "f45b9ae7-32d0-45d4-83a4-a3d2d0930452",
       "name": "Puxa as informações do veículo",
       "alwaysOutputData": true,
       "credentials": {
@@ -610,59 +487,8 @@
           "name": "Supabase Farrapos"
         }
       },
+      "disabled": true,
       "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://graph.facebook.com/v22.0/764981153363033/messages",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "whatsAppApi",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n    \"messaging_product\": \"whatsapp\",\n    \"recipient_type\": \"individual\",\n    \"to\": \"{{ $('Parser numero/mensagem').item.json.id_whatsapp }}\",\n    \"type\": \"interactive\",\n    \"interactive\": {\n        \"type\": \"button\",\n        \"header\": {\n            \"type\": \"text\",\n            \"text\": \"Bem vindo!\"\n        },\n        \"body\": {\n            \"text\": \"Esse número pertence à {{ $('Puxa todos os dados do funcionário').item.json.nome }}, dono do veículo de placa {{ $('Puxa as informações do veículo').item.json.placa }}?\"\n        },\n        \"footer\": {\n            \"text\": \"Escolha uma das opções abaixo\"\n        },\n        \"action\": {\n            \"buttons\": [\n                {\n                    \"type\": \"reply\",\n                    \"reply\": {\n                        \"id\": \"0\",\n                        \"title\": \"Sim, sou eu\"\n                    }\n                },\n                {\n                    \"type\": \"reply\",\n                    \"reply\": {\n                        \"id\": \"1\",\n                        \"title\": \"Não sou eu\"\n                    }\n                }\n            ]\n        }\n    }\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        32,
-        -224
-      ],
-      "id": "e9c5d35f-2d29-4c86-bf42-51ef94ca8030",
-      "name": "Inicia primeira conversa",
-      "credentials": {
-        "whatsAppApi": {
-          "id": "6DyQbUy3Ty2nyzEV",
-          "name": "Token Rewell"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://graph.facebook.com/v22.0/764981153363033/messages",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "whatsAppApi",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n    \"messaging_product\": \"whatsapp\",\n    \"recipient_type\": \"individual\",\n    \"to\": \"{{ $('Parser numero/mensagem').item.json.id_whatsapp }}\",\n    \"type\": \"interactive\",\n    \"interactive\": {\n        \"type\": \"button\",\n        \"header\": {\n            \"type\": \"text\",\n            \"text\": \"Bem vindo!\"\n        },\n        \"body\": {\n            \"text\": \"Esse número pertence à {{ $('Puxa todos os dados do funcionário').item.json.nome }}, dono do veículo de placa {{ $('Puxa as informações do veículo').item.json.placa }}?\"\n        },\n        \"footer\": {\n            \"text\": \"Escolha uma das opções abaixo\"\n        },\n        \"action\": {\n            \"buttons\": [\n                {\n                    \"type\": \"reply\",\n                    \"reply\": {\n                        \"id\": \"0\",\n                        \"title\": \"Sim, sou eu\"\n                    }\n                },\n                {\n                    \"type\": \"reply\",\n                    \"reply\": {\n                        \"id\": \"1\",\n                        \"title\": \"Não sou eu\"\n                    }\n                }\n            ]\n        }\n    }\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        16,
-        320
-      ],
-      "id": "4c31dd3f-3ab3-4a84-9fbf-e0d8550ad103",
-      "name": "Inicia nova conversa",
-      "credentials": {
-        "whatsAppApi": {
-          "id": "6DyQbUy3Ty2nyzEV",
-          "name": "Token Rewell"
-        }
-      }
     },
     {
       "parameters": {
@@ -671,8 +497,8 @@
         "filters": {
           "conditions": [
             {
-              "keyName": "id",
-              "keyValue": "={{ $('Puxa a última sessão que do número').first().json.funcionario_id }}"
+              "keyName": "id_whatsapp",
+              "keyValue": "={{ $('Puxa a última sessão que do número').first().json.fun001_codigo }}"
             }
           ]
         }
@@ -680,10 +506,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -896,
-        96
+        -2048,
+        1056
       ],
-      "id": "7305b92b-b038-4af3-8407-fd01e855f094",
+      "id": "1036e033-db19-4755-b77e-ad25d1b4da3c",
       "name": "Puxa todos os dados do funcionário",
       "alwaysOutputData": true,
       "credentials": {
@@ -701,8 +527,8 @@
         "filters": {
           "conditions": [
             {
-              "keyName": "id",
-              "keyValue": "={{ $('Parser numero/mensagem').first().json.id_whatsapp }}"
+              "keyName": "id_whatsapp",
+              "keyValue": "={{ $('Parser').first().json.id_whatsapp }}"
             }
           ]
         }
@@ -710,10 +536,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -448,
-        -384
+        -1328,
+        576
       ],
-      "id": "93766990-fa9a-445b-8a13-da8163a4f9ab",
+      "id": "5fd8364d-9213-4277-984c-14ce9d27c950",
       "name": "Puxa todos os dados do número",
       "alwaysOutputData": true,
       "credentials": {
@@ -727,9 +553,10 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "VijAMGONWhWzLInR",
+          "value": "LI7ZZUHrwha3K9rE",
           "mode": "list",
-          "cachedResultName": "Farrapos - Pega e formata os dados dos documentos"
+          "cachedResultUrl": "/workflow/LI7ZZUHrwha3K9rE",
+          "cachedResultName": "Farrapos - Formata os dados dos documentos"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -744,26 +571,176 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        720,
-        96
+        -16,
+        1056
       ],
-      "id": "63a0217a-e2cc-495c-9d0e-f77c6e62a031",
+      "id": "a0b98807-8f68-498b-938d-f27c63a3d671",
       "name": "Executa workflow de dados"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "55dd2cdf-8a82-41af-a99f-1cda75bc13ac",
+              "name": "tipo_resposta",
+              "value": "={{ ($json.body.text) ? \"text\" : ($json.body.image) ? \"image\" : ($json.body.image) ? \"image\" : ($json.body.listResponseMessage) ? \"list\" : ($json.body.buttonsResponseMessage) ? \"button\" : \"invalido\" }}",
+              "type": "string"
+            },
+            {
+              "id": "b97d1a2d-3c23-4fe8-b563-c0ec172027a1",
+              "name": "id_whatsapp",
+              "value": "={{ $json.body.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "586a162c-cc58-43df-a09c-3dc5d1e9ee26",
+              "name": "id_botao",
+              "value": "={{ $json.body.buttonsResponseMessage.buttonId }}",
+              "type": "string"
+            },
+            {
+              "id": "e3729d83-2e43-4451-8a10-51222285413f",
+              "name": "titulo_botao",
+              "value": "={{ $json.body.buttonsResponseMessage.message }}",
+              "type": "string"
+            },
+            {
+              "id": "bb1d3325-cdcc-4bfc-995a-c14ea8e68f60",
+              "name": "id_lista",
+              "value": "={{ $json.body.listResponseMessage.selectedRowId }}",
+              "type": "string"
+            },
+            {
+              "id": "cfb1be71-8988-4f06-b12d-b7005b91eab9",
+              "name": "titulo_lista",
+              "value": "={{ $json.body.listResponseMessage.title }}",
+              "type": "string"
+            },
+            {
+              "id": "52bd686b-4db1-4176-8ad1-0f1c687650ad",
+              "name": "descricao_lista",
+              "value": "={{ $json.body.listResponseMessage.message }}",
+              "type": "string"
+            },
+            {
+              "id": "47adba9d-c774-4529-bdf9-ff3e35672411",
+              "name": "resposta_texto",
+              "value": "={{ $json.body.text.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2592,
+        1056
+      ],
+      "id": "0ceae98b-bf4c-4a54-9a64-25e9dd12e00b",
+      "name": "Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "const mensagem = $input.first().json.body\n\nconst texto = (mensagem.text?.body || \"\").trim().toUpperCase();\nconst replyType = mensagem.type\n\n// Resposta Interativa\nconst tipoRespostaInterativa = mensagem.interactive?.type ?? null;\nconst respostaInterativa = mensagem.interactive?.[tipoRespostaInterativa];\nconst idRespostaInterativa = respostaInterativa?.id ?? null;\nconst tituloRespostaInterativa = respostaInterativa?.title ?? null;\nconst descricaoRespostaInterativa = respostaInterativa?.description ?? null;\n\nconst numeroBruto = mensagem.from || \"\";\nlet numeroTelefoneFormatado = numeroBruto.replace(/[^\\d]/g, \"\");\n\nif (numeroTelefoneFormatado.length === 12) {\n  numeroTelefoneFormatado = numeroTelefoneFormatado.slice(0,4) + \"9\" + numeroTelefoneFormatado.slice(4);\n}\n\n// Retorno\nreturn { json: { \n  id_whatsapp: `${numeroTelefoneFormatado}`,\n  tipo_resposta: replyType,\n  tipo_resposta_interativa: tipoRespostaInterativa,\n  id_resposta_interativa: idRespostaInterativa,\n  titulo_resposta_interativa: tituloRespostaInterativa,\n  descricao_resposta_interativa: descricaoRespostaInterativa,\n  resposta_texto: texto === \"\" ? null : texto\n  } \n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3264,
+        1456
+      ],
+      "id": "ce59d9b8-6639-4a51-b8e3-61325b2f7fa3",
+      "name": "Code in JavaScript1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Em desenvolvimento",
+        "height": 464,
+        "width": 1040
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        224
+      ],
+      "id": "5d580f91-4a9c-494b-b487-d5e11619e047",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "sendButtonList",
+        "phone": "={{ $('Parser').first().json.id_whatsapp }}",
+        "message": "=Este número pertence a: {{ $('Puxa todos os dados do número').item.json.nome }}?",
+        "delayMessage": 1,
+        "buttons": {
+          "button": [
+            {
+              "label": "Sim, sou eu",
+              "id": "0"
+            },
+            {
+              "label": "Não sou eu",
+              "id": "1"
+            }
+          ]
+        }
+      },
+      "type": "@z-api/n8n-nodes-zapi.zapi",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        704
+      ],
+      "id": "9158fb4b-4e61-4fd3-9387-40bc2a353b39",
+      "name": "Inicia conversa 1",
+      "credentials": {
+        "zapiApi": {
+          "id": "OfoyELjLp5AL9ucp",
+          "name": "Z-API account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendButtonList",
+        "phone": "={{ $('Parser').first().json.id_whatsapp }}",
+        "message": "=Este número pertence a: {{ $('Puxa todos os dados do número').item.json.nome }}?",
+        "delayMessage": 1,
+        "buttons": {
+          "button": [
+            {
+              "label": "Sim, sou eu",
+              "id": "0"
+            },
+            {
+              "label": "Não sou eu",
+              "id": "1"
+            }
+          ]
+        }
+      },
+      "type": "@z-api/n8n-nodes-zapi.zapi",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        1152
+      ],
+      "id": "8f1ab95d-088c-4835-adc3-72aacea9f2cf",
+      "name": "Inicia conversa 2",
+      "credentials": {
+        "zapiApi": {
+          "id": "OfoyELjLp5AL9ucp",
+          "name": "Z-API account"
+        }
+      }
     }
   ],
-  "pinData": {},
   "connections": {
-    "Log RECEIVED": {
-      "main": [
-        [
-          {
-            "node": "É a primeira sessão?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Atendimento em andamento?": {
       "main": [
         [
@@ -775,18 +752,7 @@
         ],
         [
           {
-            "node": "Inicia nova conversa",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Verify": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook",
+            "node": "Inicia conversa 2",
             "type": "main",
             "index": 0
           }
@@ -811,11 +777,11 @@
         ]
       ]
     },
-    "Recebe mensagens da API do Whatsapp": {
+    "Inicia a nova sessão de conversa": {
       "main": [
         [
           {
-            "node": "Is message?",
+            "node": "Puxa a última sessão que do número",
             "type": "main",
             "index": 0
           }
@@ -833,22 +799,11 @@
         ]
       ]
     },
-    "Inicia a nova sessão de conversa": {
+    "Recebe mensagens da API do Whatsapp": {
       "main": [
         [
           {
-            "node": "Puxa a última sessão que do número",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Is message?": {
-      "main": [
-        [
-          {
-            "node": "Parser numero/mensagem",
+            "node": "Parser",
             "type": "main",
             "index": 0
           }
@@ -859,18 +814,7 @@
       "main": [
         [
           {
-            "node": "Puxa as informações do veículo",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parser numero/mensagem": {
-      "main": [
-        [
-          {
-            "node": "Puxa a última sessão que do número",
+            "node": "Puxa todos os dados do funcionário",
             "type": "main",
             "index": 0
           }
@@ -888,7 +832,7 @@
         ],
         [
           {
-            "node": "Inicia primeira conversa",
+            "node": "Inicia conversa 1",
             "type": "main",
             "index": 0
           }
@@ -950,29 +894,7 @@
       "main": [
         [
           {
-            "node": "Puxa todos os dados do funcionário",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Inicia primeira conversa": {
-      "main": [
-        [
-          {
-            "node": "Cria a sessão de conversa",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Inicia nova conversa": {
-      "main": [
-        [
-          {
-            "node": "Inicia a nova sessão de conversa",
+            "node": "É a primeira sessão?",
             "type": "main",
             "index": 0
           }
@@ -983,7 +905,7 @@
       "main": [
         [
           {
-            "node": "É a primeira sessão?",
+            "node": "Puxa as informações do veículo",
             "type": "main",
             "index": 0
           }
@@ -1001,21 +923,43 @@
         ]
       ]
     },
-    "Executa workflow de dados": {
+    "Parser": {
       "main": [
-        []
+        [
+          {
+            "node": "Puxa a última sessão que do número",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inicia conversa 1": {
+      "main": [
+        [
+          {
+            "node": "Cria a sessão de conversa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inicia conversa 2": {
+      "main": [
+        [
+          {
+            "node": "Inicia a nova sessão de conversa",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
-  "active": true,
-  "settings": {
-    "executionOrder": "v1"
-  },
-  "versionId": "749e9c3c-588a-4c36-b45f-36cdac0ca2d7",
+  "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "aa6df07db1b386814570ffd65bf5a1bc78881504b712a406d3a96a243fdeef75"
-  },
-  "id": "vbVf1RYNbnghd2YI",
-  "tags": []
+  }
 }

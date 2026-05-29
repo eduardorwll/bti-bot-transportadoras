@@ -1,5 +1,4 @@
 {
-  "name": "Farrapos - UPSERT e Resposta",
   "nodes": [
     {
       "parameters": {
@@ -8,10 +7,10 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        -32,
-        0
+        -1536,
+        288
       ],
-      "id": "4b91f1b9-e894-4d62-84d4-3b991fc56cc5",
+      "id": "8b7312a9-218a-44dd-9a58-8e69ebc30ac3",
       "name": "Inicia pelo workflow dos dados de documentos"
     },
     {
@@ -118,10 +117,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        1152,
-        -32
+        -384,
+        240
       ],
-      "id": "d5f8aea1-7cee-4110-81ce-3fd277687d10",
+      "id": "b643641b-b63e-4075-a948-1d8af8a95b3c",
       "name": "Verifica o tipo da resposta"
     },
     {
@@ -131,10 +130,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1600,
-        -112
+        0,
+        176
       ],
-      "id": "f83f1b67-d37b-4148-a9f9-c3a9fd2f19c1",
+      "id": "747d434a-618d-40ff-be84-be75c7b705a0",
       "name": "Processa a mensagem caso TEXTO"
     },
     {
@@ -144,10 +143,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1600,
-        -288
+        0,
+        0
       ],
-      "id": "5c437f38-b290-4c12-adff-2144c0a0bea0",
+      "id": "cf5bcf8d-759f-4792-928a-5a119068b8cd",
       "name": "Processa a mensagem caso INTERATIVA"
     },
     {
@@ -157,10 +156,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1600,
-        80
+        0,
+        368
       ],
-      "id": "481b5f1a-d5bd-4885-adfb-52794753bfdd",
+      "id": "64083f6f-e1c6-422e-8e90-4ab17f5cf6ae",
       "name": "Processa a mensagem caso IMAGEM"
     },
     {
@@ -172,10 +171,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        576,
-        0
+        -832,
+        288
       ],
-      "id": "d81e0b37-ee76-4d09-ae03-73d6186f70f8",
+      "id": "0b19e11a-9b11-4df7-9c6e-fde43a113a05",
       "name": "Estados"
     },
     {
@@ -187,10 +186,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        816,
-        0
+        -608,
+        288
       ],
-      "id": "b8a23765-c579-4364-bc5a-12a8a779e975",
+      "id": "b3d0b349-4689-47fa-918a-b9fd94b16e86",
       "name": "Templates"
     },
     {
@@ -216,7 +215,7 @@
               "type": "string"
             },
             {
-              "id": "501c7909-1819-47e9-a976-a33f4c656152",
+              "id": "d615b02c-485e-4b02-a26f-4b14954e1139",
               "name": "descricao_resposta_interativa",
               "value": "={{ $json.resposta_whatsapp.descricao_resposta_interativa }}",
               "type": "string"
@@ -258,18 +257,18 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        288,
-        0
+        -1072,
+        288
       ],
-      "id": "bd2d2523-39b2-4998-b318-d99a733150de",
+      "id": "b615868a-b1b4-4dc5-bc06-1b022b7f66ad",
       "name": "Contexto"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://graph.facebook.com/v24.0/764981153363033/messages",
+        "url": "https://api.z-api.io/instances/3F2C8145645D21B81246463A5A856F80/token/A4CC571E89B960A127AAA363/send-text",
         "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "whatsAppApi",
+        "nodeCredentialType": "zapiApi",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ $('Monta mensagens').item.json.resposta[0] }}",
@@ -278,24 +277,28 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2848,
-        -80
+        1136,
+        192
       ],
-      "id": "368580f2-7b64-4ee4-8bf0-2e8b9129b0f9",
+      "id": "7ed484d8-0df9-47e1-ae2f-209fc5864437",
       "name": "POST reply[0]",
       "credentials": {
         "whatsAppApi": {
-          "id": "6DyQbUy3Ty2nyzEV",
-          "name": "Token Rewell"
+          "id": "1drs0e7LTkRTk9Yc",
+          "name": "WhatsApp account"
+        },
+        "zapiApi": {
+          "id": "OfoyELjLp5AL9ucp",
+          "name": "Z-API account"
         }
       }
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://graph.facebook.com/v24.0/764981153363033/messages",
+        "url": "https://api.z-api.io/instances/3F2C8145645D21B81246463A5A856F80/token/A4CC571E89B960A127AAA363/send-text",
         "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "whatsAppApi",
+        "nodeCredentialType": "zapiApi",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ $('Monta mensagens').item.json.resposta[1] }}",
@@ -304,24 +307,28 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3056,
-        -80
+        1328,
+        192
       ],
-      "id": "2ebd3263-1ae2-4ea1-bb83-c6c64537617d",
+      "id": "05a4cb00-c3db-422e-8f17-744627a3393f",
       "name": "POST reply[1]",
       "credentials": {
         "whatsAppApi": {
-          "id": "6DyQbUy3Ty2nyzEV",
-          "name": "Token Rewell"
+          "id": "1drs0e7LTkRTk9Yc",
+          "name": "WhatsApp account"
+        },
+        "zapiApi": {
+          "id": "OfoyELjLp5AL9ucp",
+          "name": "Z-API account"
         }
       }
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://graph.facebook.com/v24.0/764981153363033/messages",
+        "url": "https://api.z-api.io/instances/3F2C8145645D21B81246463A5A856F80/token/A4CC571E89B960A127AAA363/send-text",
         "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "whatsAppApi",
+        "nodeCredentialType": "zapiApi",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ $('Monta mensagens').item.json.resposta[0] }}",
@@ -330,15 +337,19 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2960,
-        112
+        1232,
+        416
       ],
-      "id": "bbff29de-c7d3-4343-83e1-715e5bd41491",
+      "id": "44328c12-23d0-454d-a0e6-1ecb152bff9d",
       "name": "POST reply",
       "credentials": {
         "whatsAppApi": {
-          "id": "6DyQbUy3Ty2nyzEV",
-          "name": "Token Rewell"
+          "id": "1drs0e7LTkRTk9Yc",
+          "name": "WhatsApp account"
+        },
+        "zapiApi": {
+          "id": "OfoyELjLp5AL9ucp",
+          "name": "Z-API account"
         }
       }
     },
@@ -369,37 +380,24 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2528,
-        0
+        864,
+        288
       ],
-      "id": "128ac15a-550e-4e76-b299-7e225a6d47b6",
+      "id": "00c2d5c7-67e8-4564-87a5-e379887ecf3c",
       "name": "Mais de um reply?"
     },
     {
       "parameters": {
-        "jsCode": "// Estrutura correta do input - objeto único com payloads e contexto\nconst inputData = $input.first().json\n\nconst contexto = inputData.contexto || {}\nconst templates = $('Templates')?.first()?.json || {}\nconst currentTaskId = contexto.id_tarefa_atual ?? null\nconst payloadSessao = inputData.payloadSessao || {}\nconst payloadTarefas = inputData.payloadTarefas || {}\n\n// Verificação segura para currentTaskData\nlet currentTaskData = null\ntry {\n  const workflowData = $('Inicia pelo workflow dos dados de documentos')?.first()?.json\n  if (workflowData && workflowData.dados_documentos_fiscais) {\n    const dadosFiltrados = workflowData.dados_documentos_fiscais[1]?.dados_filtrados?.[1]\n    if (dadosFiltrados && dadosFiltrados.tarefas) {\n      // Se não tem currentTaskId, pega a primeira tarefa\n      if (currentTaskId) {\n        currentTaskData = dadosFiltrados.tarefas.find(tarefa => tarefa.idTarefa === currentTaskId)\n      } else {\n        currentTaskData = dadosFiltrados.tarefas[0] // Pega a primeira tarefa\n      }\n    }\n  }\n} catch (error) {\n  console.log(\"Erro ao buscar currentTaskData:\", error.message)\n}\n\n\n// ==========================================\n// CONSTRUTORES DE MENSAGENS WHATSAPP\n// ==========================================\n\nclass WhatsAppMessageFactory {\n  constructor(to) {\n    this.to = to\n  }\n\n  createBaseMessage(type) {\n    return {\n      messaging_product: \"whatsapp\",\n      recipient_type: \"individual\",\n      to: this.to,\n      type\n    }\n  }\n\n  createListMessage(inputData) {\n    const message = this.createBaseMessage(\"interactive\")\n\n    message.interactive = {\n      type: \"list\",\n      header: { type: \"text\", text: inputData?.header || \"\" },\n      body: { text: \"Selecione do menu abaixo\" },\n      action: {\n        button: \"Opções\",\n        sections: [{\n          title: inputData?.header || \"\",\n          rows: (inputData?.options || []).map(option => ({\n            id: option?.id?.toString() || \"\",\n            title: option?.title || \"\",\n            ...(option?.description && { description: option.description })\n          }))\n        }]\n      }\n    }\n\n    return message\n  }\n\n  createButtonMessage(inputData) {\n    const message = this.createBaseMessage(\"interactive\")\n\n    const interactive = {\n      type: \"button\",\n      body: { text: \"Selecione das opções abaixo\" },\n      action: {\n        buttons: (inputData?.options || []).map(option => ({\n          type: \"REPLY\",\n          reply: {\n            id: option?.id?.toString() || \"\",\n            title: option?.title || \"\"\n          }\n        }))\n      }\n    }\n\n    if (inputData?.header) {\n      interactive.header = { type: \"text\", text: inputData.header }\n    }\n\n    message.interactive = interactive\n    return message\n  }\n\n  createTextMessage(inputData) {\n    const message = this.createBaseMessage(\"text\")\n    message.text = { body: inputData?.content || \"\" }\n    return message\n  }\n\n  createMessage(inputData) {\n    if (!inputData || !inputData.type) {\n      throw new Error(`Template inválido ou sem tipo: ${JSON.stringify(inputData)}`)\n    }\n\n    const messageTypes = {\n      list: this.createListMessage,\n      button: this.createButtonMessage,\n      text: this.createTextMessage\n    }\n\n    const createFunction = messageTypes[inputData.type]\n    if (!createFunction) {\n      throw new Error(`Tipo de mensagem não suportado: ${inputData.type}`)\n    }\n\n    return createFunction.call(this, inputData)\n  }\n}\n\n// Função para construir mensagens com rota do Google Maps\nconst createGMapsMessage = (lat, long, toNumber) => {\n  const message = {\n    messaging_product: \"whatsapp\",\n    recipient_type: \"individual\",\n    to: toNumber,\n    type: \"interactive\",\n    interactive: {\n      type: \"cta_url\",\n      body: {\n        text: `Status da tarefa de CTe ${contexto.cte_tarefa_atual} alterado para: \"Em andamento\"`\n      },\n      action: {\n        name: \"cta_url\",\n        parameters: {\n          display_text: \"Abrir no Google Maps\",\n          url: `https://www.google.com/maps/search/?api=1&query=${lat},${long}`\n        }\n      },\n      footer: {\n        text: \"Clique abaixo para abrir a localização no Google Maps.\"\n      }\n    }\n  }\n  return message\n}\n\n// Função específica para o estado ENCERRADO\nconst createGMAPSLINKMessage = (toNumber, currentTaskData) => {\n\n  if (currentTaskData && currentTaskData.enderecoLatitude && currentTaskData.enderecoLongitude) {\n    const gmapsMessage = createGMapsMessage(\n      currentTaskData.enderecoLatitude,\n      currentTaskData.enderecoLongitude,\n      toNumber\n    )\n    return [gmapsMessage]\n  } else {\n    console.log(\"DEBUG - Não foi possível criar mensagem ENCERRADO: dados de localização faltando\")\n    console.log(\"DEBUG - currentTaskData:\", currentTaskData)\n    console.log(\"DEBUG - Latitude:\", currentTaskData?.enderecoLatitude)\n    console.log(\"DEBUG - Longitude:\", currentTaskData?.enderecoLongitude)\n    return []\n  }\n}\n\n// Função específica para o contexto completo\nconst createMessageFromContext = (templates, contexto, currentTaskData) => {\n  //Cria o objeto \"fábrica de mensagens\"  \n  const factory = new WhatsAppMessageFactory(contexto.id_whatsapp)\n  const messages = []\n\n  if (contexto.proximo_estado.includes('CONFIRMAR_CTE')) {\n    const templateExpositor = {\n      type: \"text\",\n      content: `*TAREFA ESCOLHIDA:*\n\nEndereço: ${currentTaskData.enderecoEntrega}\nCTe: ${currentTaskData.codigoCTe}\nRemetente: ${currentTaskData.remetente}\nDestinatário: ${currentTaskData.destinatario}`\n    }\n    const expositorTarefa = factory.createMessage(templateExpositor)\n    messages.push(expositorTarefa)\n  }\n\n  // Se for GMAPSLINK, cria mensagem do Google Maps diretamente\n  if (contexto.proximo_estado === \"GMAPSLINK\") {\n    return createGMAPSLINKMessage(contexto.id_whatsapp, currentTaskData)\n  }\n\n\n\n  const template = templates[contexto.proximo_estado]\n  // Lança erro caso não exista template com o nome do proximo estado\n  if (!template) {\n    throw new Error(`Template não encontrado para o estado: ${contexto.proximo_estado}`)\n  }\n  // Para outros estados, usa a sequência normal\n  const currentMessage = factory.createMessage(template)\n  messages.push(currentMessage)\n\n  // Esse trecho serve para enviar a mensagem de simulação da torre enquanto não temos isso no fluxo, depois deve ser retirado\n  if (contexto.confirmacao_torre === \"1\") {\n    const mensagemConfirmacao = factory.createMessage(templates[(contexto.proximo_estado).replaceAll(\"AGUARDAR\", \"CONFIRMAR\")])\n    messages.push(mensagemConfirmacao)\n  }\n\n\n\n  return messages\n}\n\nfunction formatTaskListOptions() {\n  const taskListOptions = []\n\n  try {\n    // Obtém o array de tarefas do caminho especificado\n    const tempTasksArray = $node[\"Inicia pelo workflow dos dados de documentos\"].json[\"dados_documentos_fiscais\"][\"1\"][\"dados_filtrados\"][\"1\"][\"tarefas\"]\n    const tasksArray = payloadTarefas.status === \"2\" || payloadTarefas.status === \"3\" || payloadTarefas.status === \"4\" ? tempTasksArray.filter(task => task.idTarefa !== payloadTarefas.id_tarefa) : tempTasksArray\n\n    if (tasksArray === null || tasksArray === undefined) {\n      // Nenhuma tarefa encontrada\n      console.log(\"Nenhuma tarefa encontrada no caminho especificado\")\n    } else if (Array.isArray(tasksArray)) {\n      // Processa cada tarefa do array - CONVERTENDO id para string\n      taskListOptions.push(\n        ...tasksArray.map((task, index) => ({\n          id: index.toString(),  // CONVERTIDO PARA STRING\n          title: task?.enderecoEntrega?.split(\"-\")[0] || \"Endereço não informado\",\n          description: `CTe: ${task?.codigoCTe || \"N/A\"}`\n        }))\n      )\n    } else {\n      // Caso seja um único objeto (não array)\n      taskListOptions.push({\n        id: \"0\",  // CONVERTIDO PARA STRING\n        title: tasksArray?.enderecoEntrega || \"Endereço não informado\",\n        description: `CTe: ${tasksArray?.codigoCTe || \"N/A\"} | Prioridade: ${tasksArray?.prioridade || \"N/A\"}`\n      })\n    }\n  } catch (error) {\n    console.log(\"Erro ao formatar lista de tarefas:\", error.message)\n  }\n\n  return taskListOptions\n}\n\n// Função para mensagem única simples\nconst createWhatsAppMessage = (template, toNumber) => {\n  const factory = new WhatsAppMessageFactory(toNumber)\n  return factory.createMessage(template)\n}\n\nconst taskListOptions = formatTaskListOptions();\nconst templateTarefas = {\n  ...templates.SELECAO_TAREFAS,\n  options: taskListOptions\n}\n\nlet mensagens = []\n\n\n// Manda a mensagem do próximo estado e depois já redefine ele para enviar junto o menu de tarefas na condicional abaixo\nif (contexto.mensagens_consecutivas === \"1\") {\n  mensagens.push(createWhatsAppMessage(templates[contexto.proximo_estado], contexto.id_whatsapp))\n\n  contexto.proximo_estado = \"SELECAO_TAREFAS\"\n}\n\nif (contexto.proximo_estado === \"SELECAO_TAREFAS\") {\n  mensagens.push(createWhatsAppMessage(templateTarefas, contexto.id_whatsapp))\n} else {\n  mensagens = createMessageFromContext(templates, contexto, currentTaskData)\n}\n\n\nlet mensagensSaoArray = Array.isArray(mensagens)\nif (!mensagensSaoArray) {\n  mensagens = [mensagens]\n}\n\n\n\nmensagensSaoArray = Array.isArray(mensagens)\nconst quantasMensagens = mensagens.length\n\nreturn {\n  json: {\n    resposta: mensagens,\n    mensagens_sao_array: mensagensSaoArray,\n    quantas_mensagens: quantasMensagens,\n    proximo_estado: contexto.proximo_estado,\n    payload_sessao: payloadSessao,\n    payload_tarefas: payloadTarefas\n  }\n}"
+        "jsCode": "// Estrutura correta do input - objeto único com payloads e contexto\nconst inputData = $input.first().json\n\nconst contexto = inputData.contexto || {}\nconst templates = $('Templates')?.first()?.json || {}\nconst currentTaskId = contexto.id_tarefa_atual ?? null\nconst payloadSessao = inputData.payloadSessao || {}\nconst payloadTarefas = inputData.payloadTarefas || {}\n\n// Verificação segura para currentTaskData\nlet currentTaskData = null\ntry {\n  const workflowData = $('Inicia pelo workflow dos dados de documentos')?.first()?.json\n  if (workflowData && workflowData.dados_documentos_fiscais) {\n    // Busca dinamicamente qual objeto de \"dados_documentos_fiscais\" contém o array de \"tarefas\"\n    const objTarefas = workflowData.dados_documentos_fiscais.find(item => item.tarefas)\n    \n    if (objTarefas && objTarefas.tarefas) {\n      // Se tem currentTaskId (ope001_codigo), pega a tarefa correspondente\n      if (currentTaskId) {\n        currentTaskData = objTarefas.tarefas.find(tarefa => String(tarefa.ope001_codigo) === String(currentTaskId))\n      } else {\n        currentTaskData = objTarefas.tarefas[0] // Pega a primeira tarefa\n      }\n    }\n  }\n} catch (error) {\n  console.log(\"Erro ao buscar currentTaskData:\", error.message)\n}\n\n\n// ==========================================\n// CONSTRUTORES DE MENSAGENS Z-API\n// ==========================================\n\nclass WhatsAppMessageFactory {\n  constructor(to) {\n    this.to = to\n  }\n\n  createListMessage(inputData) {\n    return {\n      phone: this.to,\n      message: \"Selecione do menu abaixo\",\n      optionList: {\n        title: inputData?.header || \"Opções disponíveis\",\n        buttonLabel: \"Opções\",\n        options: (inputData?.options || []).map(option => ({\n          id: option?.id?.toString() || \"\",\n          title: option?.title || \"\",\n          ...(option?.description && { description: option.description })\n        }))\n      }\n    }\n  }\n\n  createButtonMessage(inputData) {\n    return {\n      phone: this.to,\n      message: inputData?.header || \"Selecione das opções abaixo\",\n      buttonList: {\n        buttons: (inputData?.options || []).map(option => ({\n          id: option?.id?.toString() || \"\",\n          label: option?.title || \"\" // Z-API utiliza 'label' no lugar de 'title' para botões\n        }))\n      }\n    }\n  }\n\n  createTextMessage(inputData) {\n    return {\n      phone: this.to,\n      message: inputData?.content || \"\"\n    }\n  }\n\n  createMessage(inputData) {\n    if (!inputData || !inputData.type) {\n      throw new Error(`Template inválido ou sem tipo: ${JSON.stringify(inputData)}`)\n    }\n\n    const messageTypes = {\n      list: this.createListMessage,\n      button: this.createButtonMessage,\n      text: this.createTextMessage\n    }\n\n    const createFunction = messageTypes[inputData.type]\n    if (!createFunction) {\n      throw new Error(`Tipo de mensagem não suportado: ${inputData.type}`)\n    }\n\n    return createFunction.call(this, inputData)\n  }\n}\n\n// ==========================================\n// MENSAGENS DO GOOGLE MAPS\n// ==========================================\n\n// Função para construir mensagens com rota do Google Maps usando texto ou coordenadas\nconst createGMapsMessage = (lat, long, enderecoTexto, toNumber, cTe) => {\n  let linkBusca;\n  let descricaoRota;\n\n  // Se tem latitude e longitude, usa rota exata. Se não, faz a busca pelo texto do endereço\n  if (lat !== null && long !== null && lat !== undefined && long !== undefined) {\n    // Usando padrão URL para buscar direto as coordenadas\n    linkBusca = `https://maps.google.com/?q=${lat},${long}`;\n    descricaoRota = \"Clique abaixo para abrir a localização exata no Google Maps.\";\n  } else {\n    // Monta a busca por texto encodada para URL (ex: RUA+FERNANDES+LIMA,+38+-+CENTRO)\n    linkBusca = `https://maps.google.com/?q=${encodeURIComponent(enderecoTexto)}`;\n    descricaoRota = \"Coordenadas ausentes. Clique para buscar o endereço aproximado no Maps.\";\n  }\n\n  return {\n    phone: toNumber,\n    message: `Status da tarefa de CTe ${cTe} alterado para: \"Em andamento\"`,\n    linkUrl: linkBusca,\n    title: \"Abrir no Google Maps\",\n    linkDescription: descricaoRota\n  }\n}\n\n// Função específica para o estado GMAPSLINK (Encerrado/Andamento)\nconst createGMAPSLINKMessage = (toNumber, currentTaskData, cTeAtual) => {\n  if (currentTaskData) {\n    // Monta o endereço em texto caso falte a latitude/longitude\n    const enderecoCompleto = `${currentTaskData.endereco_logradouro || ''}, ${currentTaskData.endereco_numero || ''} - ${currentTaskData.endereco_bairro || ''}, ${currentTaskData.endereco_municipio || ''}`;\n\n    const gmapsMessage = createGMapsMessage(\n      currentTaskData.latitude,\n      currentTaskData.longitude,\n      enderecoCompleto,\n      toNumber,\n      cTeAtual \n    )\n    return [gmapsMessage]\n  } else {\n    console.log(\"DEBUG - Não foi possível criar mensagem de Maps: dados da tarefa vazios\")\n    return []\n  }\n}\n\n// ==========================================\n// CONSTRUÇÃO BASEADA NO CONTEXTO\n// ==========================================\n\n// Função específica para o contexto completo\nconst createMessageFromContext = (templates, contexto, currentTaskData) => {\n  // Cria o objeto \"fábrica de mensagens\"  \n  const factory = new WhatsAppMessageFactory(contexto.id_whatsapp)\n  const messages = []\n\n  if (contexto.proximo_estado && contexto.proximo_estado.includes('CONFIRMAR_CTE')) {\n    // Monta o endereço completo concatenando as informações separadas\n    const enderecoCompleto = currentTaskData \n      ? `${currentTaskData.endereco_logradouro || ''}, ${currentTaskData.endereco_numero || ''} - ${currentTaskData.endereco_bairro || ''}, ${currentTaskData.endereco_municipio || ''}`\n      : \"Endereço não informado\";\n\n    const templateExpositor = {\n      type: \"text\",\n      content: `*TAREFA ESCOLHIDA:*\n\nEndereço: ${enderecoCompleto}\nCTe: ${currentTaskData?.cte001_codigo || \"N/A\"}\nRemetente: ${currentTaskData?.remetente || \"N/A\"}\nDestinatário: ${currentTaskData?.destinatario || \"N/A\"}`\n    }\n    const expositorTarefa = factory.createMessage(templateExpositor)\n    messages.push(expositorTarefa)\n  }\n\n  // Se for GMAPSLINK, cria mensagem do Google Maps diretamente e aciona a função de fallback de endereço\n  if (contexto.proximo_estado === \"GMAPSLINK\") {\n    return createGMAPSLINKMessage(contexto.id_whatsapp, currentTaskData, contexto.cte_tarefa_atual)\n  }\n\n  const template = templates[contexto.proximo_estado]\n  // Lança erro caso não exista template com o nome do proximo estado\n  if (!template) {\n    throw new Error(`Template não encontrado para o estado: ${contexto.proximo_estado}`)\n  }\n  \n  // Para outros estados, usa a sequência normal\n  const currentMessage = factory.createMessage(template)\n  messages.push(currentMessage)\n\n  // Trecho de simulação da torre\n  if (contexto.confirmacao_torre === \"1\" && contexto.proximo_estado) {\n    const mensagemConfirmacao = factory.createMessage(templates[(contexto.proximo_estado).replaceAll(\"AGUARDAR\", \"CONFIRMAR\")])\n    messages.push(mensagemConfirmacao)\n  }\n\n  return messages\n}\n\nfunction formatTaskListOptions() {\n  const taskListOptions = []\n\n  try {\n    const workflowData = $('Inicia pelo workflow dos dados de documentos')?.first()?.json\n    // Extrai tarefas usando o método dinâmico para não quebrar independente da ordem do array\n    const objTarefas = workflowData?.dados_documentos_fiscais?.find(item => item.tarefas)\n    const tempTasksArray = objTarefas ? objTarefas.tarefas : []\n\n    // Filtra pela chave ope001_codigo convertida para String para não ter problema de tipagem\n    const tasksArray = payloadTarefas.status === \"2\" || payloadTarefas.status === \"3\" || payloadTarefas.status === \"4\" \n      ? tempTasksArray.filter(task => String(task.ope001_codigo) !== String(payloadTarefas.id_tarefa)) \n      : tempTasksArray\n\n    if (!tasksArray || tasksArray.length === 0) {\n      console.log(\"Nenhuma tarefa encontrada no caminho especificado\")\n    } else if (Array.isArray(tasksArray)) {\n      taskListOptions.push(\n        ...tasksArray.map((task, index) => ({\n          id: index.toString(),  \n          // Z-API limita titulo de listas a 24 caracteres\n          title: (task?.endereco_logradouro || \"Endereço não informado\").substring(0, 24),\n          description: `CTe: ${task?.cte001_codigo || \"N/A\"}`\n        }))\n      )\n    } else {\n      taskListOptions.push({\n        id: \"0\", \n        title: (tasksArray?.endereco_logradouro || \"Endereço não informado\").substring(0, 24),\n        description: `CTe: ${tasksArray?.cte001_codigo || \"N/A\"}`\n      })\n    }\n  } catch (error) {\n    console.log(\"Erro ao formatar lista de tarefas:\", error.message)\n  }\n\n  return taskListOptions\n}\n\n// Função para mensagem única simples\nconst createWhatsAppMessage = (template, toNumber) => {\n  const factory = new WhatsAppMessageFactory(toNumber)\n  return factory.createMessage(template)\n}\n\nconst taskListOptions = formatTaskListOptions();\nconst templateTarefas = {\n  ...templates.SELECAO_TAREFAS,\n  options: taskListOptions\n}\n\nlet mensagens = []\n\n// Manda a mensagem do próximo estado e depois já redefine ele para enviar junto o menu de tarefas\nif (contexto.mensagens_consecutivas === \"1\" && contexto.proximo_estado) {\n  mensagens.push(createWhatsAppMessage(templates[contexto.proximo_estado], contexto.id_whatsapp))\n  contexto.proximo_estado = \"SELECAO_TAREFAS\"\n}\n\nif (contexto.proximo_estado === \"SELECAO_TAREFAS\") {\n  mensagens.push(createWhatsAppMessage(templateTarefas, contexto.id_whatsapp))\n} else {\n  mensagens = createMessageFromContext(templates, contexto, currentTaskData)\n}\n\nlet mensagensSaoArray = Array.isArray(mensagens)\nif (!mensagensSaoArray) {\n  mensagens = [mensagens]\n}\n\nmensagensSaoArray = Array.isArray(mensagens)\nconst quantasMensagens = mensagens.length\n\nreturn {\n  json: {\n    resposta: mensagens,\n    mensagens_sao_array: mensagensSaoArray,\n    quantas_mensagens: quantasMensagens,\n    proximo_estado: contexto.proximo_estado,\n    payload_sessao: payloadSessao,\n    payload_tarefas: payloadTarefas\n  }\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2304,
-        0
+        640,
+        288
       ],
-      "id": "b6efe30d-6ab1-4414-91fa-9f8bb5c90202",
+      "id": "c0e16657-4fe6-4d92-8154-6ce00e5e2597",
       "name": "Monta mensagens"
-    },
-    {
-      "parameters": {
-        "jsCode": "let contexto = $input.first().json\nconst tarefas = $('Inicia pelo workflow dos dados de documentos').first().json.dados_documentos_fiscais[1].dados_filtrados[1].tarefas\nconst tarefasBrutas = $('Inicia pelo workflow dos dados de documentos').first().json.dados_documentos_fiscais[0].dados_brutos[2].tarefas\n\nconst cteEscolhida = $input.first().json.cte_tarefa_atual ??(contexto.descricao_resposta_interativa !== null ? (contexto.descricao_resposta_interativa).match(/CTe:\\s*(\\d+)/)[1] : null)\nconst idTarefaEscolhida = $input.first().json.id_tarefa_atual ?? (cteEscolhida !== null ? (tarefas.find(tarefa => tarefa.codigoCTe === cteEscolhida)).idTarefa : null)\n\n// Inicializar os objetos\nlet resultado = {\n    payloadSessao: {\n      cte_tarefa_atual: $input.first().json.cte_tarefa_atual, \n      ativo: true, \n      id_tarefa_atual: $input.first().json.id_tarefa_atual, \n      estado: $input.first().json.proximo_estado, \n      escolha_automatica: $input.first().json.escolha_automatica, \n      tarefas_ordenadas_previamente: $input.first().json.tarefas_ordenadas_previamente\n    },\n  \n    payloadTarefas: {\n      codigo_cte: $input.first().json.cte_tarefa_atual, \n      id_tarefa: $input.first().json.id_tarefa_atual,\n      status: $input.first().json.id_tarefa_atual !== null ? (tarefasBrutas.find(tarefa => tarefa.id === $input.first().json.id_tarefa_atual)).status : null\n    },\n\n    registroOcorrencia: {\n        novo_registro: false,\n        id_tarefa: null,\n        tipo_ocorrencia: null,\n        detalhamento: null\n    },\n  \n    contexto: contexto\n}\n\nswitch(resultado.contexto.estado_atual){\n  case 'OBRIGADO_SUCESSO':\n  case 'OBRIGADO_PENDENCIA':\n  case 'OBRIGADO_RETENCAO_APROVADA':\n  case 'ENDERECO_ESTA_ERRADO':\n  case 'OBRIGADO_OCORRENCIA_REGISTRADA':\n  case 'SELECAO_TAREFAS':\n    resultado.payloadTarefas.id_tarefa = idTarefaEscolhida\n    resultado.payloadTarefas.codigo_cte = cteEscolhida\n    resultado.payloadTarefas.status = \"1\"\n\n    resultado.contexto.cte_tarefa_atual = cteEscolhida\n    resultado.contexto.id_tarefa_atual = idTarefaEscolhida\n\n    resultado.payloadSessao.id_tarefa_atual = idTarefaEscolhida\n    resultado.payloadSessao.cte_tarefa_atual = cteEscolhida\n    resultado.payloadSessao.ativo = false\n    resultado.payloadSessao.estado = \"FINALIZADO\"\n}\n\nswitch (resultado.contexto.proximo_estado){\n    case 'ENCERRAMENTO':\n        resultado.payloadSessao.ativo = false\n        resultado.payloadSessao.estado = 'FINALIZADO'\n        break\n\n    case 'CONTINUA_COM_TORRE':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida\n        resultado.payloadTarefas.codigo_cte = cteEscolhida\n        resultado.payloadTarefas.status = \"4\"\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida\n        resultado.contexto.id_tarefa_atual = cteEscolhida\n\n        resultado.payloadSessao.id_tarefa_atual = null\n        resultado.payloadSessao.cte_tarefa_atual = null\n\n        break\n\n    case 'OBRIGADO_SUCESSO':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida\n        resultado.payloadTarefas.codigo_cte = cteEscolhida\n        resultado.payloadTarefas.status = \"2\"\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida\n        resultado.contexto.id_tarefa_atual = cteEscolhida\n\n        resultado.payloadSessao.id_tarefa_atual = null\n        resultado.payloadSessao.cte_tarefa_atual = null\n\n        resultado.contexto.mensagens_consecutivas = \"1\"\n        break\n    \n    case 'OBRIGADO_PENDENCIA':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida\n        resultado.payloadTarefas.codigo_cte = cteEscolhida\n        resultado.payloadTarefas.status = \"3\"\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida\n        resultado.contexto.id_tarefa_atual = cteEscolhida\n\n        resultado.payloadSessao.id_tarefa_atual = null\n        resultado.payloadSessao.cte_tarefa_atual = null\n\n        resultado.contexto.mensagens_consecutivas = \"1\"\n        break\n    \n    case 'OBRIGADO_RETENCAO_APROVADA':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida\n        resultado.payloadTarefas.codigo_cte = cteEscolhida\n        resultado.payloadTarefas.status = \"4\"\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida\n        resultado.contexto.id_tarefa_atual = cteEscolhida\n\n        resultado.payloadSessao.id_tarefa_atual = null\n        resultado.payloadSessao.cte_tarefa_atual = null\n\n        resultado.contexto.mensagens_consecutivas = \"1\"\n        break\n\n    case 'ENDERECO_ESTA_ERRADO':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida\n        resultado.payloadTarefas.codigo_cte = cteEscolhida\n        resultado.payloadTarefas.status = \"4\"\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida\n        resultado.contexto.id_tarefa_atual = cteEscolhida\n\n        resultado.payloadSessao.id_tarefa_atual = null\n        resultado.payloadSessao.cte_tarefa_atual = null\n\n        resultado.contexto.mensagens_consecutivas = \"1\"\n        break\n\n    case 'OBRIGADO_OCORRENCIA_REGISTRADA':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida\n        resultado.payloadTarefas.codigo_cte = cteEscolhida\n        resultado.payloadTarefas.status = \"4\"\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida\n        resultado.contexto.id_tarefa_atual = cteEscolhida\n\n        resultado.payloadSessao.id_tarefa_atual = null\n        resultado.payloadSessao.cte_tarefa_atual = null\n\n        resultado.contexto.mensagens_consecutivas = \"1\"\n        break\n}\n\n\n// Esse trecho serve para enviar a mensagem de simulação da torre enquanto não temos isso no fluxo\nswitch (resultado.contexto.proximo_estado){\n    case \"AGUARDAR_TORRE_COMPROVANTE_RETIDO\":\n    case \"AGUARDAR_TORRE_DIVERGENCIA\":\n    case \"AGUARDAR_TORRE_RECUSA\":\n    case \"AGUARDAR_TORRE_ENDERECO_NAO_ENCONTRADO\":\n    case \"AGUARDAR_TORRE_AUSENCIA\":\n        resultado.contexto.confirmacao_torre = \"1\"\n        break\n}\n\n\n// Retornar um único item com todos os objetos\nreturn [{json: resultado}]"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2096,
-        0
-      ],
-      "id": "9e436a40-b9d4-4b45-a963-3edfb7ee989d",
-      "name": "Monta payloads"
     },
     {
       "parameters": {
@@ -438,10 +436,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3424,
-        32
+        1616,
+        336
       ],
-      "id": "accfef3c-902a-4b62-87bf-e287452e1c37",
+      "id": "93d6accc-d74e-45b7-a6b0-d0be8d46166b",
       "name": "UPDATE Tabela de Sessões",
       "credentials": {
         "supabaseApi": {
@@ -475,10 +473,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3664,
-        32
+        1856,
+        336
       ],
-      "id": "6ca330fa-eccd-4e43-aef6-ab6a74b52689",
+      "id": "2ce434ae-3ae7-4df2-a1c8-55a61c840057",
       "name": "UPDATE Tabela de Tarefas",
       "credentials": {
         "supabaseApi": {
@@ -495,20 +493,177 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1600,
-        272
+        0,
+        560
       ],
-      "id": "71468410-b0e3-4920-b107-65747a090123",
+      "id": "28ef864d-1ae7-4987-be28-44224e2c064e",
       "name": "Processa a mensagem caso LOCALIZAÇÃO"
+    },
+    {
+      "parameters": {
+        "jsCode": "let contexto = $input.first().json;\nconst tarefas = $('Inicia pelo workflow dos dados de documentos').first().json.dados_documentos_fiscais[2].tarefas;\nconst tarefasBrutas = $('Inicia pelo workflow dos dados de documentos').first().json.dados_documentos_fiscais[2].tarefas;\n\nconst cteEscolhida = $input.first().json.cte_tarefa_atual ?? (contexto.descricao_resposta_interativa !== null ? (contexto.descricao_resposta_interativa).match(/CTe:\\s*(\\d+)/)[1] : null);\n\n// Alterado de 'codigoCTe' para 'cte001_codigo' e de 'idTarefa' para 'ope001_codigo'\nconst idTarefaEscolhida = $input.first().json.id_tarefa_atual ?? (cteEscolhida !== null ? (tarefas.find(tarefa => String(tarefa.cte001_codigo) === String(cteEscolhida)))?.ope001_codigo : null);\n\n// Inicializar os objetos\nlet resultado = {\n    payloadSessao: {\n        cte_tarefa_atual: $input.first().json.cte_tarefa_atual, \n        ativo: true, \n        id_tarefa_atual: $input.first().json.id_tarefa_atual, \n        estado: $input.first().json.proximo_estado, \n        escolha_automatica: $input.first().json.escolha_automatica, \n        tarefas_ordenadas_previamente: $input.first().json.tarefas_ordenadas_previamente\n    },\n  \n    payloadTarefas: {\n        codigo_cte: $input.first().json.cte_tarefa_atual, \n        id_tarefa: $input.first().json.id_tarefa_atual,\n        // Alterado de 'tarefa.id' para 'tarefa.ope001_codigo' para coincidir com a estrutura do payload\n        status: $input.first().json.id_tarefa_atual !== null ? (tarefasBrutas.find(tarefa => String(tarefa.ope001_codigo) === String($input.first().json.id_tarefa_atual)))?.status : null\n    },\n\n    registroOcorrencia: {\n        novo_registro: false,\n        id_tarefa: null,\n        tipo_ocorrencia: null,\n        detalhamento: null\n    },\n  \n    contexto: contexto\n};\n\nswitch(resultado.contexto.estado_atual){\n    case 'OBRIGADO_SUCESSO':\n    case 'OBRIGADO_PENDENCIA':\n    case 'OBRIGADO_RETENCAO_APROVADA':\n    case 'ENDERECO_ESTA_ERRADO':\n    case 'OBRIGADO_OCORRENCIA_REGISTRADA':\n    case 'SELECAO_TAREFAS':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida;\n        resultado.payloadTarefas.codigo_cte = cteEscolhida;\n        resultado.payloadTarefas.status = \"1\";\n\n        resultado.contexto.cte_tarefa_atual = cteEscolhida;\n        resultado.contexto.id_tarefa_atual = idTarefaEscolhida;\n\n        resultado.payloadSessao.id_tarefa_atual = idTarefaEscolhida;\n        resultado.payloadSessao.cte_tarefa_atual = cteEscolhida;\n        resultado.payloadSessao.ativo = false;\n        resultado.payloadSessao.estado = \"FINALIZADO\";\n        break; // Break inserido para prevenir falhas de fluxo (\"fallthrough\")\n}\n\nswitch (resultado.contexto.proximo_estado){\n    case 'ENCERRAMENTO':\n        resultado.payloadSessao.ativo = false;\n        resultado.payloadSessao.estado = 'FINALIZADO';\n        break;\n\n    case 'CONTINUA_COM_TORRE':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida;\n        resultado.payloadTarefas.codigo_cte = cteEscolhida;\n        resultado.payloadTarefas.status = \"4\";\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida;\n        resultado.contexto.id_tarefa_atual = cteEscolhida;\n\n        resultado.payloadSessao.id_tarefa_atual = null;\n        resultado.payloadSessao.cte_tarefa_atual = null;\n        break;\n\n    case 'OBRIGADO_SUCESSO':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida;\n        resultado.payloadTarefas.codigo_cte = cteEscolhida;\n        resultado.payloadTarefas.status = \"2\";\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida;\n        resultado.contexto.id_tarefa_atual = cteEscolhida;\n\n        resultado.payloadSessao.id_tarefa_atual = null;\n        resultado.payloadSessao.cte_tarefa_atual = null;\n\n        resultado.contexto.mensagens_consecutivas = \"1\";\n        break;\n    \n    case 'OBRIGADO_PENDENCIA':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida;\n        resultado.payloadTarefas.codigo_cte = cteEscolhida;\n        resultado.payloadTarefas.status = \"3\";\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida;\n        resultado.contexto.id_tarefa_atual = cteEscolhida;\n\n        resultado.payloadSessao.id_tarefa_atual = null;\n        resultado.payloadSessao.cte_tarefa_atual = null;\n\n        resultado.contexto.mensagens_consecutivas = \"1\";\n        break;\n    \n    case 'OBRIGADO_RETENCAO_APROVADA':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida;\n        resultado.payloadTarefas.codigo_cte = cteEscolhida;\n        resultado.payloadTarefas.status = \"4\";\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida;\n        resultado.contexto.id_tarefa_atual = cteEscolhida;\n\n        resultado.payloadSessao.id_tarefa_atual = null;\n        resultado.payloadSessao.cte_tarefa_atual = null;\n\n        resultado.contexto.mensagens_consecutivas = \"1\";\n        break;\n\n    case 'ENDERECO_ESTA_ERRADO':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida;\n        resultado.payloadTarefas.codigo_cte = cteEscolhida;\n        resultado.payloadTarefas.status = \"4\";\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida;\n        resultado.contexto.id_tarefa_atual = cteEscolhida;\n\n        resultado.payloadSessao.id_tarefa_atual = null;\n        resultado.payloadSessao.cte_tarefa_atual = null;\n\n        resultado.contexto.mensagens_consecutivas = \"1\";\n        break;\n\n    case 'OBRIGADO_OCORRENCIA_REGISTRADA':\n        resultado.payloadTarefas.id_tarefa = idTarefaEscolhida;\n        resultado.payloadTarefas.codigo_cte = cteEscolhida;\n        resultado.payloadTarefas.status = \"4\";\n\n        resultado.contexto.cte_tarefa_atual = idTarefaEscolhida;\n        resultado.contexto.id_tarefa_atual = cteEscolhida;\n\n        resultado.payloadSessao.id_tarefa_atual = null;\n        resultado.payloadSessao.cte_tarefa_atual = null;\n\n        resultado.contexto.mensagens_consecutivas = \"1\";\n        break;\n}\n\n// Esse trecho serve para enviar a mensagem de simulação da torre enquanto não temos isso no fluxo\nswitch (resultado.contexto.proximo_estado){\n    case \"AGUARDAR_TORRE_COMPROVANTE_RETIDO\":\n    case \"AGUARDAR_TORRE_DIVERGENCIA\":\n    case \"AGUARDAR_TORRE_RECUSA\":\n    case \"AGUARDAR_TORRE_ENDERECO_NAO_ENCONTRADO\":\n    case \"AGUARDAR_TORRE_AUSENCIA\":\n        resultado.contexto.confirmacao_torre = \"1\";\n        break;\n}\n\n// Retornar um único item com todos os objetos\nreturn [{json: resultado}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        288
+      ],
+      "id": "3b5ab375-c3ab-4b42-84c4-5a3296aa18ee",
+      "name": "Monta payloads"
+    },
+    {
+      "parameters": {
+        "jsCode": "const tipo = $input.first().json.resposta_whatsapp.tipo_resposta;\n\nif (tipo === \"button\" || tipo === \"list\") {\n  $input.first().json.resposta_whatsapp = {\n    tipo_resposta: \"interactive\",\n    id_whatsapp: $input.first().json.resposta_whatsapp.id_whatsapp,\n    id_resposta_interativa: $input.first().json.resposta_whatsapp.id_lista || $input.first().json.resposta_whatsapp.id_botao,\n    descricao_resposta_interativa: $input.first().json.resposta_whatsapp.descricao_lista,\n    titulo_resposta_interativa: $input.first().json.resposta_whatsapp.titulo_lista || $input.first().json.resposta_whatsapp.titulo_botao,\n    resposta_texto: $input.first().json.resposta_whatsapp.resposta_texto\n  };\n}\n\nreturn $input.first();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1280,
+        288
+      ],
+      "id": "9f26c5ef-72c2-4687-a2f3-0f17f86f3607",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Estrutura correta do input - objeto único com payloads e contexto\nconst inputData = $input.first().json\n\nconst contexto = inputData.contexto || {}\nconst templates = $('Templates')?.first()?.json || {}\nconst currentTaskId = contexto.id_tarefa_atual ?? null\nconst payloadSessao = inputData.payloadSessao || {}\nconst payloadTarefas = inputData.payloadTarefas || {}\n\n// Verificação segura para currentTaskData\nlet currentTaskData = null\ntry {\n  const workflowData = $('Inicia pelo workflow dos dados de documentos')?.first()?.json\n  if (workflowData && workflowData.dados_documentos_fiscais) {\n    const dadosFiltrados = workflowData.dados_documentos_fiscais[1]?.dados_filtrados?.[1]\n    if (dadosFiltrados && dadosFiltrados.tarefas) {\n      // Se não tem currentTaskId, pega a primeira tarefa\n      if (currentTaskId) {\n        currentTaskData = dadosFiltrados.tarefas.find(tarefa => tarefa.idTarefa === currentTaskId)\n      } else {\n        currentTaskData = dadosFiltrados.tarefas[0] // Pega a primeira tarefa\n      }\n    }\n  }\n} catch (error) {\n  console.log(\"Erro ao buscar currentTaskData:\", error.message)\n}\n\n\n// ==========================================\n// CONSTRUTORES DE MENSAGENS (Adaptado para Z-API)\n// ==========================================\n\nclass WhatsAppMessageFactory {\n  constructor(to) {\n    this.to = to\n  }\n\n  createBaseMessage() {\n    return {\n      phone: this.to\n    }\n  }\n\n  createListMessage(inputData) {\n    const message = this.createBaseMessage()\n\n    message.message = \"Selecione do menu abaixo\"\n    message.optionList = {\n      title: inputData?.header || \"Opções disponíveis\",\n      buttonLabel: \"Opções\",\n      options: (inputData?.options || []).map(option => ({\n        id: option?.id?.toString() || \"\",\n        title: option?.title || \"\",\n        ...(option?.description && { description: option.description })\n      }))\n    }\n\n    return message\n  }\n\n  createButtonMessage(inputData) {\n    const message = this.createBaseMessage()\n    \n    // Se existir header, ele atua como a mensagem principal, senão usa um fallback\n    message.message = inputData?.header || \"Selecione das opções abaixo\"\n    message.buttonList = {\n      buttons: (inputData?.options || []).map(option => ({\n        id: option?.id?.toString() || \"\",\n        label: option?.title || \"\"\n      }))\n    }\n\n    return message\n  }\n\n  createTextMessage(inputData) {\n    const message = this.createBaseMessage()\n    message.message = inputData?.content || \"\"\n    return message\n  }\n\n  createMessage(inputData) {\n    if (!inputData || !inputData.type) {\n      throw new Error(`Template inválido ou sem tipo: ${JSON.stringify(inputData)}`)\n    }\n\n    const messageTypes = {\n      list: this.createListMessage,\n      button: this.createButtonMessage,\n      text: this.createTextMessage\n    }\n\n    const createFunction = messageTypes[inputData.type]\n    if (!createFunction) {\n      throw new Error(`Tipo de mensagem não suportado: ${inputData.type}`)\n    }\n\n    return createFunction.call(this, inputData)\n  }\n}\n\n// Função para construir mensagens com rota do Google Maps (Adaptado para modelo Link)\nconst createGMapsMessage = (lat, long, toNumber) => {\n  const message = {\n    phone: toNumber,\n    message: `Status da tarefa de CTe ${contexto.cte_tarefa_atual} alterado para: \"Em andamento\"`,\n    linkUrl: `https://www.google.com/maps/search/?api=1&query=${lat},${long}`,\n    title: \"Abrir no Google Maps\",\n    linkDescription: \"Clique abaixo para abrir a localização no Google Maps.\"\n  }\n  \n  return message\n}\n\n// Função específica para o estado ENCERRADO\nconst createGMAPSLINKMessage = (toNumber, currentTaskData) => {\n\n  if (currentTaskData && currentTaskData.enderecoLatitude && currentTaskData.enderecoLongitude) {\n    const gmapsMessage = createGMapsMessage(\n      currentTaskData.enderecoLatitude,\n      currentTaskData.enderecoLongitude,\n      toNumber\n    )\n    return [gmapsMessage]\n  } else {\n    console.log(\"DEBUG - Não foi possível criar mensagem ENCERRADO: dados de localização faltando\")\n    console.log(\"DEBUG - currentTaskData:\", currentTaskData)\n    console.log(\"DEBUG - Latitude:\", currentTaskData?.enderecoLatitude)\n    console.log(\"DEBUG - Longitude:\", currentTaskData?.enderecoLongitude)\n    return []\n  }\n}\n\n// Função específica para o contexto completo\nconst createMessageFromContext = (templates, contexto, currentTaskData) => {\n  //Cria o objeto \"fábrica de mensagens\"  \n  const factory = new WhatsAppMessageFactory(contexto.id_whatsapp)\n  const messages = []\n\n  if (contexto.proximo_estado.includes('CONFIRMAR_CTE')) {\n    const templateExpositor = {\n      type: \"text\",\n      content: `*TAREFA ESCOLHIDA:*\n\nEndereço: ${currentTaskData.enderecoEntrega}\nCTe: ${currentTaskData.codigoCTe}\nRemetente: ${currentTaskData.remetente}\nDestinatário: ${currentTaskData.destinatario}`\n    }\n    const expositorTarefa = factory.createMessage(templateExpositor)\n    messages.push(expositorTarefa)\n  }\n\n  // Se for GMAPSLINK, cria mensagem do Google Maps diretamente\n  if (contexto.proximo_estado === \"GMAPSLINK\") {\n    return createGMAPSLINKMessage(contexto.id_whatsapp, currentTaskData)\n  }\n\n\n\n  const template = templates[contexto.proximo_estado]\n  // Lança erro caso não exista template com o nome do proximo estado\n  if (!template) {\n    throw new Error(`Template não encontrado para o estado: ${contexto.proximo_estado}`)\n  }\n  // Para outros estados, usa a sequência normal\n  const currentMessage = factory.createMessage(template)\n  messages.push(currentMessage)\n\n  // Esse trecho serve para enviar a mensagem de simulação da torre enquanto não temos isso no fluxo, depois deve ser retirado\n  if (contexto.confirmacao_torre === \"1\") {\n    const mensagemConfirmacao = factory.createMessage(templates[(contexto.proximo_estado).replaceAll(\"AGUARDAR\", \"CONFIRMAR\")])\n    messages.push(mensagemConfirmacao)\n  }\n\n\n\n  return messages\n}\n\nfunction formatTaskListOptions() {\n  const taskListOptions = []\n\n  try {\n    // Obtém o array de tarefas do caminho especificado\n    const tempTasksArray = $node[\"Inicia pelo workflow dos dados de documentos\"].json[\"dados_documentos_fiscais\"][\"1\"][\"dados_filtrados\"][\"1\"][\"tarefas\"]\n    const tasksArray = payloadTarefas.status === \"2\" || payloadTarefas.status === \"3\" || payloadTarefas.status === \"4\" ? tempTasksArray.filter(task => task.idTarefa !== payloadTarefas.id_tarefa) : tempTasksArray\n\n    if (tasksArray === null || tasksArray === undefined) {\n      // Nenhuma tarefa encontrada\n      console.log(\"Nenhuma tarefa encontrada no caminho especificado\")\n    } else if (Array.isArray(tasksArray)) {\n      // Processa cada tarefa do array - CONVERTENDO id para string\n      taskListOptions.push(\n        ...tasksArray.map((task, index) => ({\n          id: index.toString(),  // CONVERTIDO PARA STRING\n          title: task?.enderecoEntrega?.split(\"-\")[0] || \"Endereço não informado\",\n          description: `CTe: ${task?.codigoCTe || \"N/A\"}`\n        }))\n      )\n    } else {\n      // Caso seja um único objeto (não array)\n      taskListOptions.push({\n        id: \"0\",  // CONVERTIDO PARA STRING\n        title: tasksArray?.enderecoEntrega || \"Endereço não informado\",\n        description: `CTe: ${tasksArray?.codigoCTe || \"N/A\"} | Prioridade: ${tasksArray?.prioridade || \"N/A\"}`\n      })\n    }\n  } catch (error) {\n    console.log(\"Erro ao formatar lista de tarefas:\", error.message)\n  }\n\n  return taskListOptions\n}\n\n// Função para mensagem única simples\nconst createWhatsAppMessage = (template, toNumber) => {\n  const factory = new WhatsAppMessageFactory(toNumber)\n  return factory.createMessage(template)\n}\n\nconst taskListOptions = formatTaskListOptions();\nconst templateTarefas = {\n  ...templates.SELECAO_TAREFAS,\n  options: taskListOptions\n}\n\nlet mensagens = []\n\n\n// Manda a mensagem do próximo estado e depois já redefine ele para enviar junto o menu de tarefas na condicional abaixo\nif (contexto.mensagens_consecutivas === \"1\") {\n  mensagens.push(createWhatsAppMessage(templates[contexto.proximo_estado], contexto.id_whatsapp))\n\n  contexto.proximo_estado = \"SELECAO_TAREFAS\"\n}\n\nif (contexto.proximo_estado === \"SELECAO_TAREFAS\") {\n  mensagens.push(createWhatsAppMessage(templateTarefas, contexto.id_whatsapp))\n} else {\n  mensagens = createMessageFromContext(templates, contexto, currentTaskData)\n}\n\n\nlet mensagensSaoArray = Array.isArray(mensagens)\nif (!mensagensSaoArray) {\n  mensagens = [mensagens]\n}\n\n\n\nmensagensSaoArray = Array.isArray(mensagens)\nconst quantasMensagens = mensagens.length\n\nreturn {\n  json: {\n    resposta: mensagens,\n    mensagens_sao_array: mensagensSaoArray,\n    quantas_mensagens: quantasMensagens,\n    proximo_estado: contexto.proximo_estado,\n    payload_sessao: payloadSessao,\n    payload_tarefas: payloadTarefas\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3440,
+        848
+      ],
+      "id": "0a550da8-2d58-4552-8906-d7a3d8ceeac7",
+      "name": "Monta mensagens2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "let contexto = $input.first().json\nconst tarefas = $('Inicia pelo workflow dos dados de documentos').first().json.dados_documentos_fiscais[2].tarefas\n\nconst cteEscolhida = $input.first().json.cte_tarefa_atual ??(contexto.descricao_resposta_interativa !== null ? (contexto.descricao_resposta_interativa).match(/CTe:\\s*(\\d+)/)[1] : null)\nconst idTarefaEscolhida = $input.first().json.id_tarefa_atual ?? (cteEscolhida !== null ? (tarefas.find(tarefa => tarefa.cte001_codigo === cteEscolhida)).cte001_codigo : null)\n\n// Armazenar input uma única vez para evitar múltiplas chamadas\nconst inputJson = $input.first().json\nconst currentId = inputJson.id_tarefa_atual\n\n// Inicializar os objetos\nlet resultado = {\n    payloadSessao: {\n      cte_tarefa_atual: inputJson.cte_tarefa_atual, \n      ativo: true, \n      id_tarefa_atual: currentId, \n      estado: inputJson.proximo_estado, \n      escolha_automatica: inputJson.escolha_automatica, \n      tarefas_ordenadas_previamente: inputJson.tarefas_ordenadas_previamente\n    },\n  \n    payloadTarefas: {\n      codigo_cte: inputJson.cte_tarefa_atual, \n      id_tarefa: currentId,\n      status: currentId !== null ? (tarefas.find(tarefa => tarefa.id === currentId)).status : null\n    },\n\n    registroOcorrencia: {\n        novo_registro: false,\n        id_tarefa: null,\n        tipo_ocorrencia: null,\n        detalhamento: null\n    },\n  \n    contexto: contexto\n}\n\n// Atualiza a tarefa/cte atual no payload de sessão e finaliza a sessão atual\nswitch(resultado.contexto.estado_atual){\n  case 'OBRIGADO_SUCESSO':\n  case 'OBRIGADO_PENDENCIA':\n  case 'OBRIGADO_RETENCAO_APROVADA':\n  case 'ENDERECO_ESTA_ERRADO':\n  case 'OBRIGADO_OCORRENCIA_REGISTRADA':\n  case 'SELECAO_TAREFAS':\n    resultado.payloadTarefas.id_tarefa = idTarefaEscolhida\n    resultado.payloadTarefas.codigo_cte = cteEscolhida\n    resultado.payloadTarefas.status = \"1\"\n\n    resultado.contexto.cte_tarefa_atual = cteEscolhida\n    resultado.contexto.id_tarefa_atual = idTarefaEscolhida\n\n    resultado.payloadSessao.id_tarefa_atual = idTarefaEscolhida\n    resultado.payloadSessao.cte_tarefa_atual = cteEscolhida\n\n    resultado.payloadSessao.ativo = false\n    resultado.payloadSessao.estado = \"FINALIZADO\"\n}\n\n// Gerencia o estado final e status das tarefas\nif (resultado.contexto.proximo_estado === \"ENCERRAMENTO\"){\n    resultado.payloadSessao.ativo = false\n    resultado.payloadSessao.estado = 'FINALIZADO'\n}else {\n    let novoStatus;\n    switch(resultado.contexto.proximo_estado){\n        case 'CONTINUA_COM_TORRE':\n        case 'OBRIGADO_RETENCAO_APROVADA':\n        case 'ENDERECO_ESTA_ERRADO':\n        case 'OBRIGADO_OCORRENCIA_REGISTRADA':\n            novoStatus = \"4\"\n            break\n        case 'OBRIGADO_SUCESSO': \n            novoStatus = \"2\"\n            break\n        case 'OBRIGADO_PENDENCIA': \n            novoStatus = \"3\"\n            break\n    }\n\n    // Atualizar payloads apenas uma vez com o novo status\n    resultado.payloadTarefas.id_tarefa = idTarefaEscolhida\n    resultado.payloadTarefas.codigo_cte = cteEscolhida\n    resultado.payloadTarefas.status = novoStatus\n\n    resultado.contexto.cte_tarefa_atual = cteEscolhida\n    resultado.contexto.id_tarefa_atual = idTarefaEscolhida\n\n    resultado.payloadSessao.id_tarefa_atual = null\n    resultado.payloadSessao.cte_tarefa_atual = null    \n}\n\n// Esse trecho serve para enviar a mensagem de simulação da torre enquanto não temos isso no fluxo\nswitch (resultado.contexto.proximo_estado){\n    case \"AGUARDAR_TORRE_COMPROVANTE_RETIDO\":\n    case \"AGUARDAR_TORRE_DIVERGENCIA\":\n    case \"AGUARDAR_TORRE_RECUSA\":\n    case \"AGUARDAR_TORRE_ENDERECO_NAO_ENCONTRADO\":\n    case \"AGUARDAR_TORRE_AUSENCIA\":\n        resultado.contexto.confirmacao_torre = \"1\"\n        break\n}\n\n\n// Retornar um único item com todos os objetos\nreturn [{json: resultado}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3200,
+        848
+      ],
+      "id": "9a77f7ab-430d-4bf6-aa26-b6febcf9f325",
+      "name": "Monta payloads2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n    \"MENU_PRINCIPAL_1\":{\n        \"0\": \"SELECAO_TAREFAS\",  \n        \"1\": \"ATUALIZAR_STATUS\"\n    },\n    \"MENU_PRINCIPAL_2\":{\n        \"0\": \"SELECAO_TAREFAS\"\n    },\n\n\n\n    \"ATUALIZAR_STATUS\": {\n        \"0\": \"CONFIRMAR_CTE_SUCESSO\",\n        \"1\": \"CONFIRMAR_CTE_PENDENCIA\",\n        \"2\": \"CONFIRMAR_CTE_INSUCESSO\"\n    },\n\n\n\n    \"CONFIRMAR_CTE_SUCESSO\": {\n        \"0\": \"FOTO_CANHOTO_SUCESSO\",\n        \"1\": \"SELECAO_TAREFAS\"\n    },\n    \"CONFIRMAR_CTE_PENDENCIA\": {\n        \"0\": \"SELECAO_TIPO_PENDENCIA_1\",\n        \"1\": \"SELECAO_TAREFAS\"\n    },\n    \"CONFIRMAR_CTE_INSUCESSO\": {\n        \"0\": \"SELECAO_TIPO_INSUCESSO\",\n        \"1\": \"SELECAO_TAREFAS\"\n    },\n\n\n\n    \"SELECAO_TIPO_PENDENCIA_1\": {\n        \"interactive_id\": \"SELECAO_TIPO_PENDENCIA_2\"\n    },\n    \"SELECAO_TIPO_PENDENCIA_2\": {\n        \"0\": \"FOTO_RESSALVA_NFD_PENDENCIA\",\n        \"1\": \"FOTO_NFD_PENDENCIA\"\n    },\n\n    \"FOTO_RESSALVA_NFD_PENDENCIA\": {\n        \"image\": \"FOTO_CARGA_PENDENCIA\"\n    },\n    \"FOTO_NFD_PENDENCIA\": {\n        \"image\": \"FOTO_CARGA_PENDENCIA\"\n    },\n    \"FOTO_CARGA_PENDENCIA\": {\n        \"image\": \"OBRIGADO_PENDENCIA\"\n    },\n\n\n\n    \"OBRIGADO_PENDENCIA\": {\n        \"none\": \"SELECAO_TAREFAS\"\n    },\n\n    \"FOTO_CANHOTO_SUCESSO\": {\n        \"image\": \"NOME_RECEBEDOR_SUCESSO\"\n    },\n    \"NOME_RECEBEDOR_SUCESSO\": {\n        \"text\": \"OBRIGADO_SUCESSO\"\n    },\n\n\n\n    \"OBRIGADO_SUCESSO\": {\n        \"none\": \"SELECAO_TAREFAS\"\n    },\n\n\n\n    \"SELECAO_TIPO_INSUCESSO\": {\n        \"0\": \"LOC_COMPROVANTE_RETIDO\",\n        \"1\": \"LOC_DIVERGENCIA\",\n        \"2\": \"LOC_ENDERECO_NAO_ENCONTRADO\",\n        \"3\": \"LOC_DESTINATARIO_AUSENTE\",\n        \"4\": \"LOC_RECUSA\"\n    },\n\n\n\n    \"LOC_COMPROVANTE_RETIDO\": {\n        \"location\": \"AGUARDAR_TORRE_COMPROVANTE_RETIDO\"\n    },\n    \"LOC_DIVERGENCIA\": {\n        \"location\": \"NOME_RECEBEDOR_DIVERGENCIA\"\n    },\n    \"LOC_ENDERECO_NAO_ENCONTRADO\": {\n        \"location\": \"FOTO_LOCAL_ENDERECO_NAO_ENCONTRADO\"\n    },\n    \"LOC_DESTINATARIO_AUSENTE\": {\n        \"location\": \"FOTO_LOCAL_AUSENCIA\"\n    },\n    \"LOC_RECUSA\": {\n        \"location\": \"NOME_RECEBEDOR_RECUSA\"\n    },\n\n\n\n    \"AGUARDAR_TORRE_COMPROVANTE_RETIDO\": {\n        \"0\": \"FOTO_TERMO_RETENCAO\",\n        \"1\": \"FOTO_CANHOTO_SUCESSO\"\n    },\n\n\n\n    \"FOTO_TERMO_RETENCAO\": {\n        \"image\": \"OBRIGADO_RETENCAO_APROVADA\"\n    },\n    \"OBRIGADO_RETENCAO_APROVADA\": {\n        \"none\": \"SELECAO_TAREFAS\"\n    },\n\n\n\n    \"NOME_RECEBEDOR_DIVERGENCIA\": {\n        \"text\": \"NUMERO_RECEBEDOR_DIVERGENCIA\"\n    },\n    \"NOME_RECEBEDOR_RECUSA\": {\n        \"text\": \"NUMERO_RECEBEDOR_RECUSA\"\n    },\n\n\n\n    \"NUMERO_RECEBEDOR_DIVERGENCIA\": {\n        \"text\": \"DETALHAR_OCORRENCIA_DIVERGENCIA\"\n    },\n    \"NUMERO_RECEBEDOR_RECUSA\": {\n        \"text\": \"DETALHAR_OCORRENCIA_RECUSA\"\n    },\n    \n    \"DETALHAR_OCORRENCIA_DIVERGENCIA\": {\n        \"text\": \"AGUARDAR_TORRE_DIVERGENCIA\"\n    },\n    \"DETALHAR_OCORRENCIA_RECUSA\": {\n        \"text\": \"AGUARDAR_TORRE_RECUSA\"\n    },\n\n    \"AGUARDAR_TORRE_DIVERGENCIA\": {\n        \"0\": \"FOTO_RESSALVA_NFD_DIVERGENCIA\"\n    },\n    \"AGUARDAR_TORRE_RECUSA\": {\n        \"0\": \"FOTO_RESSALVA_RECUSA\"\n    },\n\n\n    \"FOTO_RESSALVA_NFD_DIVERGENCIA\": {\n        \"image\": \"OBRIGADO_OCORRENCIA_REGISTRADA\"\n    },\n    \"FOTO_RESSALVA_RECUSA\": {\n        \"image\": \"OBRIGADO_OCORRENCIA_REGISTRADA\"\n    },\n\n\n    \"OBRIGADO_OCORRENCIA_REGISTRADA\": {\n        \"none\": \"SELECAO_TAREFAS\"\n    },\n\n\n\n    \"FOTO_LOCAL_ENDERECO_NAO_ENCONTRADO\": {\n        \"image\": \"AGUARDAR_TORRE_ENDERECO_NAO_ENCONTRADO\"\n    },\n    \"FOTO_LOCAL_AUSENCIA\": {\n        \"image\": \"AGUARDAR_TORRE_AUSENCIA\"\n    },\n\n    \"AGUARDAR_TORRE_ENDERECO_NAO_ENCONTRADO\": {\n        \"0\": \"ENDERECO_ESTA_CORRETO\",\n        \"1\": \"ENDERECO_ESTA_ERRADO\"\n    },\n    \"AGUARDAR_TORRE_AUSENCIA\": {\n        \"0\": \"DESTINATARIO_CONTATADO\",\n        \"1\": \"DESTINATARIO_NAO_CONTATADO\"\n    },\n\n    \"ENDERECO_ESTA_CORRETO\": {\n        \"text\": \"CONTINUA_COM_TORRE\"\n    },\n    \"ENDERECO_ESTA_ERRADO\": {\n        \"none\": \"SELECAO_TAREFAS\"\n    },\n\n    \"DESTINATARIO_CONTATADO\": {\n        \"text\": \"CONTINUA_COM_TORRE\"\n    },\n    \"DESTINATARIO_NAO_CONTATADO\": {\n        \"none\": \"SELECAO_TAREFAS\"\n    },\n\n    \"CONTINUA_COM_TORRE\": {\n        \"text\": \"SELECAO_TAREFAS\"\n    }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2592,
+        848
+      ],
+      "id": "c3e86f04-2e58-4983-b91e-b2be3249e422",
+      "name": "Estados2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"ENCERRAMENTO\": {\n    \"type\": \"text\",\n    \"content\": \"*OBRIGADO*\\n\\nAtendimento cancelado.\"\n  },\n\n  \"CONTINUA_COM_TORRE\": {\n    \"type\": \"text\",\n    \"content\": \"A partir desse ponto a conversa segue com um atendente até que o mesmo finalize o atendimento. \\n Envie uma mensagem de texto para retornar ao menu de tarefas\"\n  },\n\n\n\n  \"CONFIRMAR_TORRE_COMPROVANTE_RETIDO\": {\n    \"type\": \"button\",\n    \"header\": \"SIMULAÇÃO TORRE\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Aprovar\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Negar\"\n      }\n    ]\n  },\n\n  \"CONFIRMAR_TORRE_DIVERGENCIA\": {\n    \"type\": \"button\",\n    \"header\": \"SIMULAÇÃO TORRE\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Aprovar retorno\"\n      }\n    ]\n  },\n\n  \"CONFIRMAR_TORRE_RECUSA\": {\n    \"type\": \"button\",\n    \"header\": \"SIMULAÇÃO TORRE\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Aprovar retorno\"\n      }\n    ]\n  },\n\n  \"CONFIRMAR_TORRE_ENDERECO_NAO_ENCONTRADO\": {\n    \"type\": \"button\",\n    \"header\": \"SIMULAÇÃO TORRE\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Endereço correto\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Endereço errado\"\n      }\n    ]\n  },\n\n  \"CONFIRMAR_TORRE_AUSENCIA\": {\n    \"type\": \"button\",\n    \"header\": \"SIMULAÇÃO TORRE\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Destinatario contatado\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Destinatario \"\n      }\n    ]\n  },\n\n\n\n\n\n  \"MENU_PRINCIPAL_1\": {\n    \"type\": \"button\",\n    \"header\": \"Menu principal \",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Escolher tarefa\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Atualizar status\"\n      }\n    ]\n  },\n  \"MENU_PRINCIPAL_2\": {\n    \"type\": \"button\",\n    \"header\": \"Menu principal \",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Escolher tarefa\"\n      }\n    ]\n  },\n\n  \n\n  \"SELECAO_TAREFAS\": {\n    \"type\": \"list\",\n    \"header\": \"Escolher tarefa\",\n    \"options\": \"taskList\"\n  },\n\n\n\n  \"ATUALIZAR_STATUS\": {\n    \"type\": \"button\",\n    \"header\": \"Escolha o Status de Entrega\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Sucesso\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Pendência\"\n      },\n      {\n        \"id\": 2,\n        \"title\": \"Insucesso\"\n      }\n    ]\n  },\n\n\n\n  \"CONFIRMAR_CTE_SUCESSO\": {\n    \"type\": \"button\",\n    \"header\": \"Confirma a escolha da tarefa?\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Sim\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Não\"\n      }\n    ]\n  },\n  \"CONFIRMAR_CTE_PENDENCIA\": {\n    \"type\": \"button\",\n    \"header\": \"Confirma a escolha da tarefa?\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Sim\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Não\"\n      }\n    ]\n  },\n  \"CONFIRMAR_CTE_INSUCESSO\": {\n    \"type\": \"button\",\n    \"header\": \"Confirma a escolha da tarefa?\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Sim\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Não\"\n      }\n    ]\n  },\n\n\n  \"FOTO_CANHOTO_SUCESSO\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO DE SUCESSO*\\n\\nPor favor, envie uma foto nítida do canhoto que evidencie a presença do código do CTe, carimbo, nome do remetente e destinatário, e endereço\"\n  },\n  \"NOME_RECEBEDOR_SUCESSO\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO DE SUCESSO*\\n\\nPor favor, envie o nome do recebedor da entrega\"\n  },\n  \"OBRIGADO_SUCESSO\": {\n    \"type\": \"text\",\n    \"content\": \"*OBRIGADO*\\n\\nTarefa realizada com sucesso\"\n  },\n\n\n  \"SELECAO_TIPO_PENDENCIA_1\": {\n    \"type\": \"button\",\n    \"header\": \"Informe o tipo de pendência:\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Avaria\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Falta\"\n      },\n      {\n        \"id\": 2,\n        \"title\": \"Inversão\"\n      }\n    ]\n  },\n  \"SELECAO_TIPO_PENDENCIA_2\": {\n    \"type\": \"button\",\n    \"header\": \"A pendência é total ou parcial?\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Total\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Parcial\"\n      }\n    ]\n  },\n\n\n\n  \"FOTO_RESSALVA_NFD_PENDENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO DE PENDÊNCIA*\\n\\nPor favor, envie uma foto nítida da ressalva ou do NFD\"\n  },\n  \"FOTO_NFD_PENDENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO DE PENDÊNCIA*\\n\\nPor favor, envie uma foto nítida do NFD\"\n  },\n  \"FOTO_CARGA_PENDENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO DE PENDÊNCIA*\\n\\nObrigado, agora envie uma foto da carga\"\n  },\n  \"OBRIGADO_PENDENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*OBRIGADO*\\n\\nOcorrência de pendência registrada com sucesso\"\n  },\n\n  \n  \n  \"SELECAO_TIPO_INSUCESSO\": {\n    \"type\": \"list\",\n    \"header\": \"Motivo do insucesso:\",\n    \"options\": [\n      {\n        \"id\": 0,\n        \"title\": \"Comprovante Retido\"\n      },\n      {\n        \"id\": 1,\n        \"title\": \"Divergência Comercial\"\n      },\n      {\n        \"id\": 2,\n        \"title\": \"Endereço não localizado\"\n      },\n      {\n        \"id\": 3,\n        \"title\": \"Destinatário ausente\"\n      },\n      {\n        \"id\": 4,\n        \"title\": \"Recusa/Impossibilidade\"\n      }\n    ]\n  },\n\n\n\n  \"LOC_COMPROVANTE_RETIDO\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO RETENÇÃO*\\n\\nPor favor, envie sua localização\"\n  },\n  \"LOC_DIVERGENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO DIVERGÊNCIA*\\n\\nPor favor, envie sua localização\"\n  },\n  \"LOC_ENDERECO_NAO_ENCONTRADO\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO ENDEREÇO NÃO ENCONTRADO*\\n\\nPor favor, envie sua localização\"\n  },\n  \"LOC_DESTINATARIO_AUSENTE\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO AUSÊNCIA*\\n\\nPor favor, envie sua localização\"\n  },\n  \"LOC_RECUSA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO RECUSA*\\n\\nPor favor, envie sua localização\"\n  },\n\n\n\n  \"AGUARDAR_TORRE_COMPROVANTE_RETIDO\": {\n    \"type\": \"text\",\n    \"content\": \"*AGUARDE*\\n\\nEstamos entrando em contato com o remetente, por favor aguarde\"\n  },\n\n\n\n  \"RETENCAO_COMPROVANTE_APROVADA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO RETENÇÃO*\\n\\nA retenção foi a aprovada, por favor envie a foto do termo de retenção assinado\"\n  },\n  \"RETENCAO_COMPROVANTE_DESAPROVADA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO RETENÇÃO*\\n\\nA retenção não foi aprovada. Para prosseguir, envie uma foto nítida do canhoto que evidencie a presença do código do CTe, carimbo, nome do remetente e destinatário, e endereço\"\n  },\n\n  \"FOTO_TERMO_RETENCAO\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO RETENÇÃO*\\n\\nPor favor, envie uma foto do termo de retenção\"\n  },\n  \"OBRIGADO_RETENCAO_APROVADA\": {\n    \"type\": \"text\",\n    \"content\": \"*OBRIGADO*\\n\\nOcorrência registrada com sucesso\"\n  },\n\n\n\n  \"NOME_RECEBEDOR_DIVERGENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO DIVERGÊNCIA*\\n\\nPor favor, envie o nome do recebedor da entrega\"\n  },\n  \"NOME_RECEBEDOR_RECUSA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO RECUSA*\\n\\nPor favor, envie o nome do recebedor da entrega\"\n  },\n\n  \"NUMERO_RECEBEDOR_DIVERGENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO DIVERGÊNCIA*\\n\\nPor favor, envie o número para contato do recebedor da entrega\"\n  },\n  \"NUMERO_RECEBEDOR_RECUSA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO RECUSA*\\n\\nPor favor, envie o número para contato do recebedor da entrega\"\n  },\n\n  \"DETALHAR_OCORRENCIA_DIVERGENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO DIVERGÊNCIA*\\n\\nPor favor, envie uma só mensagem para detalhar o ocorrido\"\n  },\n  \"DETALHAR_OCORRENCIA_RECUSA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO RECUSA*\\n\\nPor favor, envie uma só mensagem para detalhar o ocorrido\"\n  },\n\n  \"AGUARDAR_TORRE_DIVERGENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*AGUARDE*\\n\\nEstamos entrando em contato com o cliente, por favor aguarde retorno\"\n  },\n\n  \"AGUARDAR_TORRE_RECUSA\": {\n    \"type\": \"text\",\n    \"content\": \"*AGUARDE*\\n\\nEstamos entrando em contato com o cliente, por favor aguarde retorno\"\n  },\n\n\n  \"OBRIGADO_OCORRENCIA_REGISTRADA\": {\n    \"type\": \"text\",\n    \"content\": \"*OBRIGADO*\\n\\nOcorrência registrada com sucesso\"\n  },\n\n\n\n  \"FOTO_LOCAL_ENDERECO_NAO_ENCONTRADO\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO ENDEREÇO NÃO ENCONTRADO*\\n\\nPor favor, envie uma foto do local onde você se encontra\"\n  },\n  \"FOTO_LOCAL_AUSENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO AUSÊNCIA*\\n\\nPor favor, envie uma foto do local onde você se encontra\"\n  },\n\n  \"AGUARDAR_TORRE_ENDERECO_NAO_ENCONTRADO\": {\n    \"type\": \"text\",\n    \"content\": \"*AGUARDE*\\n\\nEstamos verificando os dados do endereço de entrega, por favor aguarde retorno\"\n  },\n\n  \"AGUARDAR_TORRE_AUSENCIA\": {\n    \"type\": \"text\",\n    \"content\": \"*AGUARDE*\\n\\nEstamos entrando em contato com o cliente, por favor aguarde retorno\"\n  },\n\n  \"ENDERECO_ESTA_CORRETO\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO ENDEREÇO NÃO ENCONTRADO*\\n\\nO endereço está correto, responda essa mensagem para falar com a torre e receber mais informações\"\n  },\n  \"ENDERECO_ESTA_ERRADO\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO ENDEREÇO NÃO ENCONTRADO*\\n\\nO endereço está incorreto, veículo liberado para retirada, retorne com carga para a unidade\"\n  },\n\n  \"DESTINATARIO_CONTATADO\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO AUSÊNCIA*\\n\\nDestinatário foi contatado, responda essa mensagem para falar com a torre e receber mais informações\"\n  },\n  \"DESTINATARIO_NAO_CONTATADO\": {\n    \"type\": \"text\",\n    \"content\": \"*REGISTRO AUSÊNCIA*\\n\\nO destinatário naão foi contatado, veículo liberado para retirada, retorne com carga para a unidade\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2816,
+        848
+      ],
+      "id": "037e221d-d4d4-4edb-aaee-5227870e63fd",
+      "name": "Templates3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f85b640-3867-41b4-835d-6f749840048f",
+              "name": "id_whatsapp",
+              "value": "={{ $json.resposta_whatsapp.id_whatsapp }}",
+              "type": "string"
+            },
+            {
+              "id": "72aea402-4fc7-45d7-8ddb-0bdd9a466b52",
+              "name": "tipo_resposta",
+              "value": "={{ $json.resposta_whatsapp.tipo_resposta }}",
+              "type": "string"
+            },
+            {
+              "id": "dc71c1e2-1200-4b1d-9930-d0aacc8ee250",
+              "name": "id_resposta_interativa",
+              "value": "={{ $json.resposta_whatsapp.id_resposta_interativa }}",
+              "type": "string"
+            },
+            {
+              "id": "d615b02c-485e-4b02-a26f-4b14954e1139",
+              "name": "descricao_resposta_interativa",
+              "value": "={{ $json.resposta_whatsapp.descricao_resposta_interativa }}",
+              "type": "string"
+            },
+            {
+              "id": "7489a12c-7947-488f-973e-910c8c6aab71",
+              "name": "resposta_texto",
+              "value": "={{ $json.resposta_whatsapp.resposta_texto }}",
+              "type": "string"
+            },
+            {
+              "id": "ebf2c9d9-b995-40c0-a7a8-3601a6e5efda",
+              "name": "cte_tarefa_atual",
+              "value": "={{ $json.sessao.cte_tarefa_atual }}",
+              "type": "string"
+            },
+            {
+              "id": "4db59f9e-c9a9-42f0-b33d-e4dcbb2c3ba2",
+              "name": "id_tarefa_atual",
+              "value": "={{ $json.sessao.id_tarefa_atual }}",
+              "type": "string"
+            },
+            {
+              "id": "06b73013-a836-4057-bbc2-52b43b7a3d26",
+              "name": "estado_atual",
+              "value": "={{ $json.sessao.estado }}",
+              "type": "string"
+            },
+            {
+              "id": "ae90d1ba-5766-43e0-bced-c3a258f4dd4f",
+              "name": "image_id",
+              "value": "={{ $json.sessao.image_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2352,
+        848
+      ],
+      "id": "f8310241-72ac-4724-862c-22de808b9405",
+      "name": "Contexto2",
+      "disabled": true
     }
   ],
-  "pinData": {},
   "connections": {
     "Inicia pelo workflow dos dados de documentos": {
       "main": [
         [
           {
-            "node": "Contexto",
+            "node": "Code in JavaScript",
             "type": "main",
             "index": 0
           }
@@ -544,8 +699,40 @@
             "type": "main",
             "index": 0
           }
-        ],
-        []
+        ]
+      ]
+    },
+    "Processa a mensagem caso TEXTO": {
+      "main": [
+        [
+          {
+            "node": "Monta payloads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processa a mensagem caso INTERATIVA": {
+      "main": [
+        [
+          {
+            "node": "Monta payloads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processa a mensagem caso IMAGEM": {
+      "main": [
+        [
+          {
+            "node": "Monta payloads",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Estados": {
@@ -581,44 +768,33 @@
         ]
       ]
     },
-    "Processa a mensagem caso INTERATIVA": {
-      "main": [
-        [
-          {
-            "node": "Monta payloads",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Processa a mensagem caso TEXTO": {
-      "main": [
-        [
-          {
-            "node": "Monta payloads",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Processa a mensagem caso IMAGEM": {
-      "main": [
-        [
-          {
-            "node": "Monta payloads",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "POST reply[0]": {
       "main": [
         [
           {
             "node": "POST reply[1]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST reply[1]": {
+      "main": [
+        [
+          {
+            "node": "UPDATE Tabela de Sessões",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST reply": {
+      "main": [
+        [
+          {
+            "node": "UPDATE Tabela de Sessões",
             "type": "main",
             "index": 0
           }
@@ -643,44 +819,11 @@
         ]
       ]
     },
-    "POST reply": {
-      "main": [
-        [
-          {
-            "node": "UPDATE Tabela de Sessões",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "POST reply[1]": {
-      "main": [
-        [
-          {
-            "node": "UPDATE Tabela de Sessões",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Monta mensagens": {
       "main": [
         [
           {
             "node": "Mais de um reply?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Monta payloads": {
-      "main": [
-        [
-          {
-            "node": "Monta mensagens",
             "type": "main",
             "index": 0
           }
@@ -708,17 +851,66 @@
           }
         ]
       ]
+    },
+    "Monta payloads": {
+      "main": [
+        [
+          {
+            "node": "Monta mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta payloads2": {
+      "main": [
+        [
+          {
+            "node": "Monta mensagens2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estados2": {
+      "main": [
+        [
+          {
+            "node": "Templates3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contexto2": {
+      "main": [
+        [
+          {
+            "node": "Estados2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
-  "settings": {
-    "executionOrder": "v1"
-  },
-  "versionId": "9dcc2ab1-10e0-491b-ad33-7c693c6b3e2f",
+  "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "aa6df07db1b386814570ffd65bf5a1bc78881504b712a406d3a96a243fdeef75"
-  },
-  "id": "Rbj3NhFcalbjs9MX",
-  "tags": []
+  }
 }
